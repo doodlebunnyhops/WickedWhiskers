@@ -1,0 +1,30 @@
+# To Do
+- [ ] CoolDowns
+- [x] What are the ways players can join the game?
+  - ~~logic i have `opt in/out` isn't flushed out and idk how much i care for it.~~
+  - either through /join or react join
+- [x] Better command descriptions
+- [ ] Consider easier to read command names
+- [ ] LOG...how have i not put this in yet..
+- [x] Update the help cmd
+- [ ] make sure we're salting inputs... be safe not dumb
+- [ ] decide on where messages should be sent:
+  - admin channel
+  - event channel
+  - ephemeral response or not? <- if not it will post it what ever channel invoked in.
+- [ ] Make some responses prettier with embeds
+- [ ] Include Candy Stolen and Candy Won from Cauldron Spell in /stats
+
+# Found Bugs
+- [x] lottery system..it's wrong
+  - DB isn't tracking how many tickets a player has, thus not giving players increased chances of winning
+  - But i do like the idea of a moderator or admin coming in and deciding to be evil and give it to one or distributed random player(s) who may not have purchased a ticket 😈 muwahahaha...
+- [x] Make sure tickets_purchased removes tickets after the cauldron draw has occurred!!
+- [x] Show in stats how many tickets you have
+- [x] /trick command sends "The application did not respond." I need to respond with interaction ephemeral true with timeout and then a post_event_channel() to stop this
+- [x] Give 0 candy should not be possible OR should it… with a smart butt remark
+- [x] Stealing from someone who has 0 candy...that meany LOL
+  - Give some to the target
+    - Put the rest in the cauldron
+  - Put all in the cauldron
+  - Give all to the target
