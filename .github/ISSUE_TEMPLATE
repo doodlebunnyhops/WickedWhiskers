@@ -1,0 +1,40 @@
+# Issue Title
+<!--
+Provide a short, descriptive title of the issue.
+-->
+
+## Description
+<!--
+Describe the problem you're experiencing or the feature you would like to request. Be as detailed as possible.
+-->
+
+## Steps to Reproduce (for bug reports)
+<!--
+Include the steps necessary to reproduce the issue. Example:
+1. Go to '...'
+2. Click on '...'
+3. See error
+-->
+
+## Expected Behavior
+<!--
+Describe what you expected to happen.
+-->
+
+## Screenshots or Logs
+<!--
+If applicable, add screenshots or logs to help explain your problem.
+-->
+
+## Environment
+<!--
+List the software versions or configurations related to the issue. Example:
+- OS: [e.g. Ubuntu 20.04]
+- Python version: [e.g. 3.9]
+- Discord.py version: [e.g. 2.3.2]
+-->
+
+## Additional Context
+<!--
+Add any other context or information about the issue or request here.
+-->
