@@ -1,0 +1,17 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "pip" # This is for Python packages
+    directory: "/" # Location of the `requirements.txt` or `pyproject.toml` file
+    schedule:
+      interval: "weekly" # Check for updates weekly
+    open-pull-requests-limit: 10 # Limit the number of open pull requests at one time
+  - package-ecosystem: "github-actions" # To keep GitHub Actions up-to-date
+    directory: "/" # Location of the action workflow files
+    schedule:
+      interval: "weekly" # Check for updates weekly
+    open-pull-requests-limit: 5 # Limit the number of open pull requests for GitHub Actions
