@@ -266,7 +266,7 @@ async def opt_in_game(interaction: discord.Interaction):
 # Slash Command for Help - Shows a list of available commands and extra ones for mods/admins
 @bot.tree.command(name="help", description="Get a list of available commands and how to use them.")
 async def help_command(interaction: discord.Interaction):
-    help_message = f"Go to our readme [here](https://github.com/doodlebunnyhops/candy/blob/main/README.md)"
+    help_message = f"Go to our readme [here](https://github.com/doodlebunnyhops/WickedWhiskers?tab=readme-ov-file#commands)"
 
     await interaction.response.send_message(help_message,ephemeral= True)  # Send the first chunk
 
