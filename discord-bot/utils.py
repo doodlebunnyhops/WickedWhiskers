@@ -1,3 +1,13 @@
+# -----------------------------------------------------------------------------
+# Author: doodlebunnyhops
+# Date: 10-07-2024
+# Description: Utility functions to support discord bot.
+# License: This file is part of a project licensed under the MIT License.
+# Attribution: If you reuse or modify this code, please attribute the original
+# creator, doodlebunnyhops, by referencing the source repository at 
+# https://github.com/doodlebunnyhops.
+# -----------------------------------------------------------------------------
+
 import discord
 import db_utils
 from functools import wraps
