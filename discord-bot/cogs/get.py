@@ -1,5 +1,3 @@
-# cogs/set_commands.py
-
 import logging
 import discord
 from discord import app_commands
@@ -12,7 +10,7 @@ get_group = app_commands.Group(name="get", description="get commands")
 
 @get_group.command(name="role", description="Get the saved roles")
 @checks.check_if_has_permission_or_role()
-async def get_role(self, interaction: discord.Interaction):
+async def get_role(interaction: discord.Interaction):
     logging.debug("role_access get command was triggered")
     await interaction.response.send_message("Fetching roles...",delete_after=10,ephemeral=True)
     role_ids = db_utils.fetch_roles_by_guild(interaction.guild.id)

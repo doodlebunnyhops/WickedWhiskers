@@ -179,6 +179,14 @@ def get_player_data(player_id, guild_id):
         return player_data
     return None
 
+def create_player_data(player_id: int, guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO players (player_id, guild_id, candy_count, successful_steals, failed_steals, candy_given, active, tickets_purchased, frozen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+                    (player_id, guild_id, 50, 0, 0, 0, 1, 0, 0))
+    conn.commit()
+
+
 # Delete a player's data.
 def delete_player_data(player_id, guild_id):
     conn = get_db_connection()

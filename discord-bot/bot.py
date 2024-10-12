@@ -8,66 +8,87 @@
 # https://github.com/doodlebunnyhops.
 # -----------------------------------------------------------------------------
 import discord
-from discord.ext import commands
 from discord import app_commands
 import logging
 import db_utils
+from cogs.server import RoleAccess
 
 print(discord.__version__)
 print(discord.__file__)
 
 logging.basicConfig(level=logging.DEBUG)
 
-class MyBot(commands.Bot):
-    def __init__(self):
-        intents = discord.Intents.default()
-        intents.message_content = True
-        intents.guilds = True
-        intents.members = True
-        
-        super().__init__(command_prefix="!", intents=intents)
+class MyBot(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.tree = discord.app_commands.CommandTree(self)
 
     async def setup_hook(self):
-        # Initialize the database before loading extensions
-        db_utils.initialize_database()  # Ensures the database is ready
+        print("Initializing database...")
+        db_utils.initialize_database()  # Initialize database before loading extensions
+        
         # Load all cogs
-        await self.load_extension("cogs.server")
-        # await self.load_extension("cogs.moderation")
-        # Add more cogs as needed
+        print("Loading Extensions...")
+        # await self.load_extension("cogs.server")
+        self.tree.add_command(RoleAccess.server)
+
+        
+        print("Syncing tree...")
+        await self.tree.sync()  # Sync the commands with the server
 
     async def on_ready(self):
-        await self.tree.sync()  # Sync the commands with the server
-        print(f'Logged in as {self.user}!')
-
-    # Event listener for reaction adds
-    # @commands.Cog.listener()  # If inside a cog, otherwise use @bot.event if in bot.py
-    # async def on_reaction_add(self, reaction, user):
-    #     # Make sure the reaction wasn't added by the bot itself
-    #     if user.bot:
-    #         return
-
-    #     # Example: Check if the message is a specific message you are tracking
-    #     if reaction.message.id == 123456789012345678:  # Replace with your message ID
-    #         if str(reaction.emoji) == "🎃":  # Check if the reaction emoji is 🎃
-    #             # Example: Add a role to the user
-    #             guild = reaction.message.guild
-    #             role = discord.utils.get(guild.roles, name="Pumpkin Player")  # Replace with your role name
-    #             if role:
-    #                 await user.add_roles(role)
-    #                 await reaction.message.channel.send(f"{user.name} has been given the {role.name} role!")
+        print(f'Logged in as {self.user} and bot is ready!')
 
 
-bot = MyBot()
+# @bot.event
+# async def on_raw_reaction_add(payload):
+#     # Ensure the event is from a guild
+#     if payload.guild_id is None:
+#         return
+
+#     guild = bot.get_guild(payload.guild_id)
+#     member = guild.get_member(payload.user_id)
+#     channel = bot.get_channel(payload.channel_id)
+    
+#     # Define the emoji that will trigger joining the game
+#     join_emoji = '🎃'
+
+#     # Fetch the game invite message ID from the database for the current guild
+#     result = db_utils.get_game_join_msg_id(guild.id)
+
+#     if result is None:
+#         return  # No invite message ID found, do nothing
+
+#     game_invite_message_id = result[0]  # Get the invite message ID
+
+#     # Check if the reaction is on the correct invite message and is the right emoji
+#     if payload.message_id == game_invite_message_id and str(payload.emoji) == join_emoji:
+#         player_id = member.id
+#         guild_id = guild.id
+
+#         if db_utils.is_player_active(player_id,guild_id):
+#             # Player is already in the game
+#             await channel.send(f"{member.mention}, you are already in the game! Use /return if you previously opted out.", delete_after=20)
+#         else:
+#             db_utils.create_player_data(player_id,guild_id)
+
+#             # Welcome the new player
+#             await channel.send(f"Welcome {member.mention}! You have joined the candy game with 50 candy. Get ready to trick or treat! 🎃", delete_after=10)
+
+
+
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.guilds = True
+intents.members = True
+bot = MyBot(intents=intents)
 
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error):
     # Check if the error is due to the user missing the 'mod' role
     if isinstance(error, app_commands.MissingRole):
         await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
-    elif isinstance(error, commands.CommandOnCooldown):
-        await interaction.response.send_message(f"This command is on cooldown. Try again in {round(error.retry_after, 1)} seconds.", ephemeral=True)
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await interaction.response.send_message("Missing required arguments. Please provide all necessary information.", ephemeral=True)
     elif isinstance(error, app_commands.CheckFailure):
         await interaction.response.send_message(f"{error}", ephemeral=True)
     else:
@@ -77,5 +98,4 @@ async def on_app_command_error(interaction: discord.Interaction, error):
         await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
 
-
-bot.run('TOKEN')
+bot.run('MTI5MzA0NTMzOTQwMTYxNzQ1OQ.GGLy0M.Ux8ddJeyKWYvHefj7QitwpQKeiUgFxwN6hFb7c')
