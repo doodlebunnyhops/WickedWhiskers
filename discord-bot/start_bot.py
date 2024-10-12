@@ -7,7 +7,8 @@
 # creator, doodlebunnyhops, by referencing the source repository at 
 # https://github.com/doodlebunnyhops.
 # -----------------------------------------------------------------------------
-import candy_v3  # Replace with the actual module that runs your bot
+import bot  # Replace with the actual module that runs your bot
 
 if __name__ == "__main__":
-    candy_v3.run_bot()  # This should start the bot
+    # bot.run_bot()  # This should start the bot
+    bot.MyBot.run

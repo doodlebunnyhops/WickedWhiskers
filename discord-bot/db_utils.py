@@ -77,6 +77,47 @@ def initialize_database():
 def shutdown():
     close_db_connection()
 
+def get_game_join_msg_id(guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT game_invite_message_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
+    result = cursor.fetchone()
+
+    return result
+
+def set_game_join_msg_id(join_msg_id: int, guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Save the new message ID to the guild_settings table without overwriting other columns
+    cursor.execute('UPDATE guild_settings SET game_invite_message_id = ? WHERE guild_id = ?', (join_msg_id, guild_id))
+
+    # If no rows were affected by the UPDATE, insert a new row
+    if cursor.rowcount == 0:
+        cursor.execute('INSERT INTO guild_settings (guild_id, game_invite_message_id) VALUES (?, ?)', 
+                       (guild_id, join_msg_id))
+    
+    conn.commit()
+
+def fetch_roles_by_guild(guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT role_id FROM role_access WHERE guild_id = ?", (guild_id,))
+    role_ids = [row[0] for row in cursor.fetchall()]
+
+    return role_ids
+
+def set_role_by_guild(role_id: int, guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("REPLACE INTO role_access (guild_id, role_id) VALUES (?, ?)", (guild_id, role_id))
+    conn.commit()
+
+def remove_role_by_guild(role_id: int, guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM role_access WHERE guild_id = ? AND role_id = ?", (guild_id, role_id))
+    conn.commit()
+
 # Get players with most candy that are in active status
 def get_top_active_players(guild_id, limit=10):
     conn = get_db_connection()
@@ -103,13 +144,39 @@ def fetch_player_data(player_id, guild_id):
 
 # Function to get a player's candy count, stats, and tickets purchased
 def get_player_data(player_id, guild_id):
+    """
+    Fetches a player's data from the database based on their player ID and guild ID.
+
+    Args:
+        player_id (int): The unique identifier of the player.
+        guild_id (int): The unique identifier of the guild.
+
+    Returns:
+        dict: A dictionary containing the player's data with the following keys:
+            - 'candy_count' (int): The number of candies the player has.
+            - 'successful_steals' (int): The number of successful steals by the player.
+            - 'failed_steals' (int): The number of failed steals by the player.
+            - 'candy_given' (int): The amount of candy the player has given to others.
+            - 'tickets_purchased' (int): The number of lottery tickets (potions) purchased by the player.
+            - 'active' (int): The player's active status (1 for active, 0 for inactive).
+        None: If no player data is found in the database.
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT candy_count, successful_steals, failed_steals, candy_given, tickets_purchased, active FROM players WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
     result = cursor.fetchone()
 
     if result:  # Check if player exists
-        return result
+        # Return a PlayerData dataclass instance
+        player_data = {
+            "candy_count": result[0],
+            "successful_steals": result[1],
+            "failed_steals": result[2],
+            "candy_given": result[3],
+            "tickets_purchased": result[4],
+            "active": result[5]
+        }
+        return player_data
     return None
 
 # Delete a player's data.
@@ -192,7 +259,7 @@ def set_event_channel(guild_id, channel_id):
 
     if result:
         # If the guild exists, update the event_channel_id only
-        cursor.execute('UPDATE guild_settings SET event_channel_id = ? WHERE guild_id = ?', (channel_id, guild_id))
+        update_guild_setting_field(guild_id,"event_channel_id",channel_id)
     else:
         # If the guild does not exist, insert a new row with both channel IDs
         cursor.execute('INSERT INTO guild_settings (guild_id, event_channel_id) VALUES (?, ?)', (guild_id, channel_id))
@@ -219,7 +286,7 @@ def set_admin_channel(guild_id, channel_id):
 
     if result:
         # If the guild exists, update the admin_channel_id only
-        cursor.execute('UPDATE guild_settings SET admin_channel_id = ? WHERE guild_id = ?', (channel_id, guild_id))
+        update_guild_setting_field(guild_id,"admin_channel_id",channel_id)
     else:
         # If the guild does not exist, insert a new row with both channel IDs
         cursor.execute('INSERT INTO guild_settings (guild_id, admin_channel_id) VALUES (?, ?)', (guild_id, channel_id))
@@ -234,6 +301,52 @@ def get_admin_channel(guild_id):
     if result:
         return result[0]
     return None
+
+# Function to update player data by any field dynamically
+def update_guild_setting_field(guild_id, field, value):
+    """
+    Update specified guild settings field for requested guild.
+
+    Args:
+        guild_id (int): The unique identifier of the guild.
+        field (str): Field name to update.
+        value (any): value to insert.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(f'UPDATE guild_settings SET {field} = ? WHERE guild_id = ?', (value, guild_id))
+    conn.commit()
+
+def get_guild_settings(guild_id):
+    """
+    Fetches all guild settings for requested guild.
+
+    Args:
+        guild_id (int): The unique identifier of the guild.
+
+    Returns:
+        dict: A dictionary containing the player's data with the following keys:
+            - 'guild_id' (int): Unique ID of Guild.
+            - 'event_channel_id' (int): Unique ID of channel where event messages will be posted.
+            - 'admin_channel_id' (int): Unique ID of channel where admin messages will be posted.
+            - 'game_invite_message_id' (int): Unique ID of Message for react join.
+        None: If no guild settings data is found in the database.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM guild_settings WHERE guild_id = ?', (guild_id,))
+    result = cursor.fetchone()
+    if result:  # Check if player exists
+    # Return a PlayerData dataclass instance
+        guild_settings_data = {
+            "guild_id": result[0],
+            "event_channel_id": result[1],
+            "admin_channel_id": result[2],
+            "game_invite_message_id": result[3]
+        }
+        return guild_settings_data
+    return None
+
 
 # Function to get the current lottery pool for a guild
 def get_lottery_pool(guild_id):
