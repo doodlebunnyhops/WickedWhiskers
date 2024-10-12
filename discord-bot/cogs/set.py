@@ -23,7 +23,7 @@ async def set_roles(interaction: discord.Interaction, role: discord.Role):
 # Slash command to post message players react to join the game.
 @set_group.command(name="game_join_msg", description="Posts a message for players to join by reacting with a 🎃. Can be a TEXT or ANNOUNCEMENT channel")
 @checks.check_if_has_permission_or_role()
-async def game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
+async def set_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
     guild_id = interaction.guild.id
 
         # Check if an invite message already exists for the guild
@@ -69,3 +69,43 @@ async def game_join_msg(interaction: discord.Interaction, channel: discord.TextC
         await interaction.followup.send(f"Invite message sent! Players can now react to join. Here is the message: {invite_message.jump_url}", ephemeral=True)
     else:
         await interaction.response.send_message(f"Invite message sent! Players can now react to join. Here is the message: {invite_message.jump_url}", ephemeral=True)
+
+    
+# Slash Command to set the event channel
+from discord import app_commands
+import discord
+
+# Define choices for the channel type
+@set_group.command(name="channel", description="Set the channel for either event or admin messages to be posted.")
+@checks.check_if_has_permission_or_role()
+@app_commands.choices(channel_type=[
+    app_commands.Choice(name="Event", value="event"),
+    app_commands.Choice(name="Admin", value="admin")
+])
+async def set_channel(interaction: discord.Interaction, channel_type: app_commands.Choice[str], channel: discord.TextChannel):
+    guild_id = interaction.guild.id
+
+    # Check the type of channel (event or admin)
+    if channel_type.value == "event":
+        existing_channel_id = db_utils.get_event_channel(guild_id)
+    elif channel_type.value == "admin":
+        existing_channel_id = db_utils.get_admin_channel(guild_id)
+
+    # Check if a channel is already set
+    if existing_channel_id is not None:
+        existing_channel = interaction.guild.get_channel(existing_channel_id)
+        if existing_channel:
+            await interaction.response.send_message(
+                f"The {channel_type.name.lower()} channel is already set to {existing_channel.mention}. Please delete or update it first.",
+                ephemeral=True
+            )
+            return
+
+    # Set the new channel based on the type
+    if channel_type.value == "event":
+        db_utils.set_event_channel(guild_id, channel.id)
+        await interaction.response.send_message(f"The event channel has been set to {channel.mention}.", ephemeral=True)
+    elif channel_type.value == "admin":
+        db_utils.set_admin_channel(guild_id, channel.id)
+        await interaction.response.send_message(f"The admin channel has been set to {channel.mention}.", ephemeral=True)
+

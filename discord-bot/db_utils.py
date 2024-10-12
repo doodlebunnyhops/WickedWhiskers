@@ -288,19 +288,28 @@ def is_player_frozen(player_id: int, guild_id: int) -> bool:
     return False
 
 # Function to set event channel for a guild
-def set_event_channel(guild_id, channel_id):
+def set_event_channel(guild_id: int, channel_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Check if the guild already exists in the table
-    cursor.execute('SELECT guild_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
-    result = cursor.fetchone()
 
-    if result:
-        # If the guild exists, update the event_channel_id only
-        update_guild_setting_field(guild_id,"event_channel_id",channel_id)
+    # Check if the row already exists for this guild
+    cursor.execute('SELECT guild_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
+    exists = cursor.fetchone()
+
+    if exists:
+        # If the row exists, update the event channel
+        cursor.execute('''
+            UPDATE guild_settings
+            SET event_channel_id = ?
+            WHERE guild_id = ?
+        ''', (channel_id, guild_id))
     else:
-        # If the guild does not exist, insert a new row with both channel IDs
-        cursor.execute('INSERT INTO guild_settings (guild_id, event_channel_id) VALUES (?, ?)', (guild_id, channel_id))
+        # If the row does not exist, insert a new row
+        cursor.execute('''
+            INSERT INTO guild_settings (guild_id, event_channel_id)
+            VALUES (?, ?)
+        ''', (guild_id, channel_id))
+
     conn.commit()
 
 # Function to get event channel for a guild
@@ -313,21 +322,43 @@ def get_event_channel(guild_id):
         return result[0]
     return None
 
-
-# Function to set admin channel for a guild
-def set_admin_channel(guild_id, channel_id):
+def delete_event_channel(guild_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Check if the guild already exists in the table
-    cursor.execute('SELECT guild_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
-    result = cursor.fetchone()
 
-    if result:
-        # If the guild exists, update the admin_channel_id only
-        update_guild_setting_field(guild_id,"admin_channel_id",channel_id)
+    # Remove the event channel ID from the database
+    cursor.execute('''
+        UPDATE guild_settings
+        SET event_channel_id = NULL
+        WHERE guild_id = ?
+    ''', (guild_id,))
+
+    conn.commit()
+
+
+# Function to set admin channel for a guild
+def set_admin_channel(guild_id: int, channel_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Check if the row already exists for this guild
+    cursor.execute('SELECT guild_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
+    exists = cursor.fetchone()
+
+    if exists:
+        # If the row exists, update the admin channel
+        cursor.execute('''
+            UPDATE guild_settings
+            SET admin_channel_id = ?
+            WHERE guild_id = ?
+        ''', (channel_id, guild_id))
     else:
-        # If the guild does not exist, insert a new row with both channel IDs
-        cursor.execute('INSERT INTO guild_settings (guild_id, admin_channel_id) VALUES (?, ?)', (guild_id, channel_id))
+        # If the row does not exist, insert a new row
+        cursor.execute('''
+            INSERT INTO guild_settings (guild_id, admin_channel_id)
+            VALUES (?, ?)
+        ''', (guild_id, channel_id))
+
     conn.commit()
 
 # Function to get admin channel for a guild
@@ -339,6 +370,19 @@ def get_admin_channel(guild_id):
     if result:
         return result[0]
     return None
+
+def delete_admin_channel(guild_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Remove the admin channel ID from the database
+    cursor.execute('''
+        UPDATE guild_settings
+        SET admin_channel_id = NULL
+        WHERE guild_id = ?
+    ''', (guild_id,))
+
+    conn.commit()
 
 # Function to update player data by any field dynamically
 def update_guild_setting_field(guild_id, field, value):

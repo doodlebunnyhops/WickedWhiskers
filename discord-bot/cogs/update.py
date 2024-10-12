@@ -55,3 +55,34 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
 
     # Confirm the new invite message is posted
     await interaction.followup.send(f"New invite message posted in {channel.mention}. Players can now react to join the game!", ephemeral=True)
+
+
+@update_group.command(name="channel", description="Update the channel where event or admin messages will be posted.")
+@checks.check_if_has_permission_or_role()
+@app_commands.choices(channel_type=[
+    app_commands.Choice(name="Event", value="event"),
+    app_commands.Choice(name="Admin", value="admin")
+])
+async def update_channel_command(interaction: discord.Interaction, channel_type: app_commands.Choice[str], channel: discord.TextChannel):
+    guild_id = interaction.guild.id
+
+    # Fetch the existing channel based on the type (event or admin)
+    if channel_type.value == "event":
+        existing_channel_id = db_utils.get_event_channel(guild_id)
+    elif channel_type.value == "admin":
+        existing_channel_id = db_utils.get_admin_channel(guild_id)
+
+    # Check if a channel is already set for the selected type
+    if existing_channel_id is None:
+        await interaction.response.send_message(f"No {channel_type.name.lower()} channel has been set yet. Use the /set_channel command to set it.", ephemeral=True)
+        return
+
+    # Update the selected channel in the database
+    if channel_type.value == "event":
+        db_utils.set_event_channel(guild_id, channel.id)
+        await interaction.response.send_message(f"The event channel has been updated to {channel.mention}.", ephemeral=True)
+    elif channel_type.value == "admin":
+        db_utils.set_admin_channel(guild_id, channel.id)
+        await interaction.response.send_message(f"The admin channel has been updated to {channel.mention}.", ephemeral=True)
+
+

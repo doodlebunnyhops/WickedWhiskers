@@ -34,7 +34,7 @@ async def get_role(interaction: discord.Interaction):
 
 
 @get_group.command(name="game_join_msg", description="Gets the link to the message where you can join the game.")
-async def game_join_msg(interaction: discord.Interaction):
+async def get_game_join_msg(interaction: discord.Interaction):
     guild_id = interaction.guild.id
 
     # Fetch the game invite message and channel ID from the database
@@ -70,3 +70,50 @@ async def game_join_msg(interaction: discord.Interaction):
     except discord.HTTPException:
         # General HTTP error
         await interaction.response.send_message("An error occurred while fetching the game invite message.", ephemeral=True)
+
+# Slash Command to get the event or admin channel
+@checks.check_if_has_permission_or_role()
+@get_group.command(name="channel", description="Get the channel where event or admin messages will be posted.")
+@app_commands.choices(channel_type=[
+    app_commands.Choice(name="Event", value="event"),
+    app_commands.Choice(name="Admin", value="admin"),
+    app_commands.Choice(name="Both", value="both")
+])
+async def get_channel(interaction: discord.Interaction, channel_type: app_commands.Choice[str]):
+    guild_id = interaction.guild.id
+
+    # Initialize variables for the messages
+    event_msg = None
+    admin_msg = None
+
+    # Fetch the event channel if selected or if 'both' is selected
+    if channel_type.value == "event" or channel_type.value == "both":
+        event_channel_id = db_utils.get_event_channel(guild_id)
+        event_channel = interaction.guild.get_channel(event_channel_id) if event_channel_id else None
+
+        if not event_channel:
+            event_msg = "The event channel is not set or I do not have access to it."
+        else:
+            event_msg = f"The event channel is {event_channel.mention}."
+
+    # Fetch the admin channel if selected or if 'both' is selected
+    if channel_type.value == "admin" or channel_type.value == "both":
+        admin_channel_id = db_utils.get_admin_channel(guild_id)
+        admin_channel = interaction.guild.get_channel(admin_channel_id) if admin_channel_id else None
+
+        if not admin_channel:
+            admin_msg = "The admin channel is not set or I do not have access to it."
+        else:
+            admin_msg = f"The admin channel is {admin_channel.mention}."
+
+    # Combine the messages if 'both' is selected
+    if channel_type.value == "both":
+        combined_msg = f"{event_msg}\n{admin_msg}"
+        await interaction.response.send_message(combined_msg, ephemeral=True)
+    else:
+        # Send individual messages based on selection
+        if channel_type.value == "event":
+            await interaction.response.send_message(event_msg, ephemeral=True)
+        elif channel_type.value == "admin":
+            await interaction.response.send_message(admin_msg, ephemeral=True)
+
