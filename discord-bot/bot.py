@@ -13,6 +13,8 @@ from discord import app_commands
 import logging
 import db_utils
 from cogs.server import RoleAccess
+from cogs.player import PlayerCommands
+from utils.messages import MessageLoader
 
 print(discord.__version__)
 print(discord.__file__)
@@ -22,20 +24,29 @@ logging.basicConfig(level=logging.DEBUG)
 class MyBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.message_loader = None
         self.tree = discord.app_commands.CommandTree(self)
 
     async def setup_hook(self):
         print("Initializing database...")
         db_utils.initialize_database()  # Initialize database before loading extensions
+
+        
+        print("Loading spooky messages...")
+        self.message_loader = MessageLoader('utils/messages.json')
         
         # Load all cogs
         print("Loading Extensions...")
         # await self.load_extension("cogs.server")
+        # self.tree.clear_commands(guild=discord.Object(id=1024474698437898250))
         self.tree.add_command(RoleAccess.server)
+        self.tree.add_command(PlayerCommands.player)
 
         
         print("Syncing tree...")
         await self.tree.sync()  # Sync the commands with the server
+        # self.tree.clear_commands(guild=discord.Object(id=1024474698437898250))
+        # await self.tree.sync(guild=discord.Object(id=1024474698437898250))
 
     async def on_ready(self):
         print(f'Logged in as {self.user} and bot is ready!')
@@ -95,7 +106,7 @@ async def on_app_command_error(interaction: discord.Interaction, error):
         if interaction.response.is_done():
             await interaction.followup.send(f"{error}", ephemeral=True)
         else:
-            await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
+            await interaction.response.send_message(f"{error}", ephemeral=True)
     else:
         # For any other errors, you can handle them here or raise the default error
         print(f"An error occurred while processing:\n\tError: {error}")
