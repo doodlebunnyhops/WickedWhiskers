@@ -7,6 +7,7 @@
 # creator, doodlebunnyhops, by referencing the source repository at 
 # https://github.com/doodlebunnyhops.
 # -----------------------------------------------------------------------------
+import os
 import discord
 from discord import app_commands
 import logging
@@ -97,5 +98,5 @@ async def on_app_command_error(interaction: discord.Interaction, error):
         logging.info(f"{interaction.user.name} attempted '/{interaction.command.qualified_name}': Error\t{error}")
         await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
-
-bot.run('BOT_TOKEN')
+bot_token = os.getenv("DISCORD_BOT_TOKEN")
+bot.run(bot_token)
