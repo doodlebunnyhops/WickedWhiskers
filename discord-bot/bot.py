@@ -77,8 +77,6 @@ class MyBot(discord.Client):
 #             await channel.send(f"Welcome {member.mention}! You have joined the candy game with 50 candy. Get ready to trick or treat! 🎃", delete_after=10)
 
 
-
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
@@ -89,14 +87,23 @@ bot = MyBot(intents=intents)
 async def on_app_command_error(interaction: discord.Interaction, error):
     # Check if the error is due to the user missing the 'mod' role
     if isinstance(error, app_commands.MissingRole):
-        await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
+        if interaction.response.is_done():
+            await interaction.followup.send("You do not have permission to use this command.", ephemeral=True)
+        else:
+            await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
     elif isinstance(error, app_commands.CheckFailure):
-        await interaction.response.send_message(f"{error}", ephemeral=True)
+        if interaction.response.is_done():
+            await interaction.followup.send(f"{error}", ephemeral=True)
+        else:
+            await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
     else:
         # For any other errors, you can handle them here or raise the default error
         print(f"An error occurred while processing:\n\tError: {error}")
         logging.info(f"{interaction.user.name} attempted '/{interaction.command.qualified_name}': Error\t{error}")
-        await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
+        if interaction.response.is_done():
+            await interaction.followup.send("An error occurred while processing the command.", ephemeral=True)
+        else:
+            await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
 bot_token = os.getenv("DISCORD_BOT_TOKEN")
 bot.run(bot_token)

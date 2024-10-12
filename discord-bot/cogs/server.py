@@ -7,7 +7,8 @@ import logging
 
 from cogs.set import set_group
 from cogs.get import get_group
-from cogs.remove import remove_group
+from cogs.delete import delete_group
+from cogs.update import update_group
 
 # importlib.reload(utils)
 # importlib.reload(db_utils)
@@ -21,7 +22,8 @@ class RoleAccess(commands.Cog):
 
     server.add_command(set_group)
     server.add_command(get_group)
-    server.add_command(remove_group)
+    server.add_command(delete_group)
+    server.add_command(update_group)
     
 
 # Setup function to add the "cog" and the group

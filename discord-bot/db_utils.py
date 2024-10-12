@@ -46,12 +46,13 @@ def initialize_database():
 
     # Create table for guild settings (for event/admin channel per guild)
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS guild_settings (
-        guild_id INTEGER PRIMARY KEY,
-        event_channel_id INTEGER DEFAULT NULL,
-        admin_channel_id INTEGER DEFAULT NULL,
-        game_invite_message_id INTEGER DEFAULT NULL
-    )
+        CREATE TABLE IF NOT EXISTS guild_settings (
+            guild_id INTEGER PRIMARY KEY,
+            event_channel_id INTEGER DEFAULT NULL,
+            admin_channel_id INTEGER DEFAULT NULL,
+            game_invite_message_id INTEGER DEFAULT NULL,
+            game_invite_channel_id INTEGER DEFAULT NULL  -- New column for the channel ID
+        )
     ''')
 
     # Create table for lottery_pool (per guild)
@@ -77,26 +78,55 @@ def initialize_database():
 def shutdown():
     close_db_connection()
 
-def get_game_join_msg_id(guild_id: int):
+def get_game_join_msg_settings(guild_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT game_invite_message_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
-    result = cursor.fetchone()
 
-    return result
-
-def set_game_join_msg_id(join_msg_id: int, guild_id: int):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # Save the new message ID to the guild_settings table without overwriting other columns
-    cursor.execute('UPDATE guild_settings SET game_invite_message_id = ? WHERE guild_id = ?', (join_msg_id, guild_id))
-
-    # If no rows were affected by the UPDATE, insert a new row
-    if cursor.rowcount == 0:
-        cursor.execute('INSERT INTO guild_settings (guild_id, game_invite_message_id) VALUES (?, ?)', 
-                       (guild_id, join_msg_id))
+    # Fetch the message ID and channel ID
+    cursor.execute('''
+        SELECT game_invite_message_id, game_invite_channel_id
+        FROM guild_settings
+        WHERE guild_id = ?
+    ''', (guild_id,))
     
+    return cursor.fetchone()  # Returns (message_id, channel_id)
+
+def set_game_join_msg_settings(guild_id: int, message_id: int, channel_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # First, check if a row for this guild_id already exists
+    cursor.execute('SELECT guild_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
+    exists = cursor.fetchone()
+
+    if exists:
+        # Update only the game_invite_message_id and game_invite_channel_id if the row exists
+        cursor.execute('''
+            UPDATE guild_settings
+            SET game_invite_message_id = ?, game_invite_channel_id = ?
+            WHERE guild_id = ?
+        ''', (message_id, channel_id, guild_id))
+    else:
+        # Insert a new row if no row exists for this guild_id
+        cursor.execute('''
+            INSERT INTO guild_settings (guild_id, game_invite_message_id, game_invite_channel_id)
+            VALUES (?, ?, ?)
+        ''', (guild_id, message_id, channel_id))
+
     conn.commit()
+
+# def set_game_join_msg_id(join_msg_id: int, guild_id: int):
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
+#     # Save the new message ID to the guild_settings table without overwriting other columns
+#     cursor.execute('UPDATE guild_settings SET game_invite_message_id = ? WHERE guild_id = ?', (join_msg_id, guild_id))
+
+#     # If no rows were affected by the UPDATE, insert a new row
+#     if cursor.rowcount == 0:
+#         cursor.execute('INSERT INTO guild_settings (guild_id, game_invite_message_id) VALUES (?, ?)', 
+#                        (guild_id, join_msg_id))
+    
+#     conn.commit()
 
 def fetch_roles_by_guild(guild_id: int):
     conn = get_db_connection()
@@ -112,7 +142,7 @@ def set_role_by_guild(role_id: int, guild_id: int):
     cursor.execute("REPLACE INTO role_access (guild_id, role_id) VALUES (?, ?)", (guild_id, role_id))
     conn.commit()
 
-def remove_role_by_guild(role_id: int, guild_id: int):
+def delete_role_by_guild(role_id: int, guild_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM role_access WHERE guild_id = ? AND role_id = ?", (guild_id, role_id))
