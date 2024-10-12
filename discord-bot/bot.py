@@ -98,4 +98,4 @@ async def on_app_command_error(interaction: discord.Interaction, error):
         await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
 
-bot.run('MTI5MzA0NTMzOTQwMTYxNzQ1OQ.GGLy0M.Ux8ddJeyKWYvHefj7QitwpQKeiUgFxwN6hFb7c')
+bot.run('TOKEN')
