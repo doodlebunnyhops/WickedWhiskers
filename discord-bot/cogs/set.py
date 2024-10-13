@@ -21,7 +21,7 @@ async def set_roles(interaction: discord.Interaction, role: discord.Role):
 
 
 # Slash command to post message players react to join the game.
-@set_group.command(name="game_join_msg", description="Posts a message for players to join by reacting with a 🎃. Can be a TEXT or ANNOUNCEMENT channel")
+@set_group.command(name="game_join_msg", description="Posts a message for players to join by reacting with a 🎃.")
 @checks.check_if_has_permission_or_role()
 async def set_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
     guild_id = interaction.guild.id

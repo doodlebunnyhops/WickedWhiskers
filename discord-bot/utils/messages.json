@@ -1,4 +1,17 @@
 {
+    
+    "delete_role": {
+        "admin_messages": [
+        "**Role {role_name}** has been removed from restricted command access by {user}. *I hope that was the right choice...* 😬",
+        "Well, it’s done. The **{role_name}** role has been removed from command access by {user}. *I hope you won’t regret this!* 😨",
+        "Fine... the **{role_name}** role is no longer allowed command access. *Goodbye and good riddance,* I suppose, {user}. 😒"
+        ],
+        "personal_message": [
+        "Ugh... fine, I'll do this. **Grunt work is not my thing**, but *since you asked so nicely*, the role is gone from command access. 😒",
+        "*Seriously?* You're making me do this? **Whatever,** the role **{role_name}** is removed from restricted access. Happy now?",
+        "You *really* want me to do this? *Sigh*... okay, the role is gone from restricted access. Now let me get back to *important* stuff."
+        ]
+    },
     "greeting": "Welcome {user.mention}! You have joined the candy game with 50 candy. Get ready to trick or treat! 🎃",
     "goodbye": "Goodbye, {user}! We hope to see you again soon.",
     "error_message": "Oops! Something went wrong.",

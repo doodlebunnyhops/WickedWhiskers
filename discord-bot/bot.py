@@ -7,6 +7,7 @@
 # creator, doodlebunnyhops, by referencing the source repository at 
 # https://github.com/doodlebunnyhops.
 # -----------------------------------------------------------------------------
+import asyncio
 import os
 import discord
 from discord import app_commands
@@ -21,32 +22,54 @@ print(discord.__file__)
 
 logging.basicConfig(level=logging.DEBUG)
 
+#For development as commands sync faster for guilds than globally
+guild_ID = os.getenv("DISCORD_GUILD_ID")
+
 class MyBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.message_loader = None
+        self.guild_id = guild_ID  
         self.tree = discord.app_commands.CommandTree(self)
+        self.message_loader = None # IT WAS YOU!!!!
 
     async def setup_hook(self):
+        guild = discord.Object(id=self.guild_id)
         print("Initializing database...")
-        db_utils.initialize_database()  # Initialize database before loading extensions
+        db_utils.initialize_database()  
 
         
         print("Loading spooky messages...")
         self.message_loader = MessageLoader('utils/messages.json')
         
         # Load all cogs
-        print("Loading Extensions...")
-        # await self.load_extension("cogs.server")
-        # self.tree.clear_commands(guild=discord.Object(id=1024474698437898250))
-        self.tree.add_command(RoleAccess.server)
-        self.tree.add_command(PlayerCommands.player)
+        print("Loading group commands...")
+        #the additional options were the trick to force guild update
+        self.tree.add_command(RoleAccess.server,guild=guild,override=True)
 
+        # Player commands are not playing well with subcommands, I suspect due to several limitations
+        # documented in discord.py's docs, nothing outright that I found that correlates to what I've 
+        # seen but enough that I'm going to strip subcommands from player to top level.
+     
+        # self.tree.add_command(PlayerCommands.player,guild=guild,override=True)
         
         print("Syncing tree...")
-        await self.tree.sync()  # Sync the commands with the server
-        # self.tree.clear_commands(guild=discord.Object(id=1024474698437898250))
-        # await self.tree.sync(guild=discord.Object(id=1024474698437898250))
+        try:
+            # Sync the commands
+            logging.info(f"Attempting to sync commands for guild ID: {guild.id}")
+            synced = await self.tree.sync(guild=guild)
+            # self.tree._guild_commands.update() #for global also need to remove guild specific on add_command.
+            # synced = await self.tree.sync()
+
+            # Log detailed info about synced commands
+            logging.info(f"Successfully synced {len(synced)} commands for guild ID: {guild_ID}")
+            for command in synced:
+                logging.info(f"Command synced: {command.name} - {command.description}")
+                if hasattr(command, 'options'):
+                    for option in command.options:
+                        logging.info(f" - Option: {option.name} ({option.type}) - {option.description}")
+
+        except Exception as e:
+            logging.error(f"Error syncing commands for guild ID {guild_ID}: {str(e)}")
 
     async def on_ready(self):
         print(f'Logged in as {self.user} and bot is ready!')
@@ -93,6 +116,19 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 bot = MyBot(intents=intents)
+
+@bot.event
+async def on_error(event, *args, **kwargs):
+    if isinstance(args[0], discord.HTTPException) and args[0].status == 429:
+        # Rate limit encountered
+        retry_after = args[0].headers.get("Retry-After")
+        if retry_after:
+            await asyncio.sleep(int(retry_after) + 1)  # Wait for the suggested time before retrying
+        else:
+            await asyncio.sleep(5)  # Fallback to a reasonable delay if Retry-After is not provided
+    else:
+        # Handle errors if they occur
+        print(f"An error occurred: {args[0]}")
 
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error):
