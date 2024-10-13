@@ -60,3 +60,25 @@ async def post_to_target_channel(interaction: discord.Interaction, message: str,
             await interaction.followup.send(message)
         else:
             await interaction.response.send_message(message)
+            
+def create_invite_embed(message_loader):
+    """Creates a uniform embed for the candy game invite using messages.json."""
+    title = message_loader.get_message("react_join_msg", "title")
+    description = message_loader.get_message("react_join_msg", "description")
+    helpful_commands_name = message_loader.get_message("react_join_msg", "helpful_commands", "name")
+    helpful_commands_value = message_loader.get_message("react_join_msg", "helpful_commands", "value")
+
+    # Create the embed
+    embed = discord.Embed(
+        title=title,
+        description=description,
+        color=discord.Color.orange()
+    )
+
+    embed.add_field(
+        name=helpful_commands_name,
+        value=helpful_commands_value,
+        inline=False
+    )
+
+    return embed

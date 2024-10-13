@@ -1,4 +1,13 @@
 {
+
+    "react_join_msg": {
+        "title": "🎃 Join the Candy Game! 🎃",
+        "description": "React with 🎃 to join the candy game and start your trick-or-treat adventure!",
+        "helpful_commands": {
+            "name": "Helpful Commands",
+            "value": "- `/trick_or_treat`: Try your luck with trick-or-treating!\n- `/check_candy`: See how much candy you have.\n- `/leaderboard`: Check the top players with the most candy!"
+        }
+    },
     "set_roles": {
         "admin_messages": [
         "The role **{role_name}** has been granted access to restricted commands by {user}. *I can’t wait to see who I’ll be working with!* 🎉",

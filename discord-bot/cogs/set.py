@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 import db_utils
 import utils.checks as checks
-from utils.utils import post_to_target_channel
+from utils.utils import post_to_target_channel,create_invite_embed
 
 # Subcommand group for setting (used within the server group)
 set_group = app_commands.Group(name="set", description="Set commands")
@@ -72,7 +72,9 @@ async def set_game_join_msg(interaction: discord.Interaction, channel: discord.T
              await interaction.response.send_message(f"An unexpected error occurred: {str(e)}. Creating a new invite...", ephemeral=True)
 
     # Post the new invite message
-    invite_message = await channel.send("React with 🎃 to join the candy game and start your trick-or-treat adventure!")
+    embed = create_invite_embed(interaction.client.message_loader)
+    invite_message = await channel.send(embed=embed)
+    # invite_message = await channel.send("React with 🎃 to join the candy game and start your trick-or-treat adventure!")
     game_invite_message_id = invite_message.id  # Get the new message ID
 
     db_utils.set_game_join_msg_settings(guild_id,game_invite_message_id,channel.id)

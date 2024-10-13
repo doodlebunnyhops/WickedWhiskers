@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 import db_utils
 import utils.checks as checks
-from utils.utils import post_to_target_channel
+from utils.utils import post_to_target_channel,create_invite_embed
 
 # Subcommand group for updates (used within the server group)
 update_group = app_commands.Group(name="update", description="Update commands")
@@ -62,14 +62,16 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
         except Exception as e:
             # Generic exception handler for any other exceptions
             if interaction.response.is_done():
-                await interaction.followup.send(f"I.... really don't know what happened so um here :eyes: _have fun!_:\n{str(e)}", ephemeral=True)
+                print(f"idk....{str(e)}")
             else:
-                await interaction.response.send_message(f"I.... really don't know what happened so um here :eyes: _have fun!_:\n{str(e)}", ephemeral=True)
+                print(f"idk....{str(e)}")
 
 
 
     # Post the new invite message in the specified channel
-    new_invite_message = await channel.send("React with 🎃 to join the candy game and start your trick-or-treat adventure!")
+    embed = create_invite_embed(interaction.client.message_loader)
+    new_invite_message = await channel.send(embed=embed)
+    # new_invite_message = await channel.send("React with 🎃 to join the candy game and start your trick-or-treat adventure!")
     new_message_id = new_invite_message.id  # Get the new message ID
     new_channel_id = channel.id             # Get the new channel ID
 
