@@ -18,7 +18,7 @@ class RoleAccess(commands.Cog):
         self.bot = bot
 
     # Top-level group
-    server = app_commands.Group(name="server", description="Moderator Commands")
+    server = app_commands.Group(name="zmod", description="Moderator Commands")
 
     server.add_command(set_group)
     server.add_command(get_group)
