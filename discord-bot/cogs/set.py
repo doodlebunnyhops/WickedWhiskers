@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 import db_utils
 import utils.checks as checks
+from utils.utils import post_to_target_channel
 
 # Subcommand group for setting (used within the server group)
 set_group = app_commands.Group(name="set", description="Set commands")
@@ -17,8 +18,18 @@ async def set_roles(interaction: discord.Interaction, role: discord.Role):
         return
 
     db_utils.set_role_by_guild(role.id, guild_id)
-    await interaction.response.send_message(f"Role {role.name} can now access the restricted commands.", ephemeral=True)
 
+    #MessagingLoader
+    personal_message = interaction.client.message_loader.get_message(
+        "set_roles", "personal_message", role_name=role.name, user=interaction.user.mention
+    )
+    await interaction.response.send_message(personal_message, ephemeral=True)
+    
+    admin_message = interaction.client.message_loader.get_message(
+        "set_roles", "admin_messages", role_name=role.name, user=interaction.user.name
+    )
+
+    await post_to_target_channel(interaction,admin_message,"admin")
 
 # Slash command to post message players react to join the game.
 @set_group.command(name="game_join_msg", description="Posts a message for players to join by reacting with a 🎃.")
@@ -65,15 +76,18 @@ async def set_game_join_msg(interaction: discord.Interaction, channel: discord.T
     game_invite_message_id = invite_message.id  # Get the new message ID
 
     db_utils.set_game_join_msg_settings(guild_id,game_invite_message_id,channel.id)
+    #MessagingLoader
+    personal_message = interaction.client.message_loader.get_message(
+        "set_game_join_msg", "personal_message", channel=channel.name, jump_url=invite_message.jump_url
+    )
+    admin_message = interaction.client.message_loader.get_message(
+        "set_game_join_msg", "admin_messages", channel=channel.name, jump_url=invite_message.jump_url, user=interaction.user.name
+    )
     if interaction.response.is_done():
-        await interaction.followup.send(f"Invite message sent! Players can now react to join. Here is the message: {invite_message.jump_url}", ephemeral=True)
+        await interaction.followup.send(personal_message, ephemeral=True)
     else:
-        await interaction.response.send_message(f"Invite message sent! Players can now react to join. Here is the message: {invite_message.jump_url}", ephemeral=True)
-
-    
-# Slash Command to set the event channel
-from discord import app_commands
-import discord
+        await interaction.response.send_message(personal_message, ephemeral=True)
+    post_to_target_channel(interaction,admin_message,"admin")
 
 # Define choices for the channel type
 @set_group.command(name="channel", description="Set the channel for either event or admin messages to be posted.")
@@ -104,8 +118,20 @@ async def set_channel(interaction: discord.Interaction, channel_type: app_comman
     # Set the new channel based on the type
     if channel_type.value == "event":
         db_utils.set_event_channel(guild_id, channel.id)
-        await interaction.response.send_message(f"The event channel has been set to {channel.mention}.", ephemeral=True)
+        # await interaction.response.send_message(f"The event channel has been set to {channel.mention}.", ephemeral=True)
     elif channel_type.value == "admin":
         db_utils.set_admin_channel(guild_id, channel.id)
-        await interaction.response.send_message(f"The admin channel has been set to {channel.mention}.", ephemeral=True)
+        # await interaction.response.send_message(f"The admin channel has been set to {channel.mention}.", ephemeral=True)
 
+    #MessagingLoader
+    personal_message = interaction.client.message_loader.get_message(
+        "set_channel", "personal_message", channel_type=channel_type.value, channel=channel.name
+    )
+    # Respond with the formatted message
+    await interaction.response.send_message(personal_message, ephemeral=True)
+
+    admin_message = interaction.client.message_loader.get_message(
+        "set_channel", "admin_messages", channel_type=channel_type.value, channel=channel.name, user=interaction.user.name
+    )
+    # Respond with the formatted message
+    await post_to_target_channel(interaction,admin_message,channel_type="admin")

@@ -48,10 +48,20 @@ async def delete_channel_command(interaction: discord.Interaction, channel_type:
         await interaction.response.send_message(f"No {channel_type.name.lower()} channel has been set yet. Use the /set channel command to set it.", ephemeral=True)
         return
 
+    personal_message = interaction.client.message_loader.get_message(
+        "delete_channel", "personal_message", channel_type=channel_type.value, channel_name=interaction.guild.get_channel(existing_channel_id).name
+    )
+    # Respond with the formatted message
+    await interaction.response.send_message(personal_message, ephemeral=True)
+
     # Delete the selected channel from the database
     if channel_type.value == "event":
         db_utils.delete_event_channel(guild_id)
-        await interaction.response.send_message("The event channel has been deleted.", ephemeral=True)
     elif channel_type.value == "admin":
         db_utils.delete_admin_channel(guild_id)
-        await interaction.response.send_message("The admin channel has been deleted.", ephemeral=True)
+
+    admin_message = interaction.client.message_loader.get_message(
+        "delete_channel", "admin_messages", channel_type=channel_type.value, channel_name=interaction.guild.get_channel(existing_channel_id).name,user=interaction.user.mention
+    )
+    # Respond with the formatted message
+    await post_to_target_channel(interaction,admin_message,channel_type=channel_type.value)

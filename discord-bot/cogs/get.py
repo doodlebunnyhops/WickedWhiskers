@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 import db_utils
 import utils.checks as checks
+from utils.utils import post_to_target_channel
 
 # Subcommand group for setting (used within the server group)
 get_group = app_commands.Group(name="get", description="get commands")
@@ -12,13 +13,13 @@ get_group = app_commands.Group(name="get", description="get commands")
 @checks.check_if_has_permission_or_role()
 async def get_role(interaction: discord.Interaction):
     logging.debug("role_access get command was triggered")
-    await interaction.response.send_message("Fetching roles...",delete_after=10,ephemeral=True)
+    # await interaction.response.send_message("Fetching roles...",delete_after=10,ephemeral=True)
     role_ids = db_utils.fetch_roles_by_guild(interaction.guild.id)
 
     # Log the fetched role IDs to verify
     logging.debug(f"Fetched role IDs: {role_ids}")
     if not role_ids:
-        await interaction.followup.send("No roles have been assigned access to restricted commands.", ephemeral=True)
+        await interaction.response.send_message("No roles have been assigned access to restricted commands.", ephemeral=True)
         return
 
     # Get the role names from the guild and format them
@@ -26,12 +27,21 @@ async def get_role(interaction: discord.Interaction):
     valid_roles = [role.name for role in roles if role is not None]  # Filter out any roles that might have been deleted
 
     if not valid_roles:
-        await interaction.followup.send("None of the assigned roles exist in this guild anymore.", ephemeral=True)
+        await interaction.response.send_message("None of the assigned roles exist in this guild anymore.", ephemeral=True)
         return
-
+    
     role_names = ", ".join(valid_roles)
-    await interaction.followup.send(f"The following roles have access to restricted commands: {role_names}", ephemeral=True)
 
+    #MessagingLoader
+    personal_message = interaction.client.message_loader.get_message(
+        "get_role", "personal_message", roles=role_names
+    )
+    admin_message = interaction.client.message_loader.get_message(
+        "get_role","admin_messages", roles=role_names, user=interaction.user.name
+    )
+         # Respond with the formatted message
+    await interaction.response.send_message(personal_message, ephemeral=True)
+    await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
 @get_group.command(name="game_join_msg", description="Gets the link to the message where you can join the game.")
 async def get_game_join_msg(interaction: discord.Interaction):
@@ -56,11 +66,18 @@ async def get_game_join_msg(interaction: discord.Interaction):
     # Fetch the message from the channel
     try:
         game_invite_message = await game_invite_channel.fetch_message(game_invite_message_id)
-        # Send the message link to the user
-        await interaction.response.send_message(
-            f"Here is the invite message: {game_invite_message.jump_url}",
-            ephemeral=True
+        #MessagingLoader
+        personal_message = interaction.client.message_loader.get_message(
+            "get_game_join_msg", "personal_message", channel=game_invite_channel.name,jump_url=game_invite_message.jump_url, user=interaction.user.name
         )
+        admin_message = interaction.client.message_loader.get_message(
+            "get_game_join_msg","admin_messages", channel=game_invite_channel.name,jump_url=game_invite_message.jump_url, user=interaction.user.name
+        )
+
+         # Respond with the formatted message
+        await interaction.response.send_message(personal_message, ephemeral=True)
+        await post_to_target_channel(interaction,admin_message,channel_type="admin")
+
     except discord.NotFound:
         # If the message was not found (deleted)
         await interaction.response.send_message("The game invite message no longer exists.", ephemeral=True)
@@ -86,6 +103,8 @@ async def get_channel(interaction: discord.Interaction, channel_type: app_comman
     event_msg = None
     admin_msg = None
 
+    event_channel = None
+    admin_channel = None
     # Fetch the event channel if selected or if 'both' is selected
     if channel_type.value == "event" or channel_type.value == "both":
         event_channel_id = db_utils.get_event_channel(guild_id)
@@ -93,8 +112,8 @@ async def get_channel(interaction: discord.Interaction, channel_type: app_comman
 
         if not event_channel:
             event_msg = "The event channel is not set or I do not have access to it."
-        else:
-            event_msg = f"The event channel is {event_channel.mention}."
+            await interaction.response.send_message(event_msg, ephemeral=True)
+            return
 
     # Fetch the admin channel if selected or if 'both' is selected
     if channel_type.value == "admin" or channel_type.value == "both":
@@ -103,17 +122,44 @@ async def get_channel(interaction: discord.Interaction, channel_type: app_comman
 
         if not admin_channel:
             admin_msg = "The admin channel is not set or I do not have access to it."
-        else:
-            admin_msg = f"The admin channel is {admin_channel.mention}."
+            await interaction.response.send_message(admin_msg, ephemeral=True)
+            return
 
+    personal_message = ""
+    admin_message = ""
     # Combine the messages if 'both' is selected
     if channel_type.value == "both":
-        combined_msg = f"{event_msg}\n{admin_msg}"
-        await interaction.response.send_message(combined_msg, ephemeral=True)
+
+        #MessagingLoader
+        personal_message = interaction.client.message_loader.get_message(
+            "get_channel", "both_messages", "personal",event_channel=event_channel.name, admin_channel=admin_channel.name,user=interaction.user.name
+        )
+        admin_message = interaction.client.message_loader.get_message(
+            "get_channel","both_messages", "admin",event_channel=event_channel.name, admin_channel=admin_channel.name,user=interaction.user.name
+        )
+
     else:
         # Send individual messages based on selection
         if channel_type.value == "event":
-            await interaction.response.send_message(event_msg, ephemeral=True)
+
+            #MessagingLoader
+            personal_message = interaction.client.message_loader.get_message(
+                "get_channel", "personal_message",channel=event_channel.name,user=interaction.user.name, channel_type=channel_type.value
+            )
+            admin_message = interaction.client.message_loader.get_message(
+                "get_channel","admin_messages",channel=event_channel.name,user=interaction.user.name, channel_type=channel_type.value
+            )
         elif channel_type.value == "admin":
-            await interaction.response.send_message(admin_msg, ephemeral=True)
+
+            #MessagingLoader
+            personal_message = interaction.client.message_loader.get_message(
+                "get_channel", "personal_message", channel=admin_channel.name,user=interaction.user.name, channel_type=channel_type.value
+            )
+            admin_message = interaction.client.message_loader.get_message(
+                "get_channel","admin_messages", channel=admin_channel.name,user=interaction.user.name, channel_type=channel_type.value
+            )
+
+    # Respond with the formatted message
+    await interaction.response.send_message(personal_message, ephemeral=True)
+    await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
