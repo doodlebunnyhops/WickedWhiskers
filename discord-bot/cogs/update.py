@@ -8,7 +8,7 @@ from utils.utils import post_to_target_channel,create_invite_embed
 update_group = app_commands.Group(name="update", description="Update commands")
 
 # Slash command to update location of message to players for react to join the game.
-@update_group.command(name="game_join_msg", description="Update where react to join message will be posted.")
+@update_group.command(name="join_game_msg", description="Update where react to join message will be posted.")
 @checks.check_if_has_permission_or_role()
 async def update_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
     guild_id = interaction.guild.id

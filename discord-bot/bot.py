@@ -14,7 +14,6 @@ from discord import app_commands
 import logging
 import db_utils
 from cogs.server import RoleAccess
-from cogs.player import PlayerCommands
 from utils.messages import MessageLoader
 
 print(discord.__version__)
@@ -30,7 +29,7 @@ class MyBot(discord.Client):
         super().__init__(*args, **kwargs)
         self.guild_id = guild_ID  
         self.tree = discord.app_commands.CommandTree(self)
-        self.message_loader = None # IT WAS YOU!!!!
+        self.message_loader = None
 
     async def setup_hook(self):
         guild = discord.Object(id=self.guild_id)
@@ -45,11 +44,6 @@ class MyBot(discord.Client):
         print("Loading group commands...")
         #the additional options were the trick to force guild update
         self.tree.add_command(RoleAccess.server,guild=guild,override=True)
-
-        # Player commands are not playing well with subcommands, I suspect due to several limitations
-        # documented in discord.py's docs, nothing outright that I found that correlates to what I've 
-        # seen but enough that I'm going to strip subcommands from player to top level.
-     
         # self.tree.add_command(PlayerCommands.player,guild=guild,override=True)
         
         print("Syncing tree...")
@@ -57,8 +51,6 @@ class MyBot(discord.Client):
             # Sync the commands
             logging.info(f"Attempting to sync commands for guild ID: {guild.id}")
             synced = await self.tree.sync(guild=guild)
-            # self.tree._guild_commands.update() #for global also need to remove guild specific on add_command.
-            # synced = await self.tree.sync()
 
             # Log detailed info about synced commands
             logging.info(f"Successfully synced {len(synced)} commands for guild ID: {guild_ID}")
@@ -75,47 +67,62 @@ class MyBot(discord.Client):
         print(f'Logged in as {self.user} and bot is ready!')
 
 
-# @bot.event
-# async def on_raw_reaction_add(payload):
-#     # Ensure the event is from a guild
-#     if payload.guild_id is None:
-#         return
-
-#     guild = bot.get_guild(payload.guild_id)
-#     member = guild.get_member(payload.user_id)
-#     channel = bot.get_channel(payload.channel_id)
-    
-#     # Define the emoji that will trigger joining the game
-#     join_emoji = '🎃'
-
-#     # Fetch the game invite message ID from the database for the current guild
-#     result = db_utils.get_game_join_msg_id(guild.id)
-
-#     if result is None:
-#         return  # No invite message ID found, do nothing
-
-#     game_invite_message_id = result[0]  # Get the invite message ID
-
-#     # Check if the reaction is on the correct invite message and is the right emoji
-#     if payload.message_id == game_invite_message_id and str(payload.emoji) == join_emoji:
-#         player_id = member.id
-#         guild_id = guild.id
-
-#         if db_utils.is_player_active(player_id,guild_id):
-#             # Player is already in the game
-#             await channel.send(f"{member.mention}, you are already in the game! Use /return if you previously opted out.", delete_after=20)
-#         else:
-#             db_utils.create_player_data(player_id,guild_id)
-
-#             # Welcome the new player
-#             await channel.send(f"Welcome {member.mention}! You have joined the candy game with 50 candy. Get ready to trick or treat! 🎃", delete_after=10)
-
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
 bot = MyBot(intents=intents)
+
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    try:
+        # Ensure the event is from the correct guild and channel
+        if payload.guild_id is None:
+            return
+
+        guild = bot.get_guild(payload.guild_id)
+        channel = bot.get_channel(payload.channel_id)
+        member = guild.get_member(payload.user_id)
+
+        join_emoji = '🎃'
+
+        # Fetch the game invite message ID from the database for the current guild
+        try:
+            result = db_utils.get_game_join_msg_settings(guild.id)
+            if result is None:
+                logging.warning(f"No invite message ID found for guild {guild.id}")
+                return
+        except Exception as e:
+            logging.error(f"Error fetching invite message ID: {str(e)}")
+            return
+
+        game_invite_message_id = result[0]
+
+        # Check if the reaction is on the correct message and with the right emoji
+        if payload.message_id == game_invite_message_id and str(payload.emoji) == join_emoji:
+            player_id = member.id
+            guild_id = guild.id
+
+            try:
+                if db_utils.is_player_active(player_id, guild_id):
+                    await channel.send(f"{member.mention}, you are already in the game! Use `/return` if you previously opted out.", delete_after=15)
+                else:
+                    # Create new player data
+                    try:
+                        db_utils.create_player_data(player_id, guild_id)
+                        message = bot.message_loader.get_message(
+                            "join", "messages", user=member.mention
+                        )
+                        await channel.send(message, delete_after=30)
+                    except Exception as e:
+                        logging.error(f"Error creating player data for {member.id} in guild {guild_id}: {str(e)}")
+                        await channel.send(f"Error occurred while adding you to the game, {member.mention}. Please try again later.", delete_after=15)
+            except Exception as e:
+                logging.error(f"Error checking or adding player for {member.id} in guild {guild_id}: {str(e)}")
+    except Exception as e:
+        logging.error(f"Unexpected error in on_raw_reaction_add: {str(e)}")
+
 
 @bot.event
 async def on_error(event, *args, **kwargs):

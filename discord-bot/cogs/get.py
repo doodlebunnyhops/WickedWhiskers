@@ -43,7 +43,7 @@ async def get_role(interaction: discord.Interaction):
     await interaction.response.send_message(personal_message, ephemeral=True)
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
-@get_group.command(name="game_join_msg", description="Gets the link to the message where you can join the game.")
+@get_group.command(name="join_game_msg", description="Gets the link to the message where you can join the game.")
 async def get_game_join_msg(interaction: discord.Interaction):
     guild_id = interaction.guild.id
 

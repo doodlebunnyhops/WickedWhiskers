@@ -155,7 +155,19 @@
         "*Sigh...* I really don’t like removing channels. But it’s done. The {channel_type} channel is gone from my records. 😔"
         ]
   } ,
-    "greeting": "Welcome {user.mention}! You have joined the candy game with 50 candy. Get ready to trick or treat! 🎃",
+    "join": {
+        "messages": [
+            "Welcome, {user}! You've entered the ultimate trick-or-treat adventure with 50 candy. *Let the spooky fun begin!* 🎃",
+            "Boo! {user}, you're in! Get ready for some haunted fun. You start with 50 candy—use them wisely! 👻",
+            "The spooky games await, {user}! You've got 50 candy to kick off your trick-or-treating. *Ready for some thrills?* 🍬",
+            "Trick or treat! {user}, you're now part of the frightful fun with 50 candy. *Let’s scare up some fun!* 🎃",
+            "Welcome to the haunted playground, {user}! You’ve joined the fun with 50 candy—*better watch your stash!* 👻",
+            "{user} has arrived at the spooky party! Start with 50 candy and prepare for tricks, treats, and frights! 🍭",
+            "You're in, {user}! 50 candy to start your journey in this spooky wonderland. *Time to get mischievous!* 🍬",
+            "The haunted doors are open, {user}! You've got 50 candy to play with—*be careful out there!* 👻",
+            "Greetings, {user}! You've stepped into the ultimate Halloween party with 50 candy. *Let the chills and thrills begin!* 🎃"
+          ]
+    },
     "goodbye": "Goodbye, {user}! We hope to see you again soon.",
     "error_message": "Oops! Something went wrong.",
     "about": "Boo! I'm here to spread spooky fun, and BloominDaisy made sure I'm filled with tricks and treats! 🎃\n\nIn this candy-filled adventure, you can steal candy from others, give treats to your friends, and even join the candy lottery!\nTry your luck with these commands: `/trick` to try to nab candy, `/give_treat` to treat a friend, and `/buy_potion` to win big in the cauldron event!\n\nMore haunted surprises are on the way, so keep your eyes peeled! Got any ghostly feedback or need help? Contact BloominDaisy if you dare! 👻",

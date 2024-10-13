@@ -6,6 +6,12 @@ from utils.utils import post_to_target_channel
 
 delete_group = app_commands.Group(name="delete", description="Delete commands")
 
+
+@delete_group.command(name="join_game_msg", description="I cant delete messages :P")
+@checks.check_if_has_permission_or_role()
+async def update_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
+    await interaction.response.send_message(f":wave: Hey {interaction.user.name}...so I don't have perms to delete the join message in {channel.name} ;) you'll have to have someone with proper permissions manually delete it so they can /update")
+
 @delete_group.command(name="role", description="Delete a role from the games restricted commands")
 @checks.check_if_has_permission_or_role()
 async def delete_role(interaction: discord.Interaction, role: discord.Role):

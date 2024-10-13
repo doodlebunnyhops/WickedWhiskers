@@ -1,39 +1,23 @@
-import logging
 import discord
 from discord import app_commands
-from db_utils import create_player_data, update_player_field,get_player_data
-import utils.checks as checks
-from utils.utils import post_to_target_channel
-from discord.ext import commands
+import db_utils
 
-class PlayerCommands(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+class PlayerCommands:
+    player = app_commands.Group(name="player", description="Player commands")
 
-    # Top-level group
-    player= app_commands.Group(name="player", description="player commands")
-    
+    @player.command(name="join", description="Join the candy game!")
+    async def join_game(interaction: discord.Interaction):
+        guild_id = interaction.guild.id
+        user = interaction.user
 
-    # @checks.check_if_player_is_active(target_arg="target")  # Checks if the target is active
-    # @checks.check_if_player_is_active()  # Checks if the player is active
-    # @checks.check_if_number_is_valid()   # Checks if the amount is 0 or greater
-    # @app_commands.command(name="give_treat", description="Give a treat to another player.")
-    @player.command(name="give_treat", description="Give a treat to another player.")
-    async def give_treat(self,interaction: discord.Interaction, target: discord.Member, amount: int):
-        # Use the helper function to post the message
-        await post_to_target_channel(interaction, "Give Treat message...")
+        if db_utils.is_player_active(user.id, guild_id):
+            await interaction.response.send_message(f"{user.mention}, you are already in the game! Use `/return` if you previously opted out.", ephemeral=True)
+        else:
+            try:
+                db_utils.create_player_data(user.id, guild_id)
+                greeting_message = interaction.client.message_loader.get_message("join", "messages")
+                await interaction.response.send_message(greeting_message.format(user=user.mention), ephemeral=True)
+            except Exception as e:
+                await interaction.response.send_message(f"An error occurred: {str(e)}", ephemeral=True)
 
-    # @app_commands.command(name="hop", description="Join the ghoulish feast of candy!")
-    @player.command(name="join", description="Join the ghoulish feast of candy!")
-    async def player_join(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f"Welcome {interaction.user.mention}! You have started with 50 candy. Will you trick or treat others :thinking:?", ephemeral=True)
-
-
-    
-    # player.add_command(give_treat)
-    # player.add_command(player_join)
-    # server.add_command(delete_group)
-    # server.add_command(update_group)
-# Setup function to add the "cog" and the group
-async def setup(bot):
-    await bot.tree.add_command(PlayerCommands.player) # Register the "server" group with Discord's API
+# No need to inherit commands.Cog; we'll directly add this class to the tree in bot.py
