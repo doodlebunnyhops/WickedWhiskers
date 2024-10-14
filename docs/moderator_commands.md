@@ -17,6 +17,16 @@
 
 have _fun_ messing with the players ;) 
 
+## Status of command implementation
+
+**Currently I've set moderator commands prefexed with `zmod` to denote them as for moderator type roles and easier split of commands between player and moderators since at this time slash commands can't be ordered in a specifed way.**
+
+- ✅  Completed Command! (But unit testing is still  needed overall!)
+- ❌  In Progress, may not work as expected
+- No Icon means not started or not in a state worth using.
+
+## Commands
+
 ### Player and Candy Management
 - **/add player**
   - **Action:** Adds a new player.
@@ -24,6 +34,9 @@ have _fun_ messing with the players ;)
 - **/add player candy [amount]**
   - **Action:** Adds a specific amount of candy to a player.
   - **Example:** `/add player candy 20`
+
+- ✅ **/reset player**
+  - **Action:** Resets a player to 50candy on start as active status, this action will cause an admin message to post showing players last stats before reset.
 
 - **/remove player**
   - **Action:** Removes a player from the game.
@@ -51,17 +64,50 @@ have _fun_ messing with the players ;)
 
 ### Server Management
 
-- **/set channel type:[event|admin] [channel name]**
-  - **Action:** Sets the event or admin channel where the bot will respond to player interactions.
+
+- ✅**/set channel type:[event|admin] [channel name]**
+  - **Action:** Sets the event or admin channel where the bot will respond to player interactions in events type channel and log moderator actions in the specified admin channel.
   - **Example:** `/set channel type:event #event_channel`
 
-- **/set role_access [role]**
-  - **Action:** Assigns a role that has access to server management commands.
+- ✅ **/get channel type:[event|admin|both]**
+  - **Action:** Get the name of the channel bot uses for either events or admin/mod responses.
+  - **Example:** `/get channel type:event`
+
+- ✅ **/update channel type:[event|admin]**
+  - **Action:** Update the name of the channel bot uses for either events or admin/mod responses.
+  - **Example:** `/update channel type:event`
+
+- ✅ **/remove channel type:[event|admin]**
+  - **Action:** Bot will default to responding in whatever channel it was interacted with for moderator and event type responses. This does not remove the channel itself, just removes it from bots list of channels to use for response types. 
+  - **Example:** `/remove channel type:event`
+
+- ✅ **/get join_game_msg**
+  - **Action:** Get the link and name of channel where message to react to join game is posted.
+  - **Example:** `/get join_game_msg`
+
+- ✅ **/set join_game_msg**
+  - **Action:** Creates an embeded message inviting players to join the game via react to a :jack-o-lantern:.
+  - **Example:** `/set join_game_msg`
+
+- ❌ **/update join_game_msg**
+  - **Action:** As of right now to update the message doesn't mean editing it's contents, rather someone need to delete the old one in server, and making a new one by running this command.
+  - **Example:** `/set join_game_msg`
+
+- ❌ **/remove join_game_msg**
+  - **Action:** This does not directly delete the message*. For now the bot will forget the invite message was created and stop listening to it for reacts.
+  - **Example:** `/remove join_game_msg`
+
+- ✅ **/get roles**
+  - **Action:** Show what roles have been assigned to use this bots moderator commands
+  - **Example:** `/get roles`
+
+- ✅ **/set role [role]**
+  - **Action:** Assigns a role that has access to this bots moderator commands.
   - **Example:** `/set role_access @Admin`
 
-- **/remove role_access [role]**
-  - **Action:** Removes the server management access from a role.
-  - **Example:** `/remove role_access @Moderator`
+- ✅ **/remove role [role]**
+  - **Action:** Removes the server management access from a role. It does not remove roles from the server, only from the bots DB to know which roles to allow.
+  - **Example:** `/remove role @Moderator`
 
 ---
 

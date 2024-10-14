@@ -23,7 +23,7 @@ Not paitent enough to wait on a cauldron event, no worries try your hand at pump
 
 So glad you want to help! Refer to these docs on setup for dev.
    - [Development requirements and setup](/docs/development.md)
-   - [Contributing Guidlines](/docs/CONTRIBUTION.md)
+   - [Contributing Guidlines](CONTRIBUTION.md)
 
 ## Attribution
 

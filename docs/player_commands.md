@@ -18,9 +18,15 @@
 
 :eyes: you may be tempted to just leave the game to pause your progress but moderators can reinstate you ;)...or freeze your game permanently and you'll lose your bought potions if the spell is cast while you are away.
 
+## Status of command implementation
+
+- ✅  Completed Command! (But unit testing is still  needed overall!)
+- ❌  In Progress, may not work as expected
+- No Icon means not started or not in a state worth using.
+
 ### 1. Player Interactions
 
-- **/trick [target_player]**
+- ✅ **/trick [target_player]**
   - **Action:** Attempts to trick another player out of their candy.
   - **Example:** `/trick @Player`
 
@@ -56,7 +62,7 @@
 ### 4. Smashing Pumpkins for Risk
 
 - **/smash_pumpkin [amount]**
-  - **Action:** Risks a certain amount of candy for a chance to win or lose more candy.
+  - **Action:** Risks a certain amount of candy for a chance to win or lose candy.
   - **Example:** `/smash_pumpkin 10`
 
 ---
