@@ -1,7 +1,17 @@
 # WickedWhiskers
-a discord bot that plays trick-or-treat
 
-Current state of code is not functional! I'm working on a revamp of decorators and stewing on a balanced version to use ram/cpu with sqlite and classes.
+There are a lot of commands that haven't been implemented yet! If you're looking to contribute there's plenty to do here :D and then enjoy the discord bot game! 
+
+Hacktoberfest 2024 is ON!
+
+## What is WickedWhiskers
+
+This is a discord bot that enabls players in your server to interact in a halloween themed game.  `/trick` members out of their candy or `/treat` them with some?
+
+Buy Potions to place candy into a cauldron with a chance to win buckets of candy! Be weery, the good witch Luna and bad witch Raven keep an eye on how you play! Ever so often (when a moderator feels like it really), one of the witches will be selected to cast the spell in the cauldron to select their winner(s)...but sometimes it doesn't go according to plan. _partially implmented_
+
+Not paitent enough to wait on a cauldron event, no worries try your hand at pumpkin smashing! See if candy spills out or you got a dud with no candy :sad: _not implemented yet_
+
 
 ## Commands
 
