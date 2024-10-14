@@ -62,6 +62,13 @@ You need to create a `.env` file in your project directory to store sensitive cr
 
 Example `.env` file:
 
+```txt
+GUILD=123ABC
+FEEDBACK_CH=456DEF
+DISCORD_API_TOKEN=789EFG
+```
+
+
 **Important:** This `.env` file should be added to your `.gitignore` file to prevent exposing credentials in GitHub.
 
 ### Required Environment Variables
@@ -96,14 +103,24 @@ pip install python-dotenv
 4. In the left sidebar, go to "Bot" and click on "Add Bot."
 5. Confirm by clicking "Yes, do it!" Your bot will be created.
 6. Copy the bot token by clicking "Reset Token" and saving it to your `.env` file as `DISCORD_API_TOKEN`.
+7. Under "Bot Permissions," select the required permissions your bot needs:
+    - `Presence Intent` - for context_menu function
+    - `Server Members Intent` - for verifiying member is in guild (this bot can handle multiple server installs and maintains which guild player data is for)
+    - `Message Content Intent` - for use of embeds.
 
 ### Adding the Bot to a Server
 
-1. In the Discord Developer Portal, go to the "OAuth2" tab and select "URL Generator."
-2. Under "OAuth2 URL Generator," check the box for "bot" under scopes.
-3. Under "Bot Permissions," select the required permissions your bot needs
-    - `Send Messages` - for bot responses
-    - `Presence` - for context_menu function
+1. In the Discord Developer Portal, go to the "Installation" tab and select "Install Link."
+3. Under "Default Install Settings," select the required permissions your bot needs
+    1. User Install: Scopes, applications.commands
+        - scopes:
+            1. application.commands
+    2. Guild Install:
+        - scopes: 
+            1. application.commands
+            1. bot
+        - Permissions:
+            1. Send Messages
 4. Copy the generated URL and paste it into your browser.
 5. Select the server where you want to add the bot, and click "Authorize."
 
@@ -111,7 +128,9 @@ pip install python-dotenv
 
 1. Once the bot is added to your server, go to your Discord server settings.
 2. Go to "Roles" and find your bot's role.
-3. Assign the required permissions for the bot, making sure it has permission to read and send messages, manage roles, and any other necessary permissions for your bot's functionality.
+3. Assign the required permissions for the bot, making sure it has permissions to the following in the channels you see fit for testing.
+    - send messages
+    - see reacts 
 4. Save the settings.
 
 ## Database Setup
@@ -129,7 +148,7 @@ pip install python-dotenv
 
 ### Table Creation
 
-1. The bot will automatically create the required tables in the SQLite database.
+1. The bot will automatically create the required tables in the SQLite database. [Review db init file](/discord-bot/db_utils.py)
 2. The following tables are created:
 
    - **players**: Stores player-specific data like candy count, successful/failed steals, and active status.
@@ -159,7 +178,29 @@ pip install python-dotenv
    python bot.py
    ```
 
-4. If the bot starts successfully, you should see a confirmation message in the terminal indicating that the bot is connected and ready to interact with the Discord server.
+4. If the bot starts successfully, you should see a confirmation message in the terminal indicating that the bot is connected and ready to interact with the Discord server. Please take caution of syncing to a guild and be mindful to only sync when you have updated a command ;).
+    
+    Example output on start:
+
+    ```bash
+    WARNING    - discord.client  : PyNaCl is not installed, voice will NOT be supported
+    Initializing database...
+    Loading spooky messages...
+    Loading group commands...
+    Syncing tree...
+    INFO       - bot             : Attempting to sync commands for guild ID: #####
+    INFO       - bot             : Successfully synced 4 commands for guild ID: ######
+    INFO       - bot             : Command synced: zmod - Moderator Commands
+    INFO       - bot             :  - Option: set (AppCommandOptionType.subcommand_group) - Set commands
+    INFO       - bot             :  - Option: get (AppCommandOptionType.subcommand_group) - get commands
+    INFO       - bot             :  - Option: remove (AppCommandOptionType.subcommand_group) - Remove commands
+    INFO       - bot             :  - Option: update (AppCommandOptionType.subcommand_group) - Update commands
+    INFO       - bot             :  - Option: reset (AppCommandOptionType.subcommand_group) - Reset commands
+    INFO       - bot             : Command synced: trick - Trick a player into giving you candy!
+    INFO       - bot             :  - Option: member (AppCommandOptionType.user) - …
+    INFO       - bot             : Command synced: Join Game -
+    INFO       - bot             : Command synced: Trick Player -
+    ```
 
 5. In the Discord server, you can now use the bot’s commands as specified.
 
