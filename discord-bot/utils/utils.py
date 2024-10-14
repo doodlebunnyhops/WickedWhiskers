@@ -12,10 +12,9 @@ import logging
 import discord
 import db_utils
 
-# importlib.reload(db_utils)
+
 logging.basicConfig(level=logging.DEBUG)
 
-# print("utils.py is running")
 
 def has_role_or_permission(member: discord.Member, guild_id):
     # Check if the member has Manage Guild permission

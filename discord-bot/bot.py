@@ -14,10 +14,9 @@ from discord.ext import commands
 from discord import app_commands
 import context_menu.player
 from db_utils import initialize_database, get_game_join_msg_settings,is_player_active,create_player_data
-from cogs.server import RoleAccess
+from cogs.mod import Mod
 from utils.messages import MessageLoader
 import settings
-from utils import checks
 import context_menu
 
 print(discord.__version__)
@@ -44,26 +43,21 @@ class MyBot(commands.Bot):
         print("Loading spooky messages...")
         self.message_loader = MessageLoader('utils/messages.json')
 
-        join_cm = app_commands.ContextMenu(name="Join Game", callback=context_menu.player.join,)
+        join_cm = app_commands.ContextMenu(name="Join Game", callback=context_menu.player.join)
+        trick_cm = app_commands.ContextMenu(name="Trick Player", callback=context_menu.player.trick)
 
         # @self.tree.context_menu(name="Join Game")
         # @checks.must_target_self()
         # async def join(interaction: discord.Interaction, user: discord.Member):
         #     await interaction.response.send_message(f"{user.display_name} you are trying to join!", ephemeral=True)
         
-
-        @self.tree.context_menu(name="Show Join Date")
-        # @checks.must_target_self()
-        async def show_join_date(interaction: discord.Interaction, user: discord.Member):
-            join_date = user.joined_at.strftime("%B %d, %Y")
-            await interaction.response.send_message(f"{interaction.user.name} clicked on {user.name}", ephemeral=True)
-        
-        
         # Load all cogs
         print("Loading group commands...")
         #the additional options were the trick to force guild update
-        self.tree.add_command(RoleAccess.server,guild=self.guild_id,override=True)
+        self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
         self.tree.add_command(join_cm,guild=self.guild_id,override=True)
+        self.tree.add_command(trick_cm,guild=self.guild_id,override=True)
+        await self.load_extension("cogs.player")
         
         print("Syncing tree...")
         try:

@@ -83,38 +83,14 @@ def check_if_player_is_not_active():
 
     return app_commands.check(predicate)
 
-# def must_target_self(param_name="user"):
-#     """
-#     Decorator to ensure the user targets themselves.
-#     :param param_name: The name of the argument that holds the target user (defaults to 'user').
-#     """
-#     def decorator(func):
-#         async def wrapper(interaction: discord.Interaction, user: discord.Member, *args, **kwargs):
-#             caller = interaction.user
-#             target_user = user
-#             if not user:
-#                 target_user = kwargs.get(param_name)
-
-#             if caller.id != target_user.id:
-#                 await interaction.response.send_message("You must target yourself for this command!", ephemeral=True)
-#                 return
-
-#             # Otherwise, proceed with the command
-#             await func(interaction, *args, **kwargs)
-
-#         return wrapper
-#     return decorator
-
-# from discord import app_commands
-
-def must_target_self():
+def must_target_self_predicate():
     """
     Predicate to ensure the user targets themselves.
     """
-    async def predicate(interaction: discord.Interaction, *args, **kwargs) -> bool:
+    async def predicate(interaction: discord.Interaction,member: discord.Member) -> bool:
         caller = interaction.user
         target_user = interaction.namespace.get("member")
-        print(f"Caller: {caller}, Target: {target_user}")
+        print(f"From predication check:\tCaller: {caller}, Target: {target_user}")
 
         if caller.id != target_user.id:
             await interaction.response.send_message("You must target yourself for this command!", ephemeral=True)
@@ -123,8 +99,4 @@ def must_target_self():
         return True
 
     return app_commands.check(predicate)
-
-
-
-
 
