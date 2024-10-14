@@ -131,7 +131,7 @@
             "*Updating... updating...* All done. The {channel_type} channel is updated to **{channel}**. What’s next? 😩"
             ]
     },
-    "delete_role": {
+    "remove_role": {
         "admin_messages": [
         "**Role {role_name}** has been removed from restricted command access by {user}. *I hope that was the right choice...* 😬",
         "Well, it’s done. The **{role_name}** role has been removed from command access by {user}. *I hope you won’t regret this!* 😨",
@@ -143,7 +143,7 @@
         "You *really* want me to do this? *Sigh*... okay, the role is gone from restricted access. Now let me get back to *important* stuff."
         ]
     },
-    "delete_channel": {
+    "remove_channel": {
         "admin_messages": [
         "The {channel_type} channel **{channel_name}** has been removed from my memory by {user}. *Was that really necessary?* 😕",
         "Well, the {channel_type} channel **{channel_name}** is gone from my records. *I hope you’re happy now, {user}.* 😒",

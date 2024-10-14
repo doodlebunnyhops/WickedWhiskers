@@ -4,43 +4,43 @@ import db_utils
 import utils.checks as checks
 from utils.utils import post_to_target_channel
 
-delete_group = app_commands.Group(name="delete", description="Delete commands")
+remove_group = app_commands.Group(name="remove", description="Remove commands")
 
 
-@delete_group.command(name="join_game_msg", description="I cant delete messages :P")
+@remove_group.command(name="join_game_msg", description="I cant remove messages :P")
 @checks.check_if_has_permission_or_role()
 async def update_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
-    await interaction.response.send_message(f":wave: Hey {interaction.user.name}...so I don't have perms to delete the join message in {channel.name} ;) you'll have to have someone with proper permissions manually delete it so they can /update")
+    await interaction.response.send_message(f":wave: Hey {interaction.user.name}...so I don't have perms to remove the join message in {channel.name} ;) you'll have to have someone with proper permissions manually remove it so they can /update")
 
-@delete_group.command(name="role", description="Delete a role from the games restricted commands")
+@remove_group.command(name="role", description="Remove a role from the games restricted commands")
 @checks.check_if_has_permission_or_role()
-async def delete_role(interaction: discord.Interaction, role: discord.Role):
+async def remove_role(interaction: discord.Interaction, role: discord.Role):
 
     personal_message = interaction.client.message_loader.get_message(
-        "delete_role", "personal_message", role_name=role.name
+        "remove_role", "personal_message", role_name=role.name
     )
     # Respond with the formatted message
     await interaction.response.send_message(personal_message, ephemeral=True)
 
     ### DO THE THING JULIE!
     guild_id = interaction.guild.id
-    db_utils.delete_role_by_guild(role.id,guild_id)
+    db_utils.remove_role_by_guild(role.id,guild_id)
 
     # Access the message loader from the bot instance
     admin_message = interaction.client.message_loader.get_message(
-        "delete_role", "admin_messages", role_name=role.name, user=interaction.user.mention
+        "remove_role", "admin_messages", role_name=role.name, user=interaction.user.mention
     )
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
-    # await interaction.response.send_message(f"Role {role.name} has been deleted from accessing restricted commands.",ephemeral=True)
+    # await interaction.response.send_message(f"Role {role.name} has been removed from accessing restricted commands.",ephemeral=True)
 
 
-@delete_group.command(name="channel", description="Delete the event or admin channel setting.")
+@remove_group.command(name="channel", description="Remove the event or admin channel setting.")
 @checks.check_if_has_permission_or_role()
 @app_commands.choices(channel_type=[
     app_commands.Choice(name="Event", value="event"),
     app_commands.Choice(name="Admin", value="admin")
 ])
-async def delete_channel_command(interaction: discord.Interaction, channel_type: app_commands.Choice[str]):
+async def remove_channel_command(interaction: discord.Interaction, channel_type: app_commands.Choice[str]):
     guild_id = interaction.guild.id
 
     # Fetch the existing channel based on the type (event or admin)
@@ -55,19 +55,19 @@ async def delete_channel_command(interaction: discord.Interaction, channel_type:
         return
 
     personal_message = interaction.client.message_loader.get_message(
-        "delete_channel", "personal_message", channel_type=channel_type.value, channel_name=interaction.guild.get_channel(existing_channel_id).name
+        "remove_channel", "personal_message", channel_type=channel_type.value, channel_name=interaction.guild.get_channel(existing_channel_id).name
     )
     # Respond with the formatted message
     await interaction.response.send_message(personal_message, ephemeral=True)
 
-    # Delete the selected channel from the database
+    # Remove the selected channel from the database
     if channel_type.value == "event":
         db_utils.delete_event_channel(guild_id)
     elif channel_type.value == "admin":
         db_utils.delete_admin_channel(guild_id)
 
     admin_message = interaction.client.message_loader.get_message(
-        "delete_channel", "admin_messages", channel_type=channel_type.value, channel_name=interaction.guild.get_channel(existing_channel_id).name,user=interaction.user.mention
+        "remove_channel", "admin_messages", channel_type=channel_type.value, channel_name=interaction.guild.get_channel(existing_channel_id).name,user=interaction.user.mention
     )
     # Respond with the formatted message
     await post_to_target_channel(interaction,admin_message,channel_type=channel_type.value)

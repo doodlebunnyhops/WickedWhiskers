@@ -1,10 +1,11 @@
 from discord.ext import commands
 from discord import app_commands
 
-from cogs.mod_commands.delete import delete_group
+from cogs.mod_commands.remove import remove_group
 from cogs.mod_commands.update import update_group
 from cogs.mod_commands.get import get_group
 from cogs.mod_commands.set import set_group
+from cogs.mod_commands.reset import reset_group
 
 # importlib.reload(utils)
 # importlib.reload(db_utils)
@@ -18,8 +19,9 @@ class Mod(commands.Cog):
 
     cmds_group.add_command(set_group)
     cmds_group.add_command(get_group)
-    cmds_group.add_command(delete_group)
+    cmds_group.add_command(remove_group)
     cmds_group.add_command(update_group)
+    cmds_group.add_command(reset_group)
     
 
 # Setup function to add the "cog" and the group
