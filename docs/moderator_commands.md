@@ -3,6 +3,7 @@
 <!-- TOC -->
 
 - [Moderator-Only Commands](#moderator-only-commands)
+    - [Suggestions of use:](#suggestions-of-use)
         - [Player and Candy Management](#player-and-candy-management)
         - [Server Management](#server-management)
         - [Cauldron Event Management](#cauldron-event-management)
@@ -12,8 +13,11 @@
 
 <!-- /TOC -->
 
-### 1. Player and Candy Management
+## Suggestions of use:
 
+have _fun_ messing with the players ;) 
+
+### Player and Candy Management
 - **/add player**
   - **Action:** Adds a new player.
 
@@ -45,7 +49,7 @@
 
 ---
 
-### 2. Server Management
+### Server Management
 
 - **/set channel type:[event|admin] [channel name]**
   - **Action:** Sets the event or admin channel where the bot will respond to player interactions.
@@ -61,7 +65,7 @@
 
 ---
 
-### 3. Cauldron Event Management
+### Cauldron Event Management
 
 - **/view cauldron**
   - **Action:** Displays the amount of candy in the cauldron.
@@ -71,7 +75,7 @@
   - **Example:** `/cast_spell Luna 2` → Luna picks 2 winners from the cauldron event.
 ---
 
-### 4. Potion Management for Cauldron Event
+### Potion Management for Cauldron Event
 
 - **/set potion_cost [amount]**
   - **Action:** Allows moderators to set or update the cost of potions for the cauldron event.
@@ -83,7 +87,7 @@
 
 ---
 
-### 5. Reset and Game Management
+### Reset and Game Management
 
 - **/reset player [player]**
   - **Action:** Resets all stats for a player.
@@ -101,7 +105,7 @@
 
 ---
 
-### 6. Moderator-Only Stat Commands
+### Moderator-Only Stat Commands
 
 - **/view stats tricks [type:action|candy count] [count by:successful|failed|total]**
   - **Action:** Displays statistics related to tricks, either by action count or candy count, and broken down by successful, failed, or total.

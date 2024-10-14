@@ -1,8 +1,11 @@
 
 
+## Player Commands
+
 <!-- TOC -->
 
 - [Player Commands](#player-commands)
+- [Suggestions](#suggestions)
     - [Player Interactions](#player-interactions)
     - [Joining and Leaving the Game](#joining-and-leaving-the-game)
     - [Checking Stats and Candy](#checking-stats-and-candy)
@@ -11,7 +14,9 @@
 
 <!-- /TOC -->
 
-## Player Commands
+## Suggestions
+
+:eyes: you may be tempted to just leave the game to pause your progress but moderators can reinstate you ;)...or freeze your game permanently and you'll lose your bought potions if the spell is cast while you are away.
 
 ### 1. Player Interactions
 
