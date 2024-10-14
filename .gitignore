@@ -1,5 +1,6 @@
 # Other
 *.db
+*.sql
 /old
 .vscode/
 *.logs
