@@ -1,4 +1,4 @@
-# Contributing to [Project Name]
+# Contributing to WickedWhiskers
 
 Thank you for considering contributing to this project! To ensure that all contributions are high-quality and follow the rules of this repository, please follow these guidelines:
 
