@@ -1,4 +1,4 @@
 discord.py==2.3.2
 aiosqlite==0.17.0  # Async SQLite library for managing the database
 asyncio==3.4.3  # For managing asynchronous code
-PyYAML==6.0  # If you're using YAML for config files
+PyYAML==6.0.2  # If you're using YAML for config files
