@@ -10,68 +10,89 @@
 import asyncio
 import os
 import discord
+from discord.ext import commands
 from discord import app_commands
-import logging
-import db_utils
+import context_menu.player
+from db_utils import initialize_database, get_game_join_msg_settings,is_player_active,create_player_data
 from cogs.server import RoleAccess
 from utils.messages import MessageLoader
+import settings
+from utils import checks
+import context_menu
 
 print(discord.__version__)
 print(discord.__file__)
 
-logging.basicConfig(level=logging.DEBUG)
+# logger.basicConfig(level=logger.DEBUG)
+logger = settings.logging.getLogger("bot")
 
 #For development as commands sync faster for guilds than globally
-guild_ID = os.getenv("DISCORD_GUILD_ID")
 
-class MyBot(discord.Client):
+class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.guild_id = guild_ID  
-        self.tree = discord.app_commands.CommandTree(self)
+        self.guild_id = settings.GUILDS_ID
+        # self.tree = discord.app_commands.CommandTree(self)
         self.message_loader = None
 
     async def setup_hook(self):
-        guild = discord.Object(id=self.guild_id)
+        self.guild_id = settings.GUILDS_ID
         print("Initializing database...")
-        db_utils.initialize_database()  
+        initialize_database()  
 
         
         print("Loading spooky messages...")
         self.message_loader = MessageLoader('utils/messages.json')
+
+        join_cm = app_commands.ContextMenu(name="Join Game", callback=context_menu.player.join,)
+
+        # @self.tree.context_menu(name="Join Game")
+        # @checks.must_target_self()
+        # async def join(interaction: discord.Interaction, user: discord.Member):
+        #     await interaction.response.send_message(f"{user.display_name} you are trying to join!", ephemeral=True)
+        
+
+        @self.tree.context_menu(name="Show Join Date")
+        # @checks.must_target_self()
+        async def show_join_date(interaction: discord.Interaction, user: discord.Member):
+            join_date = user.joined_at.strftime("%B %d, %Y")
+            await interaction.response.send_message(f"{interaction.user.name} clicked on {user.name}", ephemeral=True)
+        
         
         # Load all cogs
         print("Loading group commands...")
         #the additional options were the trick to force guild update
-        self.tree.add_command(RoleAccess.server,guild=guild,override=True)
-        # self.tree.add_command(PlayerCommands.player,guild=guild,override=True)
+        self.tree.add_command(RoleAccess.server,guild=self.guild_id,override=True)
+        self.tree.add_command(join_cm,guild=self.guild_id,override=True)
         
         print("Syncing tree...")
         try:
             # Sync the commands
-            logging.info(f"Attempting to sync commands for guild ID: {guild.id}")
-            synced = await self.tree.sync(guild=guild)
+            logger.info(f"Attempting to sync commands for guild ID: {self.guild_id}")
+            self.tree.copy_global_to(guild=self.guild_id) #this is what loaded in my slash command to the guild i wanted
+            synced = await self.tree.sync(guild=self.guild_id)
 
             # Log detailed info about synced commands
-            logging.info(f"Successfully synced {len(synced)} commands for guild ID: {guild_ID}")
+            logger.info(f"Successfully synced {len(synced)} commands for guild ID: {self.guild_id}")
             for command in synced:
-                logging.info(f"Command synced: {command.name} - {command.description}")
+                logger.info(f"Command synced: {command.name} - {command.description}")
                 if hasattr(command, 'options'):
                     for option in command.options:
-                        logging.info(f" - Option: {option.name} ({option.type}) - {option.description}")
+                        logger.info(f" - Option: {option.name} ({option.type}) - {option.description}")
 
         except Exception as e:
-            logging.error(f"Error syncing commands for guild ID {guild_ID}: {str(e)}")
+            logger.error(f"Error syncing commands for guild ID {self.guild_id}: {str(e)}")
 
     async def on_ready(self):
         print(f'Logged in as {self.user} and bot is ready!')
 
-
-intents = discord.Intents.default()
-intents.message_content = True
-intents.guilds = True
-intents.members = True
-bot = MyBot(intents=intents)
+intents = discord.Intents.all()
+# intents = discord.Intents.default()
+# intents.message_content = True
+# intents.guilds = True
+# intents.members = True
+# bot = MyBot(intents=intents)
+bot = MyBot(command_prefix="!", intents=intents)
 
 
 @bot.event
@@ -89,12 +110,12 @@ async def on_raw_reaction_add(payload):
 
         # Fetch the game invite message ID from the database for the current guild
         try:
-            result = db_utils.get_game_join_msg_settings(guild.id)
+            result = get_game_join_msg_settings(guild.id)
             if result is None:
-                logging.warning(f"No invite message ID found for guild {guild.id}")
+                logger.warning(f"No invite message ID found for guild {guild.id}")
                 return
         except Exception as e:
-            logging.error(f"Error fetching invite message ID: {str(e)}")
+            logger.error(f"Error fetching invite message ID: {str(e)}")
             return
 
         game_invite_message_id = result[0]
@@ -105,23 +126,23 @@ async def on_raw_reaction_add(payload):
             guild_id = guild.id
 
             try:
-                if db_utils.is_player_active(player_id, guild_id):
+                if is_player_active(player_id, guild_id):
                     await channel.send(f"{member.mention}, you are already in the game! Use `/return` if you previously opted out.", delete_after=15)
                 else:
                     # Create new player data
                     try:
-                        db_utils.create_player_data(player_id, guild_id)
+                        create_player_data(player_id, guild_id)
                         message = bot.message_loader.get_message(
                             "join", "messages", user=member.mention
                         )
                         await channel.send(message, delete_after=30)
                     except Exception as e:
-                        logging.error(f"Error creating player data for {member.id} in guild {guild_id}: {str(e)}")
+                        logger.error(f"Error creating player data for {member.id} in guild {guild_id}: {str(e)}")
                         await channel.send(f"Error occurred while adding you to the game, {member.mention}. Please try again later.", delete_after=15)
             except Exception as e:
-                logging.error(f"Error checking or adding player for {member.id} in guild {guild_id}: {str(e)}")
+                logger.error(f"Error checking or adding player for {member.id} in guild {guild_id}: {str(e)}")
     except Exception as e:
-        logging.error(f"Unexpected error in on_raw_reaction_add: {str(e)}")
+        logger.error(f"Unexpected error in on_raw_reaction_add: {str(e)}")
 
 
 @bot.event
@@ -153,11 +174,11 @@ async def on_app_command_error(interaction: discord.Interaction, error):
     else:
         # For any other errors, you can handle them here or raise the default error
         print(f"An error occurred while processing:\n\tError: {error}")
-        logging.info(f"{interaction.user.name} attempted '/{interaction.command.qualified_name}': Error\t{error}")
+        logger.info(f"{interaction.user.name} attempted '/{interaction.command.qualified_name}': Error\t{error}")
         if interaction.response.is_done():
             await interaction.followup.send("An error occurred while processing the command.", ephemeral=True)
         else:
             await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
-bot_token = os.getenv("DISCORD_BOT_TOKEN")
-bot.run(bot_token)
+
+bot.run(settings.DISCORD_API_SECRET, root_logger=True)
