@@ -14,6 +14,7 @@
   - ephemeral response or not? <- if not it will post it what ever channel invoked in.
 - [ ] Make some responses prettier with embeds
 - [ ] Include Candy Stolen and Candy Won from Cauldron Spell in /stats
+- [ ] Cauldron has a chance of exploding it takes away a blast of players candy and gives it to one random player
 
 # Found Bugs
 - [x] lottery system..it's wrong

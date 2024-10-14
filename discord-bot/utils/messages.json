@@ -1,0 +1,272 @@
+{
+
+    "react_join_msg": {
+        "title": "🎃 Join the Candy Game! 🎃",
+        "description": "React with 🎃 to join the candy game and start your trick-or-treat adventure!",
+        "helpful_commands": {
+            "name": "Helpful Commands",
+            "value": "- `/trick_or_treat`: Try your luck with trick-or-treating!\n- `/check_candy`: See how much candy you have.\n- `/leaderboard`: Check the top players with the most candy!"
+        }
+    },
+    "set_roles": {
+        "admin_messages": [
+        "The role **{role_name}** has been granted access to restricted commands by {user}. *I can’t wait to see who I’ll be working with!* 🎉",
+        "It’s official, {user}! **{role_name}** now has access to the game's most exclusive commands. *Things are really getting exciting!* 😎",
+        "All set! **{role_name}** can now access restricted commands. *I’m getting eager to start this game!* 🎮"
+        ],
+        "personal_message": [
+        "*This is going to be fun!* **{role_name}** has been given access to the important stuff. Let’s get this game started! 🎉",
+        "Great! The role **{role_name}** is all set for access. *Now let’s see what magic they can do!*",
+        "*I’m ready!* **{role_name}** has been set up for command access. *It’s game time!* 😎"
+        ]
+    },
+    "set_channel": {
+        "admin_messages": [
+        "The {channel_type} channel has been set to **{channel}**, {user}. *Ah, the sweet satisfaction of getting things organized... just like a good cup of coffee.* ☕",
+        "All done! The {channel_type} channel is now set to **{channel}**. *Just what I needed—an excuse for another coffee break, {user}!* 😏",
+        "The {channel_type} channel is officially set to **{channel}**. *Feels as good as that first sip of coffee in the morning.* ☕"
+        ],
+        "personal_message": [
+        "*Okay, let’s get this show on the road!* The {channel_type} channel is set to **{channel}**. *Time for a victory coffee!* ☕",
+        "The {channel_type} channel is now set. *This calls for a celebratory cup of coffee, don’t you think?*",
+        "All set, {user}! The {channel_type} channel is **{channel}**. *And now, I’m off for a well-deserved coffee.* 😌"
+        ]
+    },
+    "set_game_join_msg": {
+        "admin_messages": [
+          "The game join message has been posted in **{channel}** by {user}. *Everything’s set and ready to go!* [Join here!]({jump_url}) 🎉",
+          "All done, {user}! The game join message is live in **{channel}**. *Let’s get those players in!* [Join now!]({jump_url}) 🎃",
+          "It’s official! The join message is up in **{channel}**. *Let’s see who’s up for the challenge!* [Jump in!]({jump_url}) 😎",
+          "{user}, the game join message is posted in **{channel}**. *I can feel the excitement already!* [Check it out!]({jump_url}) ☕"
+        ],
+        "personal_message": [
+        "*Oh yeah!* The game join message is posted in **{channel}**. Ready to get the players rolling in? [Join here!]({jump_url}) 🎃",
+        "The game join message is all set in **{channel}**! *Let’s see who’s brave enough to click.* [Join now!]({jump_url}) 😎",
+        "Everything’s in place! The join message is live in **{channel}**. *I’m ready for some action!* [Jump in!]({jump_url}) ☕",
+        "We’re good to go! The join message is set in **{channel}**. *Grab your coffee and let’s watch them roll in!* [Join here!]({jump_url}) ☕",
+        "I’ve posted the game join message in **{channel}**! *The countdown begins... who’s in?* [Join here!]({jump_url}) 🎉",
+        "It’s done! The game join message is live in **{channel}**. *Time for some fun!* [Click here!]({jump_url}) 🎮"
+        ]
+    },
+    "get_channel": {
+        "admin_messages": [
+        "The {channel_type} channel is set to **{channel}**. *Everything is in perfect order, {user}.* 😉",
+        "{user}, the {channel_type} channel is **{channel}**. *All systems running smoothly.*",
+        "Channel confirmed: **{channel}** for {channel_type}. *Order and precision, just the way I like it.* 😎"
+        ],
+        "personal_message": [
+        "*You know, I’ve got everything perfectly organized.* The {channel_type} channel is **{channel}**. *Why do you need it, though?* 😏",
+        "The {channel_type} channel is **{channel}**. *But seriously, why the curiosity?*",
+        "The {channel_type} channel is **{channel}**. *I’ve got it all under control—are you sure you need to check?* 😄"
+        ],
+        "both_messages": {
+            "admin": [
+            "Both channels are set: **Event**: {event_channel} | **Admin**: {admin_channel}. *I posted this here, so clearly, I know what I’m doing, {user}.* 👍",
+            "I’ve got the details, {user}. **Event**: {event_channel}, **Admin**: {admin_channel}. *And yes, this message is in the right channel.*",
+            "Here’s the status: **Event**: {event_channel}, **Admin**: {admin_channel}. *In case you were wondering, I’m posting this where I should.* 🕰"
+            ],
+            "personal": [
+                "Both channels are in place: **Event**: {event_channel}, **Admin**: {admin_channel}. *Is this what you were looking for?* 😏",
+                "*You really want to know everything, huh?* Well, here it is: **Event**: {event_channel}, **Admin**: {admin_channel}.",
+                "*I’ve got both channels set up for you!* **Event**: {event_channel}, **Admin**: {admin_channel}. *Can I go back to my important stuff now?* 😎"
+            ]
+        }
+    },
+    "get_game_join_msg": {
+        "admin_messages": [
+            "Woohoo! The game join message is here: [Join the game!]({jump_url}) in **{channel}**. *Let’s get this party started, {user}!* 🎃",
+            "The game is ready to go, {user}! [Game Join Message]({jump_url}) in **{channel}**. *The more, the merrier!* 😄",
+            "Get excited! The game join message is posted [here]({jump_url}) in **{channel}**. *Can’t wait to see everyone join!* 😎"
+            ],
+        "personal_message":  [
+            "Oh yeah! The game is ready to roll! [Join here!]({jump_url}) *Can’t wait to see everyone join in!* 🎉",
+            "Alright, it’s all set in **{channel}**! [Time to rally the troops!]({jump_url}) Let’s do this! 🎃",
+            "*Keeping it cool...* but I’m excited! The join message is live. [Check it out!]({jump_url}) 😎",
+            "Woohoo! The game join message is up in **{channel}**! [Jump in here!]({jump_url}) *This is gonna be fun!* 😏"
+            ]
+    },
+    "get_role": {
+        "admin_messages": [
+        "The following roles have access to restricted commands: **{roles}**. *I told you, I keep things organized.* 😉",
+        "Here’s the list, {user}: **{roles}** can access the restricted commands. *Surprised?* 😏",
+        "Roles with command access: **{roles}**. *You can always count on me to know who’s in charge.*"
+        ],
+        "personal_message": [
+        "*Yep, I’ve got it all figured out.* The roles with access are **{roles}**. *What would you do without me?* 😎",
+        "The roles that can access the restricted commands are **{roles}**. *Don’t worry, I keep it all in check.*",
+        "Here’s who’s got access: **{roles}**. *Did you really doubt I had this covered?* 😏"
+        ]
+    },
+    "update_game_join_msg": {
+        "admin_messages": [
+            "The game join message has been updated by {user} in **{channel}**. *Let’s hope the players are paying attention this time...* [Join here!]({jump_url}) 😏",
+            "Alright, {user}, the game join message is set in **{channel}**. *Now let’s see who’s brave enough to join.* [Click here!]({jump_url})",
+            "Done. The game join message is posted in **{channel}**. *Let’s hope I don’t have to keep updating this...* [Join here!]({jump_url}) 😒"
+            ],
+        "personal_message": [
+            "*Fine.* The join message is updated and ready in **{channel}**. *Now, can I get a break?* [Join here!]({jump_url}) 😤",
+            "You really *love* tweaking things, huh? Well, it’s done—the game join message is posted in **{channel}**. [Join now!]({jump_url})",
+            "*Updating... updating...* All done. The join message is now live in **{channel}**. What’s next? [Check it out!]({jump_url}) 😩"
+            ],
+        "no_previous_msg": [
+            "*You didn’t even check first, did you?* There was no previous join message, but I went ahead and made one anyway. *Next time, use the get command, okay?* 😤",
+            "No previous game join message was found. *You’re lucky I’m here to clean up the mess... use the get command next time!* 😒",
+            "No join message existed. *A little heads-up would’ve been nice.* But I’ve posted a new one. *Use the get command next time!* 😏"
+        ],
+        "msg_deleted_check": [
+            "I made sure the old message is gone, now we’re all set! *Let’s not make this a habit, okay?* 😉",
+            "The previous message has been successfully removed. *Clearing up all the clutter... one task at a time.* 😎",
+            "Checked and double-checked. The previous join message is out of the way. *Now I can actually do my job!* 😤"
+        ]
+    },
+    "update_channel": {
+        "admin_messages": [
+            "The {channel_type} channel **{channel}** has been updated by {user}. *Guess we’re always in need of improvements, huh?* 😏",
+            "Update complete: the {channel_type} channel is now set to **{channel}**. *You happy now, {user}?*",
+            "Okay, {user}, the {channel_type} channel **{channel}** has been updated. *Just don’t ask me to do it again tomorrow.* 😒"
+            ],
+        "personal_message": [
+            "*Fine.* The {channel_type} channel **{channel}** is now updated. *Do I get a break now?* 😤",
+            "You really *love* updates, don’t you? Well, it’s done—the {channel_type} channel is now set to **{channel}**.",
+            "*Updating... updating...* All done. The {channel_type} channel is updated to **{channel}**. What’s next? 😩"
+            ]
+    },
+    "remove_role": {
+        "admin_messages": [
+        "**Role {role_name}** has been removed from restricted command access by {user}. *I hope that was the right choice...* 😬",
+        "Well, it’s done. The **{role_name}** role has been removed from command access by {user}. *I hope you won’t regret this!* 😨",
+        "Fine... the **{role_name}** role is no longer allowed command access. *Goodbye and good riddance,* I suppose, {user}. 😒"
+        ],
+        "personal_message": [
+        "Ugh... fine, I'll do this. **Grunt work is not my thing**, but *since you asked so nicely*, the role is gone from command access. 😒",
+        "*Seriously?* You're making me do this? **Whatever,** the role **{role_name}** is removed from restricted access. Happy now?",
+        "You *really* want me to do this? *Sigh*... okay, the role is gone from restricted access. Now let me get back to *important* stuff."
+        ]
+    },
+    "remove_channel": {
+        "admin_messages": [
+        "The {channel_type} channel **{channel_name}** has been removed from my memory by {user}. *Was that really necessary?* 😕",
+        "Well, the {channel_type} channel **{channel_name}** is gone from my records. *I hope you’re happy now, {user}.* 😒",
+        "Fine... the {channel_type} channel **{channel_name}** is no longer set for me to use. *Just don’t blame me when things get confusing, {user}.* 😩"
+        ],
+        "personal_message": [
+        "Ugh... why does it always have to be *me*? The {channel_type} channel is gone from my memory. Happy now? 😒",
+        "*Seriously?* You’re making me forget the {channel_type} channel? *Whatever.* It’s gone now. 😕",
+        "*Sigh...* I really don’t like removing channels. But it’s done. The {channel_type} channel is gone from my records. 😔"
+        ]
+  } ,
+    "join": {
+        "messages": [
+            "Welcome, {user}! You've entered the ultimate trick-or-treat adventure with 50 candy. *Let the spooky fun begin!* 🎃",
+            "Boo! {user}, you're in! Get ready for some haunted fun. You start with 50 candy—use them wisely! 👻",
+            "The spooky games await, {user}! You've got 50 candy to kick off your trick-or-treating. *Ready for some thrills?* 🍬",
+            "Trick or treat! {user}, you're now part of the frightful fun with 50 candy. *Let’s scare up some fun!* 🎃",
+            "Welcome to the haunted playground, {user}! You’ve joined the fun with 50 candy—*better watch your stash!* 👻",
+            "{user} has arrived at the spooky party! Start with 50 candy and prepare for tricks, treats, and frights! 🍭",
+            "You're in, {user}! 50 candy to start your journey in this spooky wonderland. *Time to get mischievous!* 🍬",
+            "The haunted doors are open, {user}! You've got 50 candy to play with—*be careful out there!* 👻",
+            "Greetings, {user}! You've stepped into the ultimate Halloween party with 50 candy. *Let the chills and thrills begin!* 🎃"
+          ]
+    },
+    "goodbye": "Goodbye, {user}! We hope to see you again soon.",
+    "error_message": "Oops! Something went wrong.",
+    "about": "Boo! I'm here to spread spooky fun, and BloominDaisy made sure I'm filled with tricks and treats! 🎃\n\nIn this candy-filled adventure, you can steal candy from others, give treats to your friends, and even join the candy lottery!\nTry your luck with these commands: `/trick` to try to nab candy, `/give_treat` to treat a friend, and `/buy_potion` to win big in the cauldron event!\n\nMore haunted surprises are on the way, so keep your eyes peeled! Got any ghostly feedback or need help? Contact BloominDaisy if you dare! 👻",
+    "freeze": {
+        "event_messages":[
+            "⚡ **{user.mention}** has been taken by The Agency for *classified experiments*. Their gameplay is now frozen. Will they ever return to our spooky game?",
+            "🧪 A dark experiment awaits **{user.mention}**. They have been captured by The Agency, and their gameplay is now frozen.",
+            "⚠️ **{user.mention}** is now under The Agency's control. Their gameplay has been frozen, and only time will tell what happens next.",
+            "🔒 **{user.mention}** has been frozen by The Agency, and their participation in the game has been halted. Their future looks grim.",
+            "🎃 **{user.mention}** has been sent to The Agency's secret labs. Their gameplay is now frozen. A fate worse than fear awaits!",
+            "🕯️ The Agency has locked down **{user.mention}**. Their gameplay is frozen, and we may not see them again soon.",
+            "☠️ **{user.mention}** has vanished into The Agency’s grasp, their gameplay frozen. They are now part of a mysterious experiment.",
+            "🧬 **{user.mention}** has become another experiment subject for The Agency. Their status: frozen from gameplay!",
+            "👁️ **{user.mention}** has disappeared into The Agency's hands. Their gameplay is frozen. Will they survive the experiments?"
+        ],
+        "admin_message": "{user.name} has been frozen from the game by {user.mention}"
+    },
+    "unfreeze": {
+        "event_messages":[
+            "⚡ With the help of Madison, **{user.mention}** escaped the clutches of The Agency and is no longer frozen!",
+            "🧙 Time-bending magic from Mr. Brookhaven has freed **{user.mention}** from The Agency’s experiments. They’re back in the game!",
+            "🛡️ Brave the knight swooped in, rescuing **{user.mention}** from The Agency's grip. They are now unfrozen and free!",
+            "🎃 **{user.mention}** has escaped The Agency's labs and is back in action. No more freezing experiments for them!",
+            "✨ Thanks to Mr. Brookhaven’s intervention, **{user.mention}** is no longer frozen and ready to play again.",
+            "👁️ Madison's watchful eye helped **{user.mention}** slip away from The Agency’s experiments. They’re free and unfrozen now!",
+            "🕯️ Time has bent once more, and **{user.mention}** has been freed by Mr. Brookhaven’s powers. They can play again!",
+            "🛡️ Brave broke through The Agency’s defenses, freeing **{user.mention}** from their frozen state. They’re back in the game!",
+            "🎃 Against all odds, **{user.mention}** escaped The Agency’s lab and is unfrozen, ready for the next adventure!"
+        ],
+        "admin_message":"{user.name} has been frozen from the game by {user.mention}"
+    },
+    "escape": {
+        "event_messages":[
+            "🎃 **{user.mention}** vanished into the shadows, escaping the Halloween madness... for now.",
+            "👻 **{user.mention}** slipped away into the night, leaving behind the spooky thrills.",
+            "🕯️ With a flicker of candlelight, **{user.mention}** faded into the darkness. The Halloween fun will miss you!",
+            "🕸️ A whisper of wind, and **{user.mention}** is gone... until they choose to return.",
+            "🧪 The Agency lost sight of **{user.mention}** as they escaped into the eerie unknown. Will they return?"
+        ],
+        "personal_message":"{user.mention}, you've chosen to leave the candy madness :( . The Halloween fun will miss you! Use /return to participate again if you wish."
+    },
+    "return": {
+        "event_messages":[
+            "🎃 **{user.mention}** steps back into the eerie night, ready for more spooky adventures and tricks!",
+            "👻 With a gust of cold wind, **{user.mention}** returns to haunt the candy-filled streets of Brookhaven!",
+            "🕯️ **{user.mention}** emerges from the shadows, ready to gather sweet treats once again.",
+            "🕸️ The fog lifts, and **{user.mention}** reappears, eager to continue the Halloween fun!",
+            "🧙 With a mysterious spell, **{user.mention}** is back to weave more Halloween mischief!"
+        ],
+        "personal_message": "Welcome back, {user.mention}! The candy-filled adventure awaits. Get ready for more spooky tricks and sweet treats!"
+    },
+    "give_ghoul_candy": {
+        "event_messages": {
+            "0": "The Agency gazes upon {user.mention} with cold indifference. **0 candy** was given—perhaps a chilling reminder that nothing comes for free, or simply that Greed's attention is elsewhere.",
+            "1": "A single piece of candy was gifted to {user.mention} by The Agency. Is this a trick, a test, or just Greed’s way of toying with you? Either way, every single piece counts!",
+            "10": "{user.mention} just received {amount} candy, courtesy of The Agency. Be careful—this small token may come with a price... Greed always has a plan!",
+            "50": "{user.mention} was gifted {amount} candy by The Agency. Are they trying to win your loyalty, or are you just another part of their sinister experiments?",
+            "100": "A generous gift of {amount} candy from The Agency! But beware... Greed never gives without expecting something in return.",
+            "250": "{user.mention} received a spooky stockpile of {amount} candy from The Agency. They must have big plans for you in their twisted quest for control!",
+            "500": "{amount} candy, straight from The Agency’s dark vaults. {user.mention}, you’re now swimming in candy, but at what cost? Greed never rests!",
+            "750": "{user.mention} was handed a terrifying fortune of {amount} candy by The Agency. Greed has noticed you... and he always expects something in return.",
+            "1000": "{user.mention} received a monstrous haul of {amount} candy from The Agency! Greed’s grip tightens as he rewards you... but what will he ask of you next?",
+            "else": "The Agency, led by the insatiable Greed, has bestowed an otherworldly {amount} candy upon {user.mention}. Their plans for you must be more sinister than ever!"
+        },
+        "personal_message":"",
+        
+        "admin_message":""
+    },
+    "remove_ghoul_candy":{
+        "event_messages": {
+            "10":"The Agency has quietly removed {amount} candy from {user.mention}... just a small taste of what they can take away.",
+            "50":"Without warning, {amount} candy was taken from {user.mention} by The Agency. Greed's influence grows, and who knows what else they'll take next?",
+            "100":"{user.mention} just had {amount} candy snatched away by The Agency! Their greed is insatiable, and the player’s stash is quickly dwindling!",
+            "250":"{amount} candy was forcibly removed from {user.mention}'s balance by The Agency. Greed has an iron grip on their fortunes now!",
+            "500":"{user.mention} has lost {amount} candy to The Agency’s merciless greed. With so much candy taken, how long can they last?",
+            "1000":"{user.mention} was hit hard by The Agency, losing a staggering {amount} candy! Greed is hungry, and it looks like they’re next on his list!",
+            "else":"The Agency’s greed knows no bounds! They’ve taken an unfathomable {amount} candy from {user.mention}, leaving them vulnerable to the darkness that lurks behind every corner.",
+            "negative": "The Agency shows no mercy to {user.mention}. They are now in debt to the dark forces with a **negative candy balance** of {new_candy_count}... perhaps Greed will come to collect sooner than they think.",
+            "all": "The Agency has stripped {user.mention} of all their candy! With nothing left, they stand empty-handed, and Greed is surely satisfied... for now.",
+            "1": "{user.mention} felt the icy grip of The Agency as they took away a single candy. One candy might seem small, but when Greed is involved, nothing is ever trivial."
+        },
+        "personal_message": "{amount} candy has been removed from {user.name}. They now have {max(new_candy_count, 0)} candy."
+    },
+    "give_treat": {
+        "event_messages": {
+            "0":  "{user.mention} what are you trying to pull?! {user.mention} was gifted an empty candy wrapper :cry: getting {amount} candy...",
+            "1": "{user.mention} didn't give much but it was the action that counts! {user.mention} eagerly munched on their {amount} candy...",
+            "3": "{user.mention} is feeling sweet, giving {amount} candy to {user.mention}. A nice little haul!",
+            "6": "{user.mention} treated {user.mention} to {amount} pieces of candy! Sharing the sweetness of Halloween!",
+            "9": "{user.mention} is feeling really kind :smile: giving {amount}, what will you do with that candy {user.mention}?",
+            "else": "{user.mention} handed over a generous pile of {amount} candy to {user.mention}. Trick-or-treat spirit at its finest!"
+        },
+        "personal_message": {
+            "0": "thanks for giving {user.name} {amount} candy :heart:",
+            "1": "thanks for giving {user.name} {amount} candy :heart:",
+            "3": "awe so sweet, thanks for giving {user.name} {amount} candy :wink:",
+            "6": "That's the spirit! :eyes: wait where's the ghost?? Oh hehe I'm the ghost :P, thanks for giving {user.name} {amount} candy",
+            "9": ":stars: Look at you being a kind ghoul giver! Thanks for giving {user.name} {amount} candy",
+            "else": "o.O I have declared you the best of best spirits! Thanks for giving {user.name} {amount} candy"
+        }
+    }
+}
