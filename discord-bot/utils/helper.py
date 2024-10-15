@@ -1,8 +1,13 @@
 import random
 import discord
+import settings
 
+from discord import InteractionType, AppCommandType
 from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_lottery_pool
 from utils.utils import post_to_target_channel
+
+
+logger = settings.logging.getLogger("bot")
 
 async def player_join(interaction: discord.Interaction,member: discord.Member): 
     guild_id = interaction.guild.id
@@ -96,15 +101,14 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
     if random.random() < success_rate:
         # Successful steal
         stolen_amount = min(random.randint(1, 10), target_data["candy_count"])
-        update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + stolen_amount)
-        update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - stolen_amount)
-        update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
 
         # Extra probability checks for successful steal
         if random.random() < 0.01:  # 1% chance of trick
             # Trick: both lose the candy, and it's added to the lottery
             update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - stolen_amount))
             update_player_field(target_id, guild_id, 'candy_count', max(0, target_data["candy_count"] - stolen_amount))
+            update_player_field(thief_id, guild_id, 'successful_steals', thief_data["failed_steals"] + 1)
+
             # Add the lost candy to a lottery
             lottery_pool = stolen_amount * 2  # both lose the candy
             # Add the candy to the lottery pool
@@ -112,10 +116,15 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             message = f"{interaction.user.mention} was tricked by {target.mention}! Both lost {stolen_amount} candy, and it has been added to the lottery."
         elif random.random() < 0.03 and stolen_amount > 5:  # 3% chance target gets 1 candy back if more than 5 stolen
+            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + (stolen_amount - 1))
+            update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + 1)  # Target gets 1 candy back
             message = f"{interaction.user.mention} stole {stolen_amount} candy from {target.mention}, but {target.mention} got 1 candy back!"
         else:
             # Regular success
+            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + stolen_amount)
+            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - stolen_amount)
+            update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
             if stolen_amount == 0:
                 message = f"{interaction.user.mention}... tried to trick {target.mention} by hiding in a bush. The bush didn't hide {interaction.user.name} at all and {target.name} laughed. No candy was taken! "
             elif stolen_amount == 1:
@@ -133,13 +142,11 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
     else:
         # Failed steal
         penalty = random.randint(0, 5)
-        update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
-        update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
-        update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + penalty)
 
         # Extra probability checks for failed steal
         if random.random() < 0.01:  # 1% chance both fumble and lose candy, added to the lottery
             update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
+            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
             update_player_field(target_id, guild_id, 'candy_count', max(0, target_data["candy_count"] - penalty))
             lottery_pool = penalty * 2  # both lose the candy
             update_lottery_pool(interaction.guild.id, lottery_pool)
@@ -147,6 +154,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
         elif random.random() < 0.03:  # 3% chance thief tries again and gets half candy
             stolen_again = max(1, stolen_amount // 2)  # Half the candy, rounded up
             update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + stolen_again)
+            update_player_field(thief_id, guild_id,'failed_steals', thief_data["successful_steals"] + 1)
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - stolen_again)
             message = f"{interaction.user.mention} initially failed, but managed to steal {stolen_again} candy from {target.mention} on a second attempt!"
         else:
@@ -159,5 +167,108 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
                 message = f"{interaction.user.mention} botched the steal! {target.mention} cleaned you out for {penalty} candy. Better luck next time!"
             else:
                 message = f"{interaction.user.mention} failed miserably and {target.mention} got {penalty} candy from your misfortune!"
+            update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
+            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
+            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + penalty)
 
         await post_to_target_channel(channel_type="event", message=message, interaction=interaction)
+
+
+async def player_treat(interaction: discord.Interaction,member: discord.Member, amount: 0):
+    #Fetch message responses
+    event_message,personal_message = give_treat(interaction,member,amount)
+
+    #check if event_message is None, this means there was an error
+    if event_message is None:
+        await interaction.response.send_message(personal_message, ephemeral=True)
+    else:
+        #Send responses
+        await interaction.response.send_message(personal_message,ephemeral= True)
+        await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
+    
+    
+def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0):
+    guild_id = interaction.guild.id
+    giver = interaction.user
+    recipient = user
+
+    giver_data = get_player_data(giver.id, guild_id)
+    recipient_data = get_player_data(recipient.id, guild_id)
+    personal_message = None
+    event_message = None
+
+    try:
+        # Checks for the treat command
+        if giver_data['active'] == 0:
+            personal_message = f"{giver.mention}, you must join the game to participate! /join"
+            return event_message,personal_message
+        if not recipient:
+            personal_message = f"{giver.mention}, you must target a player for this command!"
+            return event_message,personal_message
+        if recipient_data['active'] == 0:
+            personal_message = f"{recipient.mention} is not active in the game!"
+            return event_message,personal_message
+        if giver.id == recipient.id:
+            personal_message = f"{giver.mention}, you can't target yourself for this command!"
+            return event_message,personal_message
+        if amount < 0:
+            personal_message = f"{giver.mention}, you can't give negative candy!"
+            return event_message,personal_message
+    except ValueError:
+        personal_message = f"{giver.mention}, please enter a valid number!"
+        return event_message,personal_message
+    except Exception as e:
+        personal_message = f"I made a silly mistake! Sorry about that {giver.mention}! Please try again. or let a moderator know"
+        logger.error(f"Error in utils.helper.give_treat: {str(e)}")
+        return event_message,personal_message
+    
+
+    # Perform the candy transfer
+    update_player_field(giver.id, guild_id, 'candy_count', giver_data["candy_count"] - amount)
+    update_player_field(recipient.id, guild_id, 'candy_count', recipient_data["candy_count"] + amount)
+    update_player_field(giver.id, guild_id, 'candy_given', giver_data["candy_given"] + 1)
+
+    #Treat Responses
+    if amount == 0:
+        event_message = interaction.client.message_loader.get_message(
+            "give_treat", "event_messages", "0", user=giver.mention, target=recipient.mention,amount=amount
+            )   
+        personal_message = interaction.client.message_loader.get_message(
+            "give_treat", "personal_message","0", user=giver.name, target=recipient.name,amount=amount
+            )   
+    elif amount == 1:
+        event_message = interaction.client.message_loader.get_message(
+            "give_treat", "event_messages", "1", user=giver.mention, target=recipient.mention,amount=amount
+            )   
+        personal_message = interaction.client.message_loader.get_message(
+            "give_treat", "personal_message","1", user=giver.name, target=recipient.name,amount=amount
+            )
+    elif amount <= 3:
+        event_message = interaction.client.message_loader.get_message(
+            "give_treat", "event_messages", "3", user=giver.mention, target=recipient.mention,amount=amount
+            )   
+        personal_message = interaction.client.message_loader.get_message(
+            "give_treat", "personal_message","3", user=giver.name, target=recipient.name,amount=amount
+            )
+    elif amount <= 6:
+        event_message = interaction.client.message_loader.get_message(
+            "give_treat", "event_messages", "6", user=giver.mention, target=recipient.mention,amount=amount
+            )   
+        personal_message = interaction.client.message_loader.get_message(
+            "give_treat", "personal_message","6", user=giver.name, target=recipient.name,amount=amount
+            )
+    elif amount <= 9:
+        event_message = interaction.client.message_loader.get_message(
+            "give_treat", "event_messages", "9", user=giver.name, target=recipient.mention,amount=amount
+            )   
+        personal_message = interaction.client.message_loader.get_message(
+            "give_treat", "personal_message","9", user=giver.name, target=recipient.name,amount=amount
+            )
+    else:  
+        event_message = interaction.client.message_loader.get_message(
+            "give_treat", "event_messages", "10", user=giver.name, target=recipient.mention,amount=amount
+            )   
+        personal_message = interaction.client.message_loader.get_message(
+            "give_treat", "personal_message","10", user=giver.name, target=recipient.name,amount=amount
+            )
+    return event_message,personal_message

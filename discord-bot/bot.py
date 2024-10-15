@@ -18,6 +18,7 @@ from cogs.mod import Mod
 from utils.messages import MessageLoader
 import settings
 import context_menu
+from modals.player import Treat
 
 print(discord.__version__)
 print(discord.__file__)
@@ -43,31 +44,40 @@ class MyBot(commands.Bot):
         print("Loading spooky messages...")
         self.message_loader = MessageLoader('utils/messages.json')
 
+        #Set Context Menus callback
         join_cm = app_commands.ContextMenu(name="Join Game", callback=context_menu.player.join)
         trick_cm = app_commands.ContextMenu(name="Trick Player", callback=context_menu.player.trick)
+        # treat_cm = app_commands.ContextMenu(name="Treat Player", callback=context_menu.player.treat)
 
+        @bot.tree.context_menu(name="Treat Player")
+        async def treat_modal(interaction: discord.Interaction, user: discord.Member):
+            # Show the modal for user input
+            modal = Treat(target_user=user)
+            await interaction.response.send_modal(modal)
+            
         # @self.tree.context_menu(name="Join Game")
         # @checks.must_target_self()
         # async def join(interaction: discord.Interaction, user: discord.Member):
         #     await interaction.response.send_message(f"{user.display_name} you are trying to join!", ephemeral=True)
         
-        # Load all cogs
+        # Load cogs and cm's
         print("Loading group commands...")
         #the additional options were the trick to force guild update
         self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
         self.tree.add_command(join_cm,guild=self.guild_id,override=True)
         self.tree.add_command(trick_cm,guild=self.guild_id,override=True)
+        self.tree.add_command(treat_modal,guild=self.guild_id,override=True)
         await self.load_extension("cogs.player")
         
         print("Syncing tree...")
         try:
             # Sync the commands
-            logger.info(f"Attempting to sync commands for guild ID: {self.guild_id}")
+            logger.info(f"Attempting to sync commands for guild ID: {self.guild_id.id}")
             self.tree.copy_global_to(guild=self.guild_id) #this is what loaded in my slash command to the guild i wanted
             synced = await self.tree.sync(guild=self.guild_id)
 
             # Log detailed info about synced commands
-            logger.info(f"Successfully synced {len(synced)} commands for guild ID: {self.guild_id}")
+            logger.info(f"Successfully synced {len(synced)} commands for guild ID: {self.guild_id.id}")
             for command in synced:
                 logger.info(f"Command synced: {command.name} - {command.description}")
                 if hasattr(command, 'options'):
@@ -172,6 +182,7 @@ async def on_app_command_error(interaction: discord.Interaction, error):
         if interaction.response.is_done():
             await interaction.followup.send("An error occurred while processing the command.", ephemeral=True)
         else:
+            print(f"An error occurred while processing:\n\tError: {error}")
             await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
 

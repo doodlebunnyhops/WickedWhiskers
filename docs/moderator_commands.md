@@ -35,8 +35,13 @@ have _fun_ messing with the players ;)
   - **Action:** Adds a specific amount of candy to a player.
   - **Example:** `/add player candy 20`
 
-- ✅ **/reset player**
-  - **Action:** Resets a player to 50candy on start as active status, this action will cause an admin message to post showing players last stats before reset.
+- ✅ **/reset player [player]**
+  - **Action:** Resets a player to 50 candy on start as active status, this action will cause an admin message to post showing players last stats before reset.
+  - **Example:** `/reset player @Player`
+
+- **/reset player [player] [option:tricks_done|treats_given|candy_count|etc.]**
+  - **Action:** Resets specific stats for a player.
+  - **Example:** `/reset player @Player candy_count`
 
 - **/remove player**
   - **Action:** Removes a player from the game.
@@ -65,7 +70,7 @@ have _fun_ messing with the players ;)
 ### Server Management
 
 
-- ✅**/set channel type:[event|admin] [channel name]**
+- ✅ **/set channel type:[event|admin] [channel name]**
   - **Action:** Sets the event or admin channel where the bot will respond to player interactions in events type channel and log moderator actions in the specified admin channel.
   - **Example:** `/set channel type:event #event_channel`
 
@@ -111,7 +116,7 @@ have _fun_ messing with the players ;)
 
 ---
 
-### Cauldron Event Management
+### Cauldron Event
 
 - **/view cauldron**
   - **Action:** Displays the amount of candy in the cauldron.
@@ -131,27 +136,19 @@ have _fun_ messing with the players ;)
   - **Action:** Displays the number of players who have purchased potions and the total number of potions bought.
   - **Example:** `/view potion_stats`
 
----
-
-### Reset and Game Management
-
-- **/reset player [player]**
-  - **Action:** Resets all stats for a player.
-  - **Example:** `/reset player @Player`
-
-- **/reset player [player] [option:tricks_done|treats_given|candy_count|etc.]**
-  - **Action:** Resets specific stats for a player.
-  - **Example:** `/reset player @Player candy_count`
-
-- **/reset game**
-  - **Action:** Wipes everything, resetting the entire game and clearing all player data.
-
 - **/dump cauldron**
   - **Action:** Empties the cauldron, resetting it to 0 candy.
 
 ---
 
-### Moderator-Only Stat Commands
+### Game Management
+
+- **/reset game**
+  - **Action:** Wipes everything, resetting the entire game and clearing all player data.
+
+---
+
+### Stats Commands
 
 - **/view stats tricks [type:action|candy count] [count by:successful|failed|total]**
   - **Action:** Displays statistics related to tricks, either by action count or candy count, and broken down by successful, failed, or total.
@@ -163,14 +160,7 @@ have _fun_ messing with the players ;)
     - `count by: total` → Shows the total of all trick actions.
   - **Example:** `/view stats tricks type:action count by:successful`
 
-- **/view stats treats [type:action|candy]**
-  - **Action:** Displays statistics related to treats, either by the number of actions or the total amount of candy given.
-  - **Options:**
-    - `type: action` → Displays how many treat actions were performed.
-    - `type: candy` → Displays how much candy was given in total.
-  - **Example:** `/view stats treats type:candy`
-
-- **/view player count [active|inactive|frozen]**
+- **/view player count [active|inactive|frozen|total]**
   - **Action:** Displays the total number of players based on their status: active, inactive, or frozen.
   - **Options:**
     - `active` → Shows the count of active players.

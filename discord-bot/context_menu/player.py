@@ -12,3 +12,6 @@ async def join(interaction: discord.Interaction, member: discord.Member):
 
 async def trick(interaction: discord.Interaction, member: discord.Member):
     await helper.player_trick(interaction, member)
+
+async def treat(interaction: discord.Interaction, member: discord.Member):
+    await helper.player_treat(interaction, member,0)

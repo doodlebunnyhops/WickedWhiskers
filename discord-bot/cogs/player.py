@@ -18,8 +18,12 @@ class Player(commands.Cog):
         await helper.player_join(interaction,None)
 
     @app_commands.command(name="trick", description="Trick a player into giving you candy!")
-    async def join(self, interaction: discord.Interaction, member: discord.Member):
+    async def trick(self, interaction: discord.Interaction, member: discord.Member):
         await helper.player_trick(interaction,member)
+
+    @app_commands.command(name="treat", description="Treat a player with some candy!")
+    async def treat(self, interaction: discord.Interaction, member: discord.Member, amount: int):
+        await helper.player_treat(interaction,member,amount)
 
 
 async def setup(bot):

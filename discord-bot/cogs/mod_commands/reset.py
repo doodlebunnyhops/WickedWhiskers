@@ -43,6 +43,6 @@ async def reset_player(interaction: discord.Interaction, user: discord.Member):
     await interaction.response.send_message(f"Resetting player {user.name} now...", ephemeral=True)
 
     reset_player_data(user.id,guild_id)
-    set_player_inactive(user.id,guild_id)
+    # set_player_inactive(user.id,guild_id)
 
     await channel.send(f"Player {user.name} has been reset.")

@@ -29,6 +29,7 @@
 - ✅ **/trick [target_player]**
   - **Action:** Attempts to trick another player out of their candy.
   - **Example:** `/trick @Player`
+  - ✅**VARIANT** Player can right click on another member -> select app -> bot -> trick to initate a trick attempt agaisnt that member.
 
 - **/treat [target_player] [amount]**
   - **Action:** Gives candy to another player.
@@ -40,9 +41,10 @@
 
 - **/join**
   - **Action:** Joins the game and sets the player’s status to active.
+  - **VARIANT**: Players can also join by clicking on themselves to open the context menu.
 
 - **/escape**
-  - **Action:** Leaves the game but saves player data, setting the player’s status to inactive.
+  - **Action:** Leaves the game but saves player data, setting the player’s status to inactive. While escaped you can still lose your potions purchased if the spell is casted - but you will not receive winnings for being inactive.
 
 - **/return**
   - **Action:** Reinstates a player’s status to active, allowing them to participate again.
@@ -67,7 +69,7 @@
 
 ---
 
-### 5. Potion Management for Cauldron Event
+### 5. Potion CMDs for Cauldron Event
 
 - **/buy_potion**
   - **Action:** Players purchase a potion (ticket) to participate in the cauldron event. One potion costs 10 candy by default.
