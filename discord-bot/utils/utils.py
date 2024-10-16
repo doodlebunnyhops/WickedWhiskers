@@ -28,13 +28,15 @@ def has_role_or_permission(member: discord.Member, guild_id):
     user_roles = [role.id for role in member.roles]
     return any(role_id in user_roles for role_id in allowed_roles)
 
-async def post_to_target_channel(interaction: discord.Interaction, message: str, channel_type: str = "event"):
+import discord
+
+async def post_to_target_channel(interaction: discord.Interaction, message, channel_type: str = "event"):
     """
     Posts a message to the event or admin channel if set, otherwise posts in the interaction channel.
     
     Args:
         interaction (discord.Interaction): The interaction object to determine guild and channel.
-        message (str): The message to be sent.
+        message (str or discord.Embed): The message to be sent, can be a string or an embed.
         channel_type (str): The type of channel to post to ("event" or "admin"). Defaults to "event".
     """
     guild_id = interaction.guild.id
@@ -50,15 +52,28 @@ async def post_to_target_channel(interaction: discord.Interaction, message: str,
     # Fetch the channel from the guild
     target_channel = interaction.guild.get_channel(channel_id) if channel_id else None
 
+    # Determine if the message is an embed
+    is_embed = isinstance(message, discord.Embed)
+
     # If target channel exists, send the message there
     if target_channel is not None:
-        await target_channel.send(message)
+        if is_embed:
+            await target_channel.send(embed=message)
+        else:
+            await target_channel.send(message)
     else:
         # Fallback to sending the message in the interaction channel
         if interaction.response.is_done():
-            await interaction.followup.send(message)
+            if is_embed:
+                await interaction.followup.send(embed=message)
+            else:
+                await interaction.followup.send(message)
         else:
-            await interaction.response.send_message(message)
+            if is_embed:
+                await interaction.response.send_message(embed=message)
+            else:
+                await interaction.response.send_message(message)
+
             
 def create_invite_embed(message_loader):
     """Creates a uniform embed for the candy game invite using messages.json."""
@@ -79,5 +94,18 @@ def create_invite_embed(message_loader):
         value=helpful_commands_value,
         inline=False
     )
+
+    return embed
+
+def create_embed(title: str = None, description: str = None, color: discord.Color = discord.Color.orange()):
+    """
+    Utility function to create a Discord embed.
+    
+    :param title: The title of the embed.
+    :param description: The description or main content of the embed.
+    :param color: The color of the embed. Default is blue.
+    :return: A discord.Embed object.
+    """
+    embed = discord.Embed(title=title, description=description, color=color)
 
     return embed

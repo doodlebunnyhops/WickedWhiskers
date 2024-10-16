@@ -4,13 +4,19 @@ import settings
 
 from discord import InteractionType, AppCommandType
 from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_lottery_pool
-from utils.utils import post_to_target_channel
+from utils.utils import post_to_target_channel,create_embed
+from utils.checks import get_game_settings
 
 
 logger = settings.logging.getLogger("bot")
 
-async def player_join(interaction: discord.Interaction,member: discord.Member): 
+async def player_join(interaction: discord.Interaction,member: discord.Member):
     guild_id = interaction.guild.id
+    game_disabled, _,_ = get_game_settings(guild_id)
+    if game_disabled:
+        print(f"Game is disabled for guild {guild_id}")
+        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
+        return
     user = interaction.user
     target_user = member
     
@@ -50,6 +56,11 @@ async def player_join(interaction: discord.Interaction,member: discord.Member):
 
 async def player_trick(interaction: discord.Interaction,member: discord.Member):
     guild_id = interaction.guild.id
+    game_disabled, _,_ = get_game_settings(guild_id)
+    if game_disabled:
+        print(f"Game is disabled for guild {guild_id}")
+        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
+        return
     user = interaction.user
     target = member
 
@@ -63,15 +74,13 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
         await interaction.response.send_message(f"{user.mention}, you can't target yourself for this command!", ephemeral=True)
         return
     if not is_player_active(target.id, guild_id):
-        await interaction.response.send_message(f"{target.name} is not in the game!", ephemeral=True)
+        await interaction.response.send_message(f"{target.display_name} is not in the game!", ephemeral=True)
         return
 
     #renaming for easier reference
     thief_id = interaction.user.id
     target_id = target.id
     
-    await interaction.response.send_message(f"{interaction.user.name}, lets see how your trick plays out...", ephemeral=True,delete_after=20)
-
     thief_data = get_player_data(thief_id, guild_id)
     target_data =get_player_data(target_id, guild_id)
 
@@ -80,103 +89,202 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
         # Target has no candy, special handling
         if thief_data["candy_count"] > 5 and random.random() < 0.05:  # 5% chance thief feels bad and gives some candy
             given_candy = random.randint(1, min(5, thief_data["candy_count"] - 5))  # Give between 1 and 5 candy
+            if given_candy == 1:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "1", user=interaction.user.mention, target=target.mention)
+            if given_candy == 2:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "2", user=interaction.user.mention, target=target.mention)
+            if given_candy == 3: 
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "3", user=interaction.user.mention, target=target.mention)
+            if given_candy == 4:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "4", user=interaction.user.mention, target=target.mention)
+            if given_candy == 5:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "5", user=interaction.user.mention, target=target.mention)
+            
             update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] - given_candy)
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + given_candy)
-            message = f"{interaction.user.mention} felt so bad for {target.mention}'s empty stash that they gave {given_candy} candy out of sympathy!"
+            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
+            personal_message = f"{interaction.user.display_name}, you felt so bad for {target.display_name}'s empty stash that you gave {given_candy} candy out of sympathy! You failed the trick, but you gained a friend maybe?"
+            
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",embeded_message,discord.Color.dark_purple())
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
         elif random.random() < 0.03:  # 3% chance of ghastly duel and candy vanishes into the lottery
             duel_candy = random.randint(50, 1000)
+            #if duel candy is between 50 and 100
+            if duel_candy >= 50 and duel_candy <= 100:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","duel", "50-100", user=interaction.user.mention, target=target.mention)
+            #if duel_candy is between 101 and 300
+            elif duel_candy >= 101 and duel_candy <= 300:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","duel", "101-300", user=interaction.user.mention, target=target.mention)
+            elif duel_candy >= 301 and duel_candy <= 600:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","duel", "301-600", user=interaction.user.mention, target=target.mention)
+            elif duel_candy >= 601:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","duel", "601+", user=interaction.user.mention, target=target.mention)
+            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
             update_lottery_pool(guild_id, duel_candy)
-            message = f"{interaction.user.mention} and {target.mention} got into a ghastly duel over candy, but magically {duel_candy} candy appeared and vanished into the cauldron!"
+            personal_message = f"{interaction.user.display_name}, you tried to trick {target.display_name} but you got into a fight instead! No candy was stolen :( The candy vanished into the cauldron!"
+            
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_magenta())
+            
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
         else:
             # No candy exchange, the target laughs at the thief
-            message = f"{interaction.user.mention} tried to steal from {target.mention}, but {target.mention} laughed in their face because they have no candy!"
-        await post_to_target_channel(channel_type="event", message=message, interaction=interaction)
+            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
+            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","target_laughs", user=interaction.user.mention, target=target.mention)
+            personal_message = f"{interaction.user.display_name} I'm so sorry but {target.display_name} has no candy to trick them out of!"
+
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple())
+
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
         return
 
-    # Determine the success rate
-    success_rate = 0.5  # Default success rate is 50%
-    if thief_data["candy_count"] == 0:
-        success_rate = 0.2  # Lower success rate if thief has no candy
+
+    # Determine the success rate of the steal
+    success_rate = calculate_thief_success_rate(thief_data["candy_count"])
+
+    # If target doesn't have enough candy, reduce the amount to the maximum
+    stolen_amount = min(random.randint(1, 10), target_data["candy_count"])
 
     if random.random() < success_rate:
         # Successful steal
-        stolen_amount = min(random.randint(1, 10), target_data["candy_count"])
 
-        # Extra probability checks for successful steal
+        # Extra probability checks for successful now possibly failed steal
         if random.random() < 0.01:  # 1% chance of trick
             # Trick: both lose the candy, and it's added to the lottery
+            if thief_data["candy_count"] < stolen_amount or target_data["candy_count"] < stolen_amount:
+                # If either player doesn't have enough candy, reduce the amount to the minimum
+                stolen_amount = min(thief_data["candy_count"], target_data["candy_count"])
             update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - stolen_amount))
             update_player_field(target_id, guild_id, 'candy_count', max(0, target_data["candy_count"] - stolen_amount))
-            update_player_field(thief_id, guild_id, 'successful_steals', thief_data["failed_steals"] + 1)
+            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
 
             # Add the lost candy to a lottery
             lottery_pool = stolen_amount * 2  # both lose the candy
             # Add the candy to the lottery pool
             update_lottery_pool(interaction.guild.id, lottery_pool)
 
-            message = f"{interaction.user.mention} was tricked by {target.mention}! Both lost {stolen_amount} candy, and it has been added to the lottery."
+            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","both_lose", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
+            personal_message = f"{interaction.user.display_name} well you tried to trick {target.display_name}! But you both lost!"
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple())
+
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
+            return
+
         elif random.random() < 0.03 and stolen_amount > 5:  # 3% chance target gets 1 candy back if more than 5 stolen
             update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + (stolen_amount - 1))
             update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + 1)  # Target gets 1 candy back
-            message = f"{interaction.user.mention} stole {stolen_amount} candy from {target.mention}, but {target.mention} got 1 candy back!"
+
+            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
+            personal_message = f"{interaction.user.display_name}, you tricked {stolen_amount -1} candy from {target.display_name}! Success!"
+            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple())
+            
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
+            return
+
         else:
             # Regular success
             update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + stolen_amount)
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - stolen_amount)
             update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
             if stolen_amount == 0:
-                message = f"{interaction.user.mention}... tried to trick {target.mention} by hiding in a bush. The bush didn't hide {interaction.user.name} at all and {target.name} laughed. No candy was taken! "
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","regular_success",0, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             elif stolen_amount == 1:
-                message = f"{interaction.user.mention} crept in the shadows and snatched 1 candy from {target.mention}! Every piece helps build your candy stash!"
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick", "regular_success",1, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             elif stolen_amount <= 3:
-                message = f"{interaction.user.mention} quietly nabbed {stolen_amount} candy from {target.mention}. A nice little haul!"
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick", "regular_success",3, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             elif stolen_amount <= 6:
-                message = f"Quick and nimble! {interaction.user.mention} just made off with {stolen_amount} candy from {target.mention}."
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick", "regular_success",6, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             elif stolen_amount <= 9:
-                message = f"{interaction.user.mention} pulled off a perfect trick, swiping {stolen_amount} candy from {target.mention}! They never saw it coming!"
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","regular_success",9, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             else:
-                message = f"{interaction.user.mention} hit the ultimate jackpot, tricking {target.mention} out of {stolen_amount} candy! What a spooky success!"
-
-        await post_to_target_channel(channel_type="event", message=message, interaction=interaction)
-    else:
-        # Failed steal
-        penalty = random.randint(0, 5)
-
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick", "regular_success",10, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
+            personal_message = f"{interaction.user.display_name} you tricked {target.display_name} out of {stolen_amount}!"
+            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple())
+            
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
+            return
+    else: #LEFT OFF HERE
+        # Failed steal, reduce the max thief can lose to the amount they have
+        penalty = min(random.randint(1, 5), thief_data["candy_count"])
+        
         # Extra probability checks for failed steal
         if random.random() < 0.01:  # 1% chance both fumble and lose candy, added to the lottery
             update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
-            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
             update_player_field(target_id, guild_id, 'candy_count', max(0, target_data["candy_count"] - penalty))
+            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
             lottery_pool = penalty * 2  # both lose the candy
             update_lottery_pool(interaction.guild.id, lottery_pool)
-            message = f"{interaction.user.mention} tried to steal from {target.mention}, but both fumbled and lost {penalty} candy, added to the lottery."
+
+            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "both_lose", 
+                                                                          user=interaction.user.mention, target=target.mention,amount=penalty)
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple())
+            personal_message = f"{interaction.user.display_name} you fumbled the trick and lost {penalty} candy!!"
+
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
+            return
         elif random.random() < 0.03:  # 3% chance thief tries again and gets half candy
-            stolen_again = max(1, stolen_amount // 2)  # Half the candy, rounded up
-            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + stolen_again)
-            update_player_field(thief_id, guild_id,'failed_steals', thief_data["successful_steals"] + 1)
-            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - stolen_again)
-            message = f"{interaction.user.mention} initially failed, but managed to steal {stolen_again} candy from {target.mention} on a second attempt!"
+            half_stolen = max(1, penalty // 2)  # Half the candy, rounded up
+            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + half_stolen)
+            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - half_stolen)
+            update_player_field(thief_id, guild_id,'successful_steals', thief_data["successful_steals"] + 1)
+            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "thief_half", 
+                                                                          user=interaction.user.mention, target=target.mention,amount=penalty)
+            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple())
+            personal_message = f"{interaction.user.display_name} you initially failed but managed to get {half_stolen} candy!!"
+
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
+            return
         else:
             # Regular failure
             if penalty == 0:
-                message = f"{interaction.user.mention} tried to steal but failed! Fortunately, {target.mention} didn't take any candy."
-            elif penalty <= 2:
-                message = f"Ouch! {interaction.user.mention} failed to grab candy, and {target.mention} swiped {penalty} candy from you. Not too bad!"
-            elif penalty == 5:
-                message = f"{interaction.user.mention} botched the steal! {target.mention} cleaned you out for {penalty} candy. Better luck next time!"
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",0, 
+                                                                            user=interaction.user.mention, target=target.mention,amount=penalty)
+            elif penalty == 1:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",1, 
+                                                                            user=interaction.user.mention, target=target.mention,amount=penalty)
+            elif penalty <= 3:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",3, 
+                                                                            user=interaction.user.mention, target=target.mention,amount=penalty)
+            elif penalty == 6:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",6, 
+                                                                            user=interaction.user.mention, target=target.mention,amount=penalty)
+            elif penalty == 9:
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",9, 
+                                                                            user=interaction.user.mention, target=target.mention,amount=penalty)
             else:
-                message = f"{interaction.user.mention} failed miserably and {target.mention} got {penalty} candy from your misfortune!"
+                event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",10, 
+                                                                            user=interaction.user.mention, target=target.mention,amount=penalty)
             update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
-            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + penalty)
+            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.purple())
+            personal_message = f"{interaction.user.display_name} you failed your tricks :( and lost {penalty} candy..."
 
-        await post_to_target_channel(channel_type="event", message=message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await interaction.response.send_message(personal_message, ephemeral=True)
+            return
 
 
 async def player_treat(interaction: discord.Interaction,member: discord.Member, amount: 0):
+    guild_id = interaction.guild.id
+    game_disabled, _,_ = get_game_settings(guild_id)
+    if game_disabled:
+        print(f"Game is disabled for guild {guild_id}")
+        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
+        return
     #Fetch message responses
     event_message,personal_message = give_treat(interaction,member,amount)
+
+    if event_message == "The game is currently paused." or personal_message == "The game is currently paused.":
+        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
 
     #check if event_message is None, this means there was an error
     if event_message is None:
@@ -186,11 +294,49 @@ async def player_treat(interaction: discord.Interaction,member: discord.Member, 
         await interaction.response.send_message(personal_message,ephemeral= True)
         await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
     
-    
+
+def calculate_thief_success_rate(thief_candy_count):
+    """
+    Calculate the success rate of a steal based on the amount of candy the thief has.
+    The more candy they have, the harder it becomes to successfully steal.
+
+    Args:  
+        thief_candy_count (int): The amount of candy the thief has.
+    """
+    base_success_rate = 1  # Start with a 100% base success rate
+    max_candy_threshold = 500  # The point where success becomes very difficult
+    min_success_rate = 0.01  # New minimum success rate of 1%
+
+    # For candy less than 500, use the original formula
+    if thief_candy_count < max_candy_threshold:
+        success_rate = base_success_rate * (1 - (thief_candy_count / max_candy_threshold))
+    else:
+        # Start with a base success rate of 10% at 500 candy
+        success_rate = 0.10  
+        # For every 100 candy over 500, reduce success rate by an additional 1%
+        extra_candy = thief_candy_count - max_candy_threshold
+        success_rate -= (extra_candy // 100) * 0.01  # Decrease by 1% per 100 extra candy
+
+    # Cap the success rate at 1%
+    return max(success_rate, min_success_rate)
+
+
 def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0):
+    """
+    Give candy to another player, handled by the /treat command or context menu Treat Player.
+    
+    Args:  
+        interaction (discord.Interaction): The interaction object to determine guild and user.
+        user (discord.Member): The target user to give candy to.
+        amount (int): The amount of candy to give.
+    """
     guild_id = interaction.guild.id
     giver = interaction.user
     recipient = user
+    
+    game_disabled, _,_ = get_game_settings(guild_id)
+    if game_disabled:
+        return None, "The game is currently paused."
 
     giver_data = get_player_data(giver.id, guild_id)
     recipient_data = get_player_data(recipient.id, guild_id)
@@ -206,7 +352,7 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
             personal_message = f"{giver.mention}, you must target a player for this command!"
             return event_message,personal_message
         if recipient_data['active'] == 0:
-            personal_message = f"{recipient.mention} is not active in the game!"
+            personal_message = f"{recipient.display_name} is not active in the game!"
             return event_message,personal_message
         if giver.id == recipient.id:
             personal_message = f"{giver.mention}, you can't target yourself for this command!"
@@ -234,41 +380,41 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
             "give_treat", "event_messages", "0", user=giver.mention, target=recipient.mention,amount=amount
             )   
         personal_message = interaction.client.message_loader.get_message(
-            "give_treat", "personal_message","0", user=giver.name, target=recipient.name,amount=amount
+            "give_treat", "personal_message","0", user=giver.display_name, target=recipient.name,amount=amount
             )   
     elif amount == 1:
         event_message = interaction.client.message_loader.get_message(
             "give_treat", "event_messages", "1", user=giver.mention, target=recipient.mention,amount=amount
             )   
         personal_message = interaction.client.message_loader.get_message(
-            "give_treat", "personal_message","1", user=giver.name, target=recipient.name,amount=amount
+            "give_treat", "personal_message","1", user=giver.display_name, target=recipient.name,amount=amount
             )
     elif amount <= 3:
         event_message = interaction.client.message_loader.get_message(
             "give_treat", "event_messages", "3", user=giver.mention, target=recipient.mention,amount=amount
             )   
         personal_message = interaction.client.message_loader.get_message(
-            "give_treat", "personal_message","3", user=giver.name, target=recipient.name,amount=amount
+            "give_treat", "personal_message","3", user=giver.display_name, target=recipient.name,amount=amount
             )
     elif amount <= 6:
         event_message = interaction.client.message_loader.get_message(
             "give_treat", "event_messages", "6", user=giver.mention, target=recipient.mention,amount=amount
             )   
         personal_message = interaction.client.message_loader.get_message(
-            "give_treat", "personal_message","6", user=giver.name, target=recipient.name,amount=amount
+            "give_treat", "personal_message","6", user=giver.display_name, target=recipient.name,amount=amount
             )
     elif amount <= 9:
         event_message = interaction.client.message_loader.get_message(
-            "give_treat", "event_messages", "9", user=giver.name, target=recipient.mention,amount=amount
+            "give_treat", "event_messages", "9", user=giver.display_name, target=recipient.mention,amount=amount
             )   
         personal_message = interaction.client.message_loader.get_message(
-            "give_treat", "personal_message","9", user=giver.name, target=recipient.name,amount=amount
+            "give_treat", "personal_message","9", user=giver.display_name, target=recipient.name,amount=amount
             )
     else:  
         event_message = interaction.client.message_loader.get_message(
-            "give_treat", "event_messages", "10", user=giver.name, target=recipient.mention,amount=amount
+            "give_treat", "event_messages", "10", user=giver.display_name, target=recipient.mention,amount=amount
             )   
         personal_message = interaction.client.message_loader.get_message(
-            "give_treat", "personal_message","10", user=giver.name, target=recipient.name,amount=amount
+            "give_treat", "personal_message","10", user=giver.display_name, target=recipient.name,amount=amount
             )
     return event_message,personal_message

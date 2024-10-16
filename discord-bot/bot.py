@@ -68,6 +68,7 @@ class MyBot(commands.Bot):
         self.tree.add_command(trick_cm,guild=self.guild_id,override=True)
         self.tree.add_command(treat_modal,guild=self.guild_id,override=True)
         await self.load_extension("cogs.player")
+        await self.load_extension("cogs.toggle")
         
         print("Syncing tree...")
         try:

@@ -8,7 +8,9 @@
 # https://github.com/doodlebunnyhops.
 # -----------------------------------------------------------------------------
 import sqlite3
+import settings
 
+logger = settings.logging.getLogger("bot")
 # Persistent connection
 conn = None
 
@@ -55,6 +57,16 @@ def initialize_database():
         )
     ''')
 
+    #Create table for for game settings (per guild)
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS game_settings (
+                guild_id INTEGER PRIMARY KEY,
+                game_disabled BOOLEAN DEFAULT TRUE,
+                potion_price INTEGER DEFAULT 10,
+                steal_success_rate INTEGER DEFAULT 100
+            )
+        ''')
+
     # Create table for lottery_pool (per guild)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS lottery_pool (
@@ -77,6 +89,47 @@ def initialize_database():
 # Close connection on shutdown
 def shutdown():
     close_db_connection()
+
+# Helper function to get guild settings from the database
+def get_game_settings(guild_id):
+    """
+    Fetches all game settings for requested guild.
+    
+    Args: 
+        guild_id (int): The unique identifier of the guild.
+    
+    Returns:
+        tuple: A tuple containing the game settings for the guild with the following elements:
+            - game_disabled (bool): The state of the game (True for disabled, False for enabled).
+            - potion_price (int): The price of the potion in candies.
+            - steal_success_rate (int): The success rate of stealing candies from other players.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT game_disabled, potion_price, steal_success_rate FROM game_settings WHERE guild_id = ?', (guild_id,))
+    row = cursor.fetchone()
+    if row:
+        game_disabled, potion_price, steal_success_rate = row
+    else:
+        # Insert default values if guild is not in the table
+        cursor.execute('INSERT INTO game_settings (guild_id) VALUES (?)', (guild_id,))
+        conn.commit()
+        game_disabled, potion_price, steal_success_rate = False, 10, 100
+    return game_disabled, potion_price, steal_success_rate
+
+# Helper function to update the game_disabled state in the database
+def set_game_disabled( guild_id, disabled):
+    """
+    Update the game_disabled state in the database for the specified guild.
+    
+    Args:
+        guild_id (int): The unique identifier of the guild.
+        disabled (bool): The new state of the game (True for disabled, False for enabled).
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE game_settings SET game_disabled = ? WHERE guild_id = ?', (disabled, guild_id))
+    conn.commit()
 
 def get_game_join_msg_settings(guild_id: int):
     conn = get_db_connection()
@@ -258,8 +311,21 @@ def set_player_active(player_id, guild_id):
 def update_player_field(player_id, guild_id, field, value):
     conn = get_db_connection()
     cursor = conn.cursor()
+    logger.debug(f'UPDATE players SET {field} = {value} WHERE player_id = {player_id} AND guild_id = {guild_id}')
     cursor.execute(f'UPDATE players SET {field} = ? WHERE player_id = ? AND guild_id = ?', (value, player_id, guild_id))
     conn.commit()
+
+# Boolean is player exists
+def is_player_exists(player_id: int, guild_id: int) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT player_id FROM players WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
+    result = cursor.fetchone()
+
+    # Return True if the player is found, otherwise return False
+    if result:
+        return True
+    return False
 
 # Boolean is player actively playing
 def is_player_active(player_id: int, guild_id: int) -> bool:

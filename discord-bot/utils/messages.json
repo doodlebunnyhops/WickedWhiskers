@@ -197,7 +197,7 @@
             "🛡️ Brave broke through The Agency’s defenses, freeing **{user}** from their frozen state. They’re back in the game!",
             "🎃 Against all odds, **{user}** escaped The Agency’s lab and is unfrozen, ready for the next adventure!"
         ],
-        "admin_message":"{user} has been frozen from the game by {user}"
+        "admin_message":"{user} has been unfrozen from the game by {user}"
     },
     "escape": {
         "event_messages":[
@@ -233,7 +233,6 @@
             "else": "The Agency, led by the insatiable Greed, has bestowed an otherworldly {amount} candy upon {user}. Their plans for you must be more sinister than ever!"
         },
         "personal_message":"",
-        
         "admin_message":""
     },
     "remove_ghoul_candy":{
@@ -321,37 +320,165 @@
     "trick_player":{
         "event_messages":{
             "no_candy":{
-                "theif_gives_candy":{},
-                "both_lose":{},
-                "theif_laughs":{}
+                "thief_gives_candy": {
+                    "1": [
+                        "{user}, really? You *felt bad* and gave {target} a piece of candy? Pathetic... just one candy? Next time, stick to being a trickster, not a soft-hearted fool! 😒🍬",
+                        "Oh {user}, how adorable. You tried to steal but ended up giving {target} 1 candy instead. Raven is rolling her eyes at you. 😏🍭",
+                        "You call yourself a trickster, {user}? You gave {target} 1 candy out of guilt? Disappointing, absolutely disappointing! 😈🍬"
+                    ],
+                    "2": [
+                        "{user}, so you tried to steal and now you're just handing over candy? {target} happily takes 2 candy from your pitiful attempt at trickery. Weak! 😈🍭",
+                        "Oh dear, {user} gave {target} 2 candy out of pity! I expected *tricks*, not this nonsense! Next time, no mercy! 😒🎃",
+                        "Look at this! {user} gave away 2 candy to {target} because they couldn't follow through with the trick. Raven is *so* disappointed in you! 😈👎"
+                    ],
+                    "3": [
+                        "What a failure, {user}. Instead of tricking {target}, you handed over 3 candy! Might as well have handed over your trickster card while you were at it! 😏🍬",
+                        "{user}, {user}, {user}... giving {target} 3 candy? That's not trickery, that's charity! Raven frowns upon your weakness. 😒🎃",
+                        "Raven expected mischief, {user}, but instead you gave {target} 3 candy. I guess we all make mistakes, but this was a *big* one! 😈🕸️"
+                    ],
+                    "4": [
+                        "Oh, {user}, are you running a charity now? You gave {target} 4 candy instead of taking any! What kind of trickery is this? I'm appalled! 😈🍭",
+                        "{user}, you gave {target} 4 candy out of guilt? I thought I trained you better than that... Don't let this happen again! 😏🕸️",
+                        "4 candy, {user}? To {target}? Out of pity? Raven is shaking her head... stick to tricks, not handouts! 😒💀"
+                    ],
+                    "5": [
+                        "{user}, giving away 5 candy out of guilt is not what Raven had in mind when she taught you the art of trickery. Pathetic! 😈🍬",
+                        "Raven watches in disbelief as {user} hands over 5 candy to {target}. A trickster with a soft heart is no trickster at all! 😒🕸️",
+                        "5 candy... really, {user}? You just *gave* {target} 5 candy? This isn’t what tricksters do. Get your act together, or Raven will find someone else to carry out her chaos! 😈👁️"
+                    ]
+                },
+                "duel": {
+                    "50-100": [
+                        "Oh, how deliciously chaotic! {user} and {target} fought tooth and nail, but neither walked away with candy. Raven, however, was *so* entertained that she’s added an *encrypted* amount of candy to the cauldron... Somewhere between dark and shadowy! 😈🍭",
+                        "Bravo, {user} and {target}! Your duel was nothing short of spectacular. No candy for you, but Raven enjoyed it so much that she’s encrypted a generous amount of candy in the cauldron! Just how much? That’s for me to know and you to never find out! 😈🎃",
+                        "{user} and {target}, your duel brought such joy to Raven! As a reward for your chaotic efforts, she’s hidden some candy in the cauldron—don’t bother trying to count it, you’ll never know the amount! 😏🕸️"
+                    ],
+                    "101-300": [
+                        "Mwahaha! {user} and {target}, your brutal battle was a spectacle! No candy for either of you, but Raven *has* slipped a secretive stash into the cauldron. How much, you ask? *You'll never know...* 😈🍬",
+                        "{user} and {target}, your duel was so entertaining that Raven decided to throw a **mysterious** amount of candy into the cauldron! Somewhere between 101 and 300 pieces, but don’t get too comfortable with that range... 😏👁️",
+                        "Chaos, pure chaos! {user} and {target} gave Raven such joy with that duel. I’ve added some candy to the cauldron in celebration! How much? That's Raven’s little secret... and the cauldron's new treasure. 💀🎃"
+                    ],
+                    "301-600": [
+                        "A duel for the ages! {user} and {target}, you’ve left Raven cackling with glee. No candy for you, but the cauldron overflows with a secret amount of candy. Raven’s encrypted it well... between whispers and shadows. 😈🍭",
+                        "Ah, {user} and {target}, what a delightful display of chaos! Raven’s added a generous stash of candy to the cauldron—between 301 and 600 pieces, but you’ll never know the exact number. Keep fighting... it amuses me! 😏🕸️",
+                        "{user} and {target}, Raven’s so pleased by your duel that she’s slipped candy into the cauldron. 301 to 600 pieces, but you’ll never know the true amount. Isn’t mystery just the sweetest? 💀🎃"
+                    ],
+                    "601+": [
+                        "Oh, what a sight! {user} and {target}, you’ve truly made Raven’s night! The duel was magnificent—no candy for you, but the cauldron is now brimming with a secret amount of candy, from 601 to 1000 pieces. The exact amount? Let’s just say it’s locked behind Raven’s enchanted vault! 😈🍬",
+                        "Raven is *beyond* thrilled! {user} and {target} left it all in the duel. To celebrate, she’s poured a **massive** stash of candy into the cauldron. How much? Only the cauldron knows... somewhere between 601 and 1000. 😏👁️",
+                        "Spectacular! {user} and {target} entertained Raven so much that she’s added a **huge** hidden amount of candy to the cauldron. Somewhere between 601 and 1000 pieces. But the exact number? Let’s just say it’s *encrypted* in Raven’s twisted mind... 💀🎃"
+                    ]
+                },
+                "target_laughs": [
+                    "{target} bursts into laughter! Poor {user}, you tried to steal from someone with **nothing** to give! Raven cackles from the shadows... Embarrassed much? 😈😆",
+                    "Oh {user}, did you really think you’d steal candy from {target}? Ha! They have nothing! Raven is howling with laughter—what a fool you’ve made of yourself! 🤣🍭",
+                    "{user}, you trickster! You’ve made a grave miscalculation—{target} has no candy! Raven relishes in your shame. Enjoy your embarrassment while {target} laughs in your face! 😏💀",
+                    "The nerve, {user}! Trying to take candy from someone who has none! {target} is laughing, and so is Raven. This is truly a sight! 😈👁️ No candy for you, only shame!",
+                    "Raven watches in delight as {target} laughs right in your face, {user}. Trying to take what doesn’t exist? *How deliciously embarrassing!* 😈🕸️ No candy for you, just Raven’s eternal mockery!"
+                ]
             },
             "successful_trick":{
-                "both_lose":{},
-                "target_gets_1":{},
-                "0": {},
-                "1": {},
-                "3": {},
-                "6": {},
-                "9": {},
-                "10": {}
-            },
+                "both_lose": [
+                    "Ahhh, {user} and {target}, you’re both so predictable! Stealing, fighting, back and forth... Raven grows tired of this. I’ll be taking {amount} candy from both of you now. Consider it... my reward. 😈👻",
+                    "What a delightful spectacle! {user} thought they won, but {target} fought back! Back and forth you go, but in the end... {amount} candy belongs to me now! Raven always wins! 😏🍬",
+                    "Oh, this is too amusing! {user} and {target}, you’ve both lost {amount} candy with all your petty fighting. Raven swoops in and claims what’s rightfully mine! Better luck next time, fools. 😈🖤",
+                    "Tsk tsk, {user} and {target}, your little back-and-forth game has entertained me long enough. The {amount} candy is now *mine!* Raven takes all the spoils! What a delicious disaster! 😈🎃",
+                    "Watching {user} and {target} claw at each other for candy has been quite the show! But enough is enough. Raven takes {amount} candy from both of you... and your misery is my treat! 😈🕸️"
+                ],
+                "target_gets_1": [
+                    "Oh-ho, {user}, you thought you could just walk away with {amount} candy, did you? But {target}—sneaky little thing—managed to snatch 1 piece back! How delightful! You both amuse me! 😈🍬",
+                    "Tsk tsk, {user}, not as smooth as you hoped, were you? {target} fought back just enough to grab 1 candy from the {amount} you nabbed. How deliciously chaotic! I almost feel proud of them. 😏🎃",
+                    "Well, {user}, you took {amount} candy, but {target} wasn't about to let you get it all! They clawed back 1 candy. Raven snickers—such a lovely mess you've made. 😈🍭",
+                    "What’s this? {user}, you thought you'd escape with {amount} candy, but {target} got clever and managed to reclaim 1 piece! I do love a good struggle. How entertaining! 😏🕷️",
+                    "My, my, {user}, {amount} candy was yours... or so you thought. But look at {target}, bravely snatching back 1 piece! Such delicious chaos. I’m thoroughly entertained. 😈👻"
+                ],
+                "regular_success": {
+                    "0": [
+                        "😏 Well, well, well... {user} tried, but all that effort for nothing? How pathetic! Not a single candy from {target}. Raven is thoroughly disappointed.",
+                        "😂 Ha! {user} thought they could trick {target}, but instead left empty-handed. Better luck next time, weakling.",
+                        "🙄 {user}... I'm embarrassed for you. All that plotting, and not a single piece of candy from {target}. What a sad little thief."
+                    ],
+                    "1": [
+                        "😒 Oh, {user}, barely a crumb! You only managed to snatch {amount} candy from {target}. Is that all you're capable of?",
+                        "😏 A single piece of candy, {user}? Really? I suppose even a pathetic thief has their moments.",
+                        "😌 {user} somehow snatched {amount} candy from {target}. Raven is mildly amused... but only mildly."
+                    ],
+                    "3": [
+                        "💀 {user} clawed away {amount} candy from {target}! A decent haul for such a small-time thief. Raven approves... for now.",
+                        "😈 {user} managed to wrangle {amount} candy from {target}. Not bad, not bad... But don't get cocky.",
+                        "🍬 {amount} candy stolen from {target} by {user}! Raven smirks—looks like you've got some talent after all."
+                    ],
+                    "6": [
+                        "👻 Impressive, {user}! You successfully snatched {amount} candy from {target}. Raven is pleased with your chaotic handiwork.",
+                        "🎃 {user} pulled off quite the trick, stealing {amount} candy from {target}. Well played, thief, well played.",
+                        "🕸️ {user} strikes again, swiping {amount} candy from {target}. The chaos is delicious!"
+                    ],
+                    "9": [
+                        "🍭 {user} just made off with {amount} candy from {target}. Now that's what I call a successful heist!",
+                        "👹 A splendid haul, {user}! You tricked {target} and walked away with {amount} candy. Raven is thoroughly impressed.",
+                        "🎉 Ahh, the sweet taste of success! {user} snagged {amount} candy from {target}. The chaos continues!"
+                    ],
+                    "10": [
+                        "💰 Jackpot! {user} hit the motherlode and walked away with {amount} candy from {target}. Raven is ecstatic—this is pure chaos at its finest!",
+                        "😈 {user} completely cleaned {target} out, stealing {amount} candy. Raven cackles with delight at this utter victory.",
+                        "🎃 Oh, now this is glorious! {user} snatched up a whopping {amount} candy from {target}. Raven couldn't be prouder!"
+                    ]
+                }
+            },                
             "failed_trick":{
-                "theif_lose":{},
-                "both_lose":{},
-                "theif_loses_some":{},
-                "0": {},
-                "1": {},
-                "3": {},
-                "6": {},
-                "9": {},
-                "10": {}
+                "both_lose": [
+                    "🙄 Oh, for the love of chaos... {user} and {target} both fumbled so badly that I had no choice but to take {amount} candy from them and toss it into the cauldron. You're both pathetic!",
+                    "😠 Watching {user} and {target} struggle was painful! I've taken {amount} candy from both of you to spare myself the embarrassment. Into the cauldron it goes!",
+                    "👀 This is painful to watch... {user} and {target}, you're both a disgrace! I'll take {amount} candy from each of you and toss it into the cauldron. Maybe next time you'll entertain me properly.",
+                    "😤 I expected chaos, not this mess! {user} and {target} both failed miserably, so I've claimed {amount} candy from each of you for the cauldron. Try harder next time.",
+                    "🖤 Ugh! {user} and {target}, your pitiful fumbling has forced me to intervene. I'll take {amount} candy from both of you and feed the cauldron instead. You should be ashamed!"
+                ],
+                "thief_half": [
+                    "🤨 Oh, {user}, that was *painful* to watch. You barely managed to snatch half of {amount} candy from {target}. At least you didn't leave empty-handed... but next time, try harder, will you?",
+                    "😏 {user}, you almost embarrassed yourself, but you got away with half of {amount} candy from {target}. Not the full prize, but hey, it's something!",
+                    "👀 Well, {user}, you stumbled and fumbled but managed to pull half of {amount} candy from {target}'s grasp. Better than nothing, I suppose. *Barely.*",
+                    "🖤 Hah! {user}, you're lucky to have escaped with half of {amount} candy from {target}. Not a perfect trick, but enough to amuse me for now. Keep practicing!",
+                    "😈 {user}, half of {amount} candy from {target}? You could have done better, but I'll allow it. A clumsy success is still a success, after all!"
+                ],
+                "regular_failure": {
+                    "0": [
+                        "😏 {user}, you tried... but got absolutely *nothing*. Not a single piece of candy from {target}. Well, at least you didn’t lose anything, for now... lucky you.",
+                        "😶 {user}, nothing? No candy from {target}? How embarrassing... at least you didn’t get worse than that.",
+                        "😒 Not even a crumb, {user}? You managed to trick... no one. It’s almost painful to watch."
+                    ],
+                    "1": [
+                        "👀 Oops, {user}, you barely made it out, and now you've lost {amount} candy yourself! {target} might be laughing now, but I'm certainly not. Learn to trick properly, next time.",
+                        "😬 {user}, your weak attempt to steal from {target} just cost you {amount} candy. I took it as a penalty for your failure!",
+                        "😈 Oh dear, {user}, what a miserable fail. You didn’t get a single thing from {target}, and I’ve snatched {amount} candy from you as punishment. Let this be a lesson."
+                    ],
+                    "3": [
+                        "🤦‍♀️ {user}, you're barely hanging on. Your attempt was laughable, and I’m taking {amount} candy from you for wasting my time.",
+                        "😜 Nice try, {user}, but not nice enough! You didn't get anything from {target}, and {amount} candy has been stripped from you. Maybe next time you'll do better!",
+                        "👁️ I expected better, {user}. You failed miserably against {target}, and now {amount} candy is gone from your stash."
+                    ],
+                    "6": [
+                        "🤣 Oh, {user}, what a *disaster*! You failed so badly, I had to step in and take {amount} candy as punishment. {target} must be laughing at you right now!",
+                        "😏 Well, {user}, you completely botched that. You’re down {amount} candy, all because you couldn't manage to trick {target}. Quite pathetic, really.",
+                        "💀 That was painful to watch, {user}. Your failure was so grand that {amount} candy has been taken from you! Better luck next time... if there is one."
+                    ],
+                    "9": [
+                        "🤡 Oh, {user}, that was one of the worst trick attempts I’ve seen! You failed so spectacularly that I've taken {amount} candy from your stash. {target} is probably laughing, and I’m... well, I'm not impressed.",
+                        "😈 You’ve outdone yourself in failure, {user}. Not only did you get nothing from {target}, but {amount} candy has vanished from your stash. *Delicious failure.*",
+                        "👿 {user}, you’ve truly hit rock bottom. {target} remains untouched, and {amount} candy is mine now. Do better, if you dare."
+                    ],
+                    "10": [
+                        "💥 That was *glorious*, {user}! A complete and total disaster. You failed so badly that {amount} candy has been ripped from your hands, and you got nothing from {target}. You’re a true master of failure.",
+                        "🔥 {user}, this might be the biggest failure of the night. Not only did you get nothing from {target}, but you lost {amount} candy in the process! I must admit, I’m *delighted* by your incompetence.",
+                        "💀 You call that a trick, {user}? Pathetic. {amount} candy has been seized from your stash, and you’ve walked away with nothing from {target}. The sweet taste of failure!"
+                    ]
+                }
             }
         },
         "personal_message":{
             "no_candy":{
-                "theif_gives_candy":{},
+                "thief_gives_candy":{},
                 "both_lose":{},
-                "theif_laughs":{}
+                "thief_laughs":{}
             },
             "successful_trick":{
                 "both_lose":{},
@@ -364,9 +491,9 @@
                 "10": {}
             },
             "failed_trick":{
-                "theif_lose":{},
+                "thief_lose":{},
                 "both_lose":{},
-                "theif_loses_some":{},
+                "thief_loses_some":{},
                 "0": {},
                 "1": {},
                 "3": {},

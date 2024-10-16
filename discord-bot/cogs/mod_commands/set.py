@@ -3,9 +3,15 @@ from discord import app_commands
 import db_utils
 import utils.checks as checks
 from utils.utils import post_to_target_channel,create_invite_embed
+from modals.bot_settings import GameSettings, BotSettings
 
 # Subcommand group for setting (used within the server group)
 set_group = app_commands.Group(name="set", description="Set commands")
+
+
+# set_player_group = app_commands.Group(name="player", description="Player commands")
+
+# set_group.add_command(set_player_group)
 
 @set_group.command(name="role", description="Set a role for the guild")
 @checks.check_if_has_permission_or_role()
@@ -137,3 +143,38 @@ async def set_channel(interaction: discord.Interaction, channel_type: app_comman
     )
     # Respond with the formatted message
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
+
+@set_group.command(name="player_stat", description="Set Player stat")
+@checks.check_if_has_permission_or_role()
+@app_commands.choices(stat=[
+    app_commands.Choice(name="Candy", value="candy_count"),
+    app_commands.Choice(name="Successful Tricks", value="successful_steals"),
+    app_commands.Choice(name="Failed Tricks", value="failed_steals"),
+    app_commands.Choice(name="Treats Given", value="candy_given"),
+    app_commands.Choice(name="Potions Purchased", value="tickets_purchased")
+])
+async def set_player_stat(interaction: discord.Interaction, user: discord.Member, stat: str, number: int):    
+    guild_id = interaction.guild.id
+
+    #check if player exits
+    if not db_utils.is_player_active(user.id, guild_id):
+        await interaction.response.send_message(f"{user.display_name} has not joined the game!", ephemeral=True)
+        return
+    else:
+        # Update the player's stat in the database
+        db_utils.update_player_field(user.id,guild_id, stat, number)
+        await interaction.response.send_message(f"{user.display_name}'s {stat.replace('_', ' ')} has been updated to {number}.", ephemeral=True)
+
+
+@set_group.command(name="bot_settings", description="Update the bot's settings.")
+@checks.check_if_has_permission_or_role()
+async def set_bot_settings(interaction: discord.Interaction):
+    modal = BotSettings()
+    await interaction.response.send_modal(modal)
+
+
+@set_group.command(name="game_settings", description="Update the game settings.")
+@checks.check_if_has_permission_or_role()
+async def set_game_settings(interaction: discord.Interaction):
+    modal = GameSettings()
+    await interaction.response.send_modal(modal)

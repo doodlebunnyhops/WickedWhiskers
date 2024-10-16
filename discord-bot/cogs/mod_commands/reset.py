@@ -14,7 +14,7 @@ async def reset_player(interaction: discord.Interaction, user: discord.Member):
 
     user_data = get_player_data(user.id, guild_id)
     # Respond with the formatted message
-    title = f"Player {user.name}'s stats before reset"
+    title = f"Player {user.display_name}'s stats before reset"
     description = f"Resetting player initiated by {interaction.user.mention}.\nHere are their stats before reset. Take note that if they were inactive or frozen they will have to join back or you may want to follow up with a `/freeze`:\n\n"
     helpful_commands_name = ":eyes:"
     helpful_commands_value = f"- Candy Bucket:\t{user_data['candy_count']}\n- Successful Tricks:\t{user_data['successful_steals']}\n - Failed Tricks:\t{user_data['failed_steals']}\n - Treats Given:\t{user_data['candy_given']}\n - Potions Purchased:\t{user_data['tickets_purchased']}"
@@ -40,9 +40,9 @@ async def reset_player(interaction: discord.Interaction, user: discord.Member):
         channel = interaction.channel
     await channel.send(embed=embed)
 
-    await interaction.response.send_message(f"Resetting player {user.name} now...", ephemeral=True)
+    await interaction.response.send_message(f"Resetting player {user.display_name} now...", ephemeral=True)
 
     reset_player_data(user.id,guild_id)
     # set_player_inactive(user.id,guild_id)
 
-    await channel.send(f"Player {user.name} has been reset.")
+    await channel.send(f"Player {user.display_name} has been reset.")

@@ -1,6 +1,9 @@
 import json
 import os
 import random
+import settings
+
+logger = settings.logging.getLogger("bot")
 
 class MessageLoader:
     def __init__(self, file_path: str):
@@ -30,9 +33,12 @@ class MessageLoader:
                 message = random.choice(message)
 
             # Format the message with any provided kwargs
+            logger.debug(f"Message: {message}")
             return message.format(**kwargs)
 
-        except (KeyError, TypeError):
+        except (KeyError, TypeError) as e:
+            logger.error(f"Error Key Error message: {str(e)}\n\tKeys: {keys}")
             return default
         except Exception as e:
+            logger.error(f"Error formatting message: {str(e)}")
             return f"Error formatting message: {str(e)}"
