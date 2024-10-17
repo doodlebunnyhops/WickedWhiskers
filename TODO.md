@@ -20,7 +20,7 @@
 - [x] lottery system..it's wrong
   - DB isn't tracking how many tickets a player has, thus not giving players increased chances of winning
   - But i do like the idea of a moderator or admin coming in and deciding to be evil and give it to one or distributed random player(s) who may not have purchased a ticket 😈 muwahahaha...
-- [x] Make sure tickets_purchased removes tickets after the cauldron draw has occurred!!
+- [x] Make sure potions_purchased removes tickets after the cauldron draw has occurred!!
 - [x] Show in stats how many tickets you have
 - [x] /trick command sends "The application did not respond." I need to respond with interaction ephemeral true with timeout and then a post_event_channel() to stop this
 - [x] Give 0 candy should not be possible OR should it… with a smart butt remark

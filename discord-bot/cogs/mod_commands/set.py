@@ -157,15 +157,15 @@ async def set_channel(interaction: discord.Interaction, channel_type: app_comman
 @set_group.command(name="player_stat", description="Set Player stat")
 @checks.check_if_has_permission_or_role()
 @app_commands.choices(stat=[
-    app_commands.Choice(name="Candy", value="candy_count"),
-    app_commands.Choice(name="Successful Tricks", value="successful_steals"),
-    app_commands.Choice(name="Failed Tricks", value="failed_steals"),
-    app_commands.Choice(name="Treats Given", value="candy_given"),
-    app_commands.Choice(name="Potions Purchased", value="tickets_purchased")
+    app_commands.Choice(name="Candy", value="candy_in_bucket"),
+    app_commands.Choice(name="Successful Tricks", value="successful_tricks"),
+    app_commands.Choice(name="Failed Tricks", value="failed_tricks"),
+    app_commands.Choice(name="Treats Given", value="treats_given"),
+    app_commands.Choice(name="Potions Purchased", value="potions_purchased")
 ])
 @app_commands.describe(
     user="The player you want to modify",
-    stat="The stat you want to change (e.g., candy_count)",
+    stat="The stat you want to change (e.g., candy_in_bucket)",
     number="The value you want to set for the stat"
 )
 async def set_player_stat(interaction: discord.Interaction, user: discord.Member, stat: str, number: int):    
