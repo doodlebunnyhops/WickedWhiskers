@@ -97,6 +97,9 @@ async def get_game_join_msg(interaction: discord.Interaction):
     app_commands.Choice(name="Admin", value="admin"),
     app_commands.Choice(name="Both", value="both")
 ])
+@app_commands.describe(
+    channel_type="The type of channel to get (event, admin, or both)"
+)
 async def get_channel(interaction: discord.Interaction, channel_type: app_commands.Choice[str]):
     guild_id = interaction.guild.id
 
@@ -171,6 +174,10 @@ async def get_channel(interaction: discord.Interaction, channel_type: app_comman
     app_commands.Choice(name="Hidden Values", value="hidden_values"),
     app_commands.Choice(name="All", value="all")
 ])
+@app_commands.describe(
+    user="The user whose stats you want to view",
+    get="The details you want to view (stats, hidden values, or both)"
+)
 async def get_player_stats(interaction: discord.Interaction, user: discord.Member, get: app_commands.Choice[str]):
     guild_id = interaction.guild.id
     # Fetch the player's stats from the database

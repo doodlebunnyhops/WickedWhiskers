@@ -1,11 +1,81 @@
 {
-
+    "luna_bucket": [
+        "You have **{amount}** candy.\n\nOh my stars! Look at all that candy in your bucket! 🍬 You’ve been so kind, {user}. Keep spreading the sweetness! 🌟",
+        "You have **{amount}** candy.\n\nWow, {user}, your bucket is practically overflowing! 🎃 Sharing is caring, don't forget to treat others with some of your goodies! 🍭",
+        "You have **{amount}** candy.\n\nAww, {user}, you’ve gathered quite the haul! 🌙 Keep being the generous spirit you are, it’s working wonders! 🍬",
+        "You have **{amount}** candy.\n\nLook at all those treats! 🍭 Luna is so proud of your kind heart, {user}! Let’s keep the good vibes rolling! 💖",
+        "You have **{amount}** candy.\n\nYour bucket is shining as bright as the moon, {user}! 🌕 Keep being sweet, you’re doing amazing! 🍬",
+        "You have **{amount}** candy.\n\nOh, {user}! You've got so much candy! 🍬 Remember, sharing is magical too! Keep making others smile! ✨",
+        "You have **{amount}** candy.\n\nWow, your bucket is brimming with goodies! 🍭 Keep up the kindness, {user}, Luna is watching and cheering for you! 🌟",
+        "You have **{amount}** candy.\n\nYou've been so generous and look at the reward! 🍬 Your bucket is a reflection of your sweet soul, {user}! Keep it up! 🎃",
+        "You have **{amount}** candy.\n\nYour bucket is glowing with all the candy you’ve earned! 🍭 Luna’s heart is full seeing your kindness! 🌕",
+        "You have **{amount}** candy.\n\nWell, {user}, you’ve certainly earned those sweets! 🍬 Your kindness is shining through every piece! Keep the sweetness flowing! 🌸"
+    ],
+  "raven_bucket": [
+        "You have **{amount}** candy.\n\nHmm, not bad, {user}. But don’t get too comfortable… I bet some of that candy would look better in someone else’s bucket. 😈🍬",
+        "You have **{amount}** candy.\n\nHa! You call that a bucket of candy? Raven’s seen better. Better watch your back, or you might lose it all. 👁️🎃",
+        "You have **{amount}** candy.\n\nNice try, {user}, but a real trickster would have taken more. Let’s see if you can hold onto that candy... for now. 😏💀",
+        "You have **{amount}** candy.\n\nOh, {user}, look at all that candy! It’d be a shame if someone took a bite out of your stash... or all of it! 🍭💀",
+        "You have **{amount}** candy.\n\nHmm, you've got a decent haul... for now. But trust me, {user}, the real challenge is keeping it. 💀🍬",
+        "You have **{amount}** candy.\n\nMwahaha, {user}, you think you’ve got enough candy to be safe? Don’t get too confident—Raven’s always watching. 😈🎃",
+        "You have **{amount}** candy.\n\nOh, look at you, {user}, thinking that candy’s safe in your bucket. Don’t let your guard down, I might pay you a visit. 🕸️💀",
+        "You have **{amount}** candy.\n\nAhh, {user}, that’s a nice pile of candy… for now. I’ll be keeping an eye on it. You never know when it might disappear. 😏🍬",
+        "You have **{amount}** candy.\n\nThat’s a lot of candy, {user}, but don’t think for a second that it’ll stay there. Raven has plans for it... hehehe. 😈🕷️",
+        "You have **{amount}** candy.\n\nWell, well, {user}, you’ve done alright. But the question is—can you *keep* it? Raven always loves a good twist... 🕸️👁️"
+    ],
+    "who_is_luna":{
+        "description":"Luna is the kind and whimsical witch of the cauldron, full of sweet intentions and an ever-optimistic spirit. She loves to see players share candy and spread joy, always cheering for generosity and good deeds. Though she can be a bit clumsy, her heart is always in the right place, and she’s never too far from a playful giggle. Luna thrives on kindness and believes in the magic of giving, making her the perfect embodiment of everything sweet and fun in the game. If you’re treating others well, Luna is always watching with a smile!",
+        "message" : "Hello there, dear! 🌙✨ I'm Luna, the kind-hearted and ever-so-sweet witch of the Cauldron! Oh, I just love seeing everyone spread joy and candy! 🍬🧙‍♀️ Whether you're treating others with sweetness or collecting goodies in your bucket, I'm here to cheer you on! 🎉✨\n\nBut don't forget—good deeds always come back to you in the best way possible. So go on, spread some smiles, and I'll be watching over you with a bit of magic and a whole lot of love! 💖🎃",
+        "image_banner_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296215769687785524/luna_banner.png?ex=67117a82&is=67102902&hm=ee8a10c2244398c351bc5a224e673dbe847a06cafad0e9a05193ad719b00687d&",
+        "image_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541670019133/DALLE_2024-10-16_15.07.46_-_A_cartoon_image_of_Luna_a_kind_and_ethereal_witch._She_has_soft_glowing_features_with_bright_twinkling_eyes_and_long_flowing_silvery_hair_resemblin.webp?ex=67116b64&is=671019e4&hm=ecaecab071be31abcbff4a9af69fa4863a17e09ab2711d2b8208d76e7baec8ff&"
+    },
+    "who_is_raven":{
+        "description":"Raven is the mischievous and cunning trickster of the game, always stirring up chaos and looking for ways to cause a little mayhem. She’s the master of tricks and will do whatever it takes to keep the game interesting. But be careful—crossing paths with Raven might lead to losing some of your hard-earned candy!",
+        "description2": "Raven is the mischievous and cunning witch of the cauldron, thriving in chaos and trickery. She revels in the darker side of Halloween, encouraging players to steal, deceive, and cause mayhem. With a sharp wit and a wicked grin, Raven delights in the power struggles and clever tricks of the game, always watching from the shadows. While her methods may be ruthless, she respects a good trickster and loves seeing players embrace their inner chaos. Raven’s world is one where the bold thrive, and she’s always ready to stir up some delightful trouble!",
+        "message": "Well, well, well... Look who stumbled into my domain. 💀🖤 I’m Raven, the chaos-loving, trick-playing witch of the Cauldron. You’ll find me lurking in the shadows, watching for those who are bold enough to stir up a little mischief. 🦇✨\n\nIf you’re here to cause some trouble—stealing candy, tricking your fellow players—oh, I’m all for it. 😈 Just remember, in my world, the line between fortune and failure is razor-thin... and I do love to tip the scales. 🕸️\n\nSo, are you brave enough to dance with chaos? 🖤🎃 Let’s see what tricks you’ve got!",
+        "image_banner_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296199542307422288/DALLE_2024-10-16_15.11.24_-_A_dark_and_ominous_cartoon-style_banner_that_complements_Ravens_chaotic_theme._The_banner_features_swirling_dark_clouds_ravens_flying_across_the_sky.webp?ex=67116b65&is=671019e5&hm=c6090570417a102d9985551330e15b29053022a6c4f80e36c755c955ca83f8ea&",
+        "image_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541158182912/DALLE_2024-10-16_15.07.44_-_A_cartoon_image_of_Raven_the_mischievous_and_dark-hearted_witch._Raven_has_sharp_angular_features_with_glowing_red_eyes_and_long_wild_black_hair_st.webp?ex=67116b64&is=671019e4&hm=d73877b572138632c5cdeb572f0784ba6423ad1d6a1f980587d9eb1a3eeb3eef&"
+    },
     "react_join_msg": {
-        "title": "🎃 Join the Candy Game! 🎃",
-        "description": "React with 🎃 to join the candy game and start your trick-or-treat adventure!",
-        "helpful_commands": {
-            "name": "Helpful Commands",
-            "value": "- `/trick_or_treat`: Try your luck with trick-or-treating!\n- `/check_candy`: See how much candy you have.\n- `/leaderboard`: Check the top players with the most candy!"
+        "1":{
+            "title": "🎃 Join the Spooky Showdown! 🎃",
+            "description": "React with 🎃 to step into the world of tricks and treats! Luna’s brewing sweetness, and Raven’s stirring up some mischief—where will you fall?",
+            "helpful_commands": {
+                "name": "Helpful Commands",
+                "value": "- `/trick`: Will Raven’s chaos guide you to trick another player? 💀\n- `/treat`: Help Luna spread the candy love! 🍬\n- `/bucket`: See how much candy you’ve gathered! 🎃"
+            }
+        },
+        "2":{
+            "title": "🎃 Enter the Haunted Carnival! 🎃",
+            "description": "React with 🎃 to dive into the Halloween madness! Luna’s watching with sweet intentions, while Raven’s waiting to see who’ll join her trickery!",
+            "helpful_commands": {
+                "name": "Helpful Commands",
+                "value": "- `/trick`: Steal candy, but don’t let Raven catch you hesitating! 😈\n- `/treat`: Luna will be so proud if you share some candy! 🍭\n- `/bucket`: How much candy have you saved from the chaos? 🕸️"
+            }
+        },
+        "3":{
+            "title": "🎃 The Witching Hour Awaits! 🎃",
+            "description": "React with 🎃 to join the fun! Luna’s got treats for the kind souls, but Raven’s itching to see who’s up for some tricks!",
+            "helpful_commands": {
+                "name": "Helpful Commands",
+                "value": "- `/trick`: Will you follow Raven’s lead and steal candy from others? 💀\n- `/treat`: Luna’s all smiles when you share candy! 🍬\n- `/bucket`: Keep an eye on your candy count... before it’s too late! 🍭"
+            }
+        },
+        "4":{
+            "title": "🎃 Will You Trick or Treat? 🎃",
+            "description": "React with 🎃 to join the game! Luna’s cheering for your sweet side, but Raven’s ready for some chaos—who will win you over?",
+            "helpful_commands": {
+                "name": "Helpful Commands",
+                "value": "- `/trick`: Raven’s all about stealing candy! Ready to follow her lead? 👹\n- `/treat`: Luna can’t wait to see you share candy! 🍬\n- `/bucket`: Keep track of how much candy you’ve got in your stash! 🎃"
+            }
+        },
+        "5":{
+            "title": "🎃 Join the Game! 🎃",
+            "description": "React with 🎃 to join the game and start your trick-or-treat adventure!",
+            "helpful_commands": {
+                "name": "Helpful Commands",
+                "value": "- `/trick`: Try your luck tricking another player out of their candy!!\n- `/treat`: Be sweet, give someone candy!.\n- `/bucket`: See how much candy you have."
+            }
         }
     },
     "set_roles": {

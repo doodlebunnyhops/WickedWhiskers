@@ -8,6 +8,9 @@ reset_group = app_commands.Group(name="reset", description="Reset commands")
 
 
 @reset_group.command(name="player", description="Factory Reset a player")
+@app_commands.describe(
+    user="The player to be reset"
+)
 @check_if_has_permission_or_role()
 async def reset_player(interaction: discord.Interaction, user: discord.Member):
     guild_id = interaction.guild.id

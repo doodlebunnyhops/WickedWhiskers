@@ -16,9 +16,20 @@ BASE_DIR = pathlib.Path(__file__).parent
 
 # VIDEOCMDS_DIR = BASE_DIR / "videocmds"
 
-GUILDS_ID = discord.Object(id=int(os.getenv("GUILD")))
+get_guild_id = os.getenv("GUILD")
+
+if get_guild_id is None:
+    GUILDS_ID = None
+    GUILD_ID_INT = None
+else:
+    GUILDS_ID = discord.Object(id=int(os.getenv("GUILD")))
+    GUILD_ID_INT = int(os.getenv("GUILD"))
 FEEDBACK_CH = int(os.getenv("FEEDBACK_CH", 0))
-GUILD_ID_INT = int(os.getenv("GUILD"))
+
+GUILD_OVERRIDE = True
+
+if GUILDS_ID is None:
+    GUILD_OVERRIDE = False
 
 LOGGING_CONFIG = {
     "version": 1,

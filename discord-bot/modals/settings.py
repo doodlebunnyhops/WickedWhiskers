@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ui import Modal, TextInput, Select, Button
 
-class BotSettings(Modal):
+class Bot(Modal):
     def __init__(self):
         super().__init__(title="Bot Settings Configuration")
 
@@ -59,7 +59,7 @@ class BotSettings(Modal):
                                                     f"Admin Role: {admin_role.name}\n",
                                                     ephemeral=True)
             
-class GameSettings(Modal):
+class Game(Modal):
     def __init__(self):
         super().__init__(title="Game Settings Configuration")
 

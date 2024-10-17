@@ -15,3 +15,6 @@ async def trick(interaction: discord.Interaction, member: discord.Member):
 
 async def treat(interaction: discord.Interaction, member: discord.Member):
     await helper.player_treat(interaction, member,0)
+
+async def bucket(interaction: discord.Interaction, member: discord.Member):
+    await helper.player_bucket(interaction)

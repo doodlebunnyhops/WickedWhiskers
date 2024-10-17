@@ -15,7 +15,7 @@ class Mod(commands.Cog):
         self.bot = bot
 
     # Top-level group
-    cmds_group = app_commands.Group(name="zmod", description="Moderator Commands")
+    cmds_group = app_commands.Group(name="bot", description="Moderator Commands")
 
     cmds_group.add_command(set_group)
     cmds_group.add_command(get_group)

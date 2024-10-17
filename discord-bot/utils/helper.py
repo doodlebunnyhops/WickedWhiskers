@@ -9,6 +9,8 @@ from utils.checks import get_game_settings
 
 
 logger = settings.logging.getLogger("bot")
+luna_url = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541670019133/DALLE_2024-10-16_15.07.46_-_A_cartoon_image_of_Luna_a_kind_and_ethereal_witch._She_has_soft_glowing_features_with_bright_twinkling_eyes_and_long_flowing_silvery_hair_resemblin.webp?ex=67116b64&is=671019e4&hm=ecaecab071be31abcbff4a9af69fa4863a17e09ab2711d2b8208d76e7baec8ff&"
+raven_url = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541158182912/DALLE_2024-10-16_15.07.44_-_A_cartoon_image_of_Raven_the_mischievous_and_dark-hearted_witch._Raven_has_sharp_angular_features_with_glowing_red_eyes_and_long_wild_black_hair_st.webp?ex=67116b64&is=671019e4&hm=d73877b572138632c5cdeb572f0784ba6423ad1d6a1f980587d9eb1a3eeb3eef&"
 
 async def player_join(interaction: discord.Interaction,member: discord.Member):
     guild_id = interaction.guild.id
@@ -37,22 +39,6 @@ async def player_join(interaction: discord.Interaction,member: discord.Member):
         except Exception as e:
             await interaction.response.send_message(f"An error occurred: {str(e)}", ephemeral=True)
 
-#for down the road nede to setup player class
-# def load_player_data(player_id,guild_id):
-#     player_data = get_player_data(player_id, guild_id)
-
-#     if player_data:
-#         # Create a Player instance using the retrieved data
-#         player = Player(
-#             player_id=player_id,
-#             guild_id=guild_id,
-#             candy_count=player_data["candy_count"],
-#             successful_steals=player_data["successful_steals"],
-#             failed_steals=player_data["failed_steals"],
-#             candy_given=player_data["candy_given"],
-#             tickets_purchased=player_data["tickets_purchased"],
-#             active=player_data["active"]
-#         )
 
 async def player_trick(interaction: discord.Interaction,member: discord.Member):
     guild_id = interaction.guild.id
@@ -105,7 +91,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
             personal_message = f"{interaction.user.display_name}, you felt so bad for {target.display_name}'s empty stash that you gave {given_candy} candy out of sympathy! You failed the trick, but you gained a friend maybe?"
             
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",embeded_message,discord.Color.dark_purple())
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",embeded_message,discord.Color.dark_purple(),raven_url,"Raven",None)
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
         elif random.random() < 0.03:  # 3% chance of ghastly duel and candy vanishes into the lottery
@@ -134,7 +120,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","target_laughs", user=interaction.user.mention, target=target.mention)
             personal_message = f"{interaction.user.display_name} I'm so sorry but {target.display_name} has no candy to trick them out of!"
 
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple())
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(), raven_url,"Raven")
 
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
@@ -167,7 +153,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","both_lose", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name} well you tried to trick {target.display_name}! But you both lost!"
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple())
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
 
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
@@ -180,7 +166,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name}, you tricked {stolen_amount -1} candy from {target.display_name}! Success!"
-            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple())
+            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
@@ -204,7 +190,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             else:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick", "regular_success",10, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name} you tricked {target.display_name} out of {stolen_amount}!"
-            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple())
+            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
@@ -223,7 +209,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "both_lose", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple())
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),  raven_url,"Raven")
             personal_message = f"{interaction.user.display_name} you fumbled the trick and lost {penalty} candy!!"
 
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
@@ -236,7 +222,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id,'successful_steals', thief_data["successful_steals"] + 1)
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "thief_half", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
-            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple())
+            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you initially failed but managed to get {half_stolen} candy!!"
 
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
@@ -265,7 +251,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
             update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + penalty)
             update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.purple())
+            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you failed your tricks :( and lost {penalty} candy..."
 
             await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
@@ -287,13 +273,34 @@ async def player_treat(interaction: discord.Interaction,member: discord.Member, 
         await interaction.response.send_message("The game is currently paused.", ephemeral=True)
 
     #check if event_message is None, this means there was an error
-    if event_message is None:
+    if event_message is None: #set a condition for give_treat to reuse event_message as none to send error message
         await interaction.response.send_message(personal_message, ephemeral=True)
     else:
         #Send responses
         await interaction.response.send_message(personal_message,ephemeral= True)
         await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
     
+
+async def player_bucket(interaction: discord.Interaction):
+    guild_id = interaction.guild.id
+    if game_paused( guild_id):
+        interaction.response.send_message("The game is currently paused.", ephemeral=True)
+        return
+    user = interaction.user
+    if not is_player_active(user.id, guild_id):
+        await interaction.response.send_message(f"{user.mention}, you must join the game to participate! /join", ephemeral=True)
+        return
+
+    player_data = get_player_data(user.id, guild_id)
+    candy_count = player_data["candy_count"]
+    # successful_steals = player_data["successful_steals"]
+    # failed_steals = player_data["failed_steals"]
+    # candy_given = player_data["candy_given"]
+
+    witch_name = random.choice(["luna", "raven"])
+
+    personal_message = interaction.client.message_loader.get_message(f"{witch_name}_bucket", user=user.mention, amount=candy_count)
+    await interaction.response.send_message(personal_message, ephemeral=True)
 
 def calculate_thief_success_rate(thief_candy_count):
     """
@@ -320,6 +327,21 @@ def calculate_thief_success_rate(thief_candy_count):
     # Cap the success rate at 1%
     return max(success_rate, min_success_rate)
 
+
+def game_paused(guild_id: int) -> bool:
+    """
+    Check if the game is paused for a guild.
+
+    Args:
+        guild_id (int): The ID of the guild to check.
+
+    Returns:
+        bool: True if the game is paused, False otherwise.
+    """
+    game_disabled, _,_ = get_game_settings(guild_id)
+    if game_disabled:
+        return True
+    return False
 
 def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0):
     """
@@ -360,6 +382,9 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         if amount < 0:
             personal_message = f"{giver.mention}, you can't give negative candy!"
             return event_message,personal_message
+        if giver_data["candy_count"] < amount:
+            personal_message = f"{giver.display_name}, you don't have enough candy to give!"
+            return event_message,personal_message
     except ValueError:
         personal_message = f"{giver.mention}, please enter a valid number!"
         return event_message,personal_message
@@ -381,7 +406,11 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
             )   
         personal_message = interaction.client.message_loader.get_message(
             "give_treat", "personal_message","0", user=giver.display_name, target=recipient.name,amount=amount
-            )   
+            )
+        update_player_field(giver.id, guild_id, 'candy_given', giver_data["candy_given"] - 1)
+        embeded = create_embed(f"{giver.display_name} Gave {recipient.display_name} {amount} Candy...",event_message,discord.Color.magenta(),luna_url,"Luna",None)
+        
+        return embeded,personal_message
     elif amount == 1:
         event_message = interaction.client.message_loader.get_message(
             "give_treat", "event_messages", "1", user=giver.mention, target=recipient.mention,amount=amount
@@ -417,4 +446,6 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         personal_message = interaction.client.message_loader.get_message(
             "give_treat", "personal_message","10", user=giver.display_name, target=recipient.name,amount=amount
             )
-    return event_message,personal_message
+    embeded = create_embed(f"{giver.display_name} Gave {recipient.display_name} {amount} Candy :heart:",event_message,discord.Color.magenta(),luna_url,"Luna",None)
+    
+    return embeded,personal_message
