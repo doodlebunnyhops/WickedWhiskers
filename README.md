@@ -15,15 +15,16 @@ Not paitent enough to wait on a cauldron event, no worries try your hand at pump
 
 ## Commands
 
-- [Moderator](/docs/moderator_commands.md)
+- [Moderator](/docs/moderator_commands.md): Locked commands to a specific role set by server admin.
 - [Player](/docs/player_commands.md)
+- [Active Commands](/docs/all_current_commands.md): 
 
 
 ## Development
 
 So glad you want to help! Refer to these docs on setup for dev.
    - [Development requirements and setup](/docs/development.md)
-   - [Contributing Guidlines](/docs/CONTRIBUTION.md)
+   - [Contributing Guidlines](CONTRIBUTION.md)
 
 ## Attribution
 

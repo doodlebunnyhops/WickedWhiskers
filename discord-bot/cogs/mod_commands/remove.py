@@ -8,11 +8,17 @@ remove_group = app_commands.Group(name="remove", description="Remove commands")
 
 
 @remove_group.command(name="join_game_msg", description="I cant remove messages :P")
+@app_commands.describe(
+    channel="The channel where the invite message will be ignored."
+)
 @checks.check_if_has_permission_or_role()
 async def update_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
     await interaction.response.send_message(f":wave: Hey {interaction.user.name}...so I don't have perms to remove the join message in {channel.name} ;) you'll have to have someone with proper permissions manually remove it so they can /update")
 
 @remove_group.command(name="role", description="Remove a role from the games restricted commands")
+@app_commands.describe(
+    role="The role to be removed"
+)
 @checks.check_if_has_permission_or_role()
 async def remove_role(interaction: discord.Interaction, role: discord.Role):
 
@@ -36,6 +42,9 @@ async def remove_role(interaction: discord.Interaction, role: discord.Role):
 
 @remove_group.command(name="channel", description="Remove the event or admin channel setting.")
 @checks.check_if_has_permission_or_role()
+@app_commands.describe(
+    channel_type="The Channel Type to stop posting messages to."
+)
 @app_commands.choices(channel_type=[
     app_commands.Choice(name="Event", value="event"),
     app_commands.Choice(name="Admin", value="admin")

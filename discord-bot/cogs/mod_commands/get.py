@@ -4,6 +4,7 @@ from discord import app_commands
 import db_utils
 import utils.checks as checks
 from utils.utils import post_to_target_channel
+from utils.helper import calculate_thief_success_rate
 
 # Subcommand group for setting (used within the server group)
 get_group = app_commands.Group(name="get", description="get commands")
@@ -89,13 +90,16 @@ async def get_game_join_msg(interaction: discord.Interaction):
         await interaction.response.send_message("An error occurred while fetching the game invite message.", ephemeral=True)
 
 # Slash Command to get the event or admin channel
-@checks.check_if_has_permission_or_role()
 @get_group.command(name="channel", description="Get the channel where event or admin messages will be posted.")
+@checks.check_if_has_permission_or_role()
 @app_commands.choices(channel_type=[
     app_commands.Choice(name="Event", value="event"),
     app_commands.Choice(name="Admin", value="admin"),
     app_commands.Choice(name="Both", value="both")
 ])
+@app_commands.describe(
+    channel_type="The type of channel to get (event, admin, or both)"
+)
 async def get_channel(interaction: discord.Interaction, channel_type: app_commands.Choice[str]):
     guild_id = interaction.guild.id
 
@@ -163,3 +167,57 @@ async def get_channel(interaction: discord.Interaction, channel_type: app_comman
     await interaction.response.send_message(personal_message, ephemeral=True)
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
+@get_group.command(name="player", description="View a player's stats.")
+@checks.check_if_has_permission_or_role()
+@app_commands.choices(get=[
+    app_commands.Choice(name="Stats", value="stats"),
+    app_commands.Choice(name="Hidden Values", value="hidden_values"),
+    app_commands.Choice(name="All", value="all")
+])
+@app_commands.describe(
+    user="The user whose stats you want to view",
+    get="The details you want to view (stats, hidden values, or both)"
+)
+async def get_player_stats(interaction: discord.Interaction, user: discord.Member, get: app_commands.Choice[str]):
+    guild_id = interaction.guild.id
+    # Fetch the player's stats from the database
+    player_data = db_utils.get_player_data(user.id, guild_id)
+
+    if player_data:
+        try:
+            candy_count, successful_steals, failed_steals, candy_given, tickets_purchased, active = list(player_data.values())
+            active_status = "Active" if active == 1 else "Inactive"
+
+            # Prepare the response based on the selected details option
+            response_message = ""
+
+            if get.value == "stats" or get.value == "all":
+                # Standard player stats
+                response_message += (
+                    f"{user.display_name} has {candy_count} candy.\n"
+                    f"Potions In Stock: {tickets_purchased}\n"
+                    f"Successful steals: {successful_steals}\n"
+                    f"Failed steals: {failed_steals}\n"
+                    f"Candy given: {candy_given}\n"
+                    f"Status: {active_status}\n"
+                )
+            
+            if get.value == "hidden_values" or get.value == "all":
+                # Hidden values
+                # evilness, sweetness, trick_success_rate = hidden_values
+                trick_success_rate = calculate_thief_success_rate(candy_count)
+                response_message += (
+                    f"Hidden Values:\n"
+                    # f"Evilness: {evilness}\n"
+                    # f"Sweetness: {sweetness}\n"
+                    f"Trick Success Rate: {trick_success_rate*100}%\n"
+                )
+
+            await interaction.response.send_message(response_message, ephemeral=True)
+        
+        except Exception as e:
+            logging.error(f"Error fetching player stats: {str(e)}")
+            await interaction.response.send_message("An error occurred while fetching player stats.", ephemeral=True)
+    
+    else:
+        await interaction.response.send_message(f"{user.display_name} has not joined the game yet.", ephemeral=True)

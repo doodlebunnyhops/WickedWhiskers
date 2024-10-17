@@ -1,11 +1,10 @@
 import logging
 
 import discord
-from db_utils import is_player_active
+from db_utils import is_player_active, get_game_settings
 import utils.utils as utils
 from discord import app_commands
 from discord import Interaction
-
 
 
 def check_if_has_permission_or_role():

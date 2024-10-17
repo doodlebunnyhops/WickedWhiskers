@@ -1,6 +1,9 @@
 import json
 import os
 import random
+import settings
+
+logger = settings.logging.getLogger("bot")
 
 class MessageLoader:
     def __init__(self, file_path: str):
@@ -30,9 +33,34 @@ class MessageLoader:
                 message = random.choice(message)
 
             # Format the message with any provided kwargs
+            logger.debug(f"Message: {message}")
             return message.format(**kwargs)
 
-        except (KeyError, TypeError):
+        except (KeyError, TypeError) as e:
+            logger.error(f"Error Key Error message: {str(e)}\n\tKeys: {keys}")
             return default
         except Exception as e:
+            logger.error(f"Error formatting message: {str(e)}")
             return f"Error formatting message: {str(e)}"
+        
+    def get_message_block(self, *keys, default=None):
+        """Get a block of messages by providing nested keys. Returns the block or default if not found."""
+        message = self.messages
+        try:
+            for key in keys:
+                if isinstance(key, int):
+                    key = str(key)  # Handle numeric keys
+                message = message[key]
+            
+            # Check if it's a dictionary or valid block
+            if isinstance(message, dict):
+                return message
+            else:
+                logger.error(f"The message block {keys} is not a valid dictionary.")
+                return default
+        except KeyError as e:
+            logger.error(f"Error accessing message block: {str(e)}\n\tKeys: {keys}")
+            return default
+        except Exception as e:
+            logger.error(f"Unexpected error accessing message block: {str(e)}")
+            return default

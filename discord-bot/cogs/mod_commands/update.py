@@ -9,6 +9,9 @@ update_group = app_commands.Group(name="update", description="Update commands")
 
 # Slash command to update location of message to players for react to join the game.
 @update_group.command(name="join_game_msg", description="Update where react to join message will be posted.")
+@app_commands.describe(
+    channel="Channel where the invite message will be posted"
+)
 @checks.check_if_has_permission_or_role()
 async def update_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
     guild_id = interaction.guild.id
@@ -69,7 +72,7 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
 
 
     # Post the new invite message in the specified channel
-    embed = create_invite_embed(interaction.client.message_loader)
+    embed = create_invite_embed(message_loader=interaction.client.message_loader)
     new_invite_message = await channel.send(embed=embed)
     # new_invite_message = await channel.send("React with 🎃 to join the candy game and start your trick-or-treat adventure!")
     new_message_id = new_invite_message.id  # Get the new message ID
@@ -94,6 +97,10 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
 @update_group.command(name="channel", description="Update the channel where event or admin messages will be posted.")
+@app_commands.describe(
+    channel="The channel to update the event or admin channel bot messages to.",
+    channel_type="The type of channel to update (event or admin)"
+)
 @checks.check_if_has_permission_or_role()
 @app_commands.choices(channel_type=[
     app_commands.Choice(name="Event", value="event"),

@@ -12,12 +12,14 @@ import os
 import discord
 from discord.ext import commands
 from discord import app_commands
-import context_menu.player
+import context_menu.player as player
 from db_utils import initialize_database, get_game_join_msg_settings,is_player_active,create_player_data
 from cogs.mod import Mod
+from cogs.game import Game
 from utils.messages import MessageLoader
 import settings
-import context_menu
+# import context_menu
+from modals.player import Treat
 
 print(discord.__version__)
 print(discord.__file__)
@@ -30,7 +32,10 @@ logger = settings.logging.getLogger("bot")
 class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.guild_id = settings.GUILDS_ID
+        if settings.GUILDS_ID is not None:
+            self.guild_id = settings.GUILDS_ID
+        else:
+            self.guild_id = None
         # self.tree = discord.app_commands.CommandTree(self)
         self.message_loader = None
 
@@ -43,42 +48,105 @@ class MyBot(commands.Bot):
         print("Loading spooky messages...")
         self.message_loader = MessageLoader('utils/messages.json')
 
-        join_cm = app_commands.ContextMenu(name="Join Game", callback=context_menu.player.join)
-        trick_cm = app_commands.ContextMenu(name="Trick Player", callback=context_menu.player.trick)
+        #Set Context Menus callback
+        join_cm = app_commands.ContextMenu(name="Join Game", callback=player.join)
+        trick_cm = app_commands.ContextMenu(name="Trick Player", callback=player.trick)
+        bucket_cm = app_commands.ContextMenu(name="Check Bucket", callback=player.bucket)
 
+        @bot.tree.context_menu(name="Treat Player")
+        async def treat_modal(interaction: discord.Interaction, user: discord.Member):
+            # Show the modal for user input
+            modal = Treat(target_user=user)
+            await interaction.response.send_modal(modal)
+            
         # @self.tree.context_menu(name="Join Game")
         # @checks.must_target_self()
         # async def join(interaction: discord.Interaction, user: discord.Member):
         #     await interaction.response.send_message(f"{user.display_name} you are trying to join!", ephemeral=True)
         
-        # Load all cogs
+        # Load cogs and cm's
         print("Loading group commands...")
         #the additional options were the trick to force guild update
-        self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
-        self.tree.add_command(join_cm,guild=self.guild_id,override=True)
-        self.tree.add_command(trick_cm,guild=self.guild_id,override=True)
-        await self.load_extension("cogs.player")
+        if self.guild_id is None:
+            self.tree.add_command(Mod.cmds_group,override=True)
+            self.tree.add_command(Game.game_group,override=True)
+            self.tree.add_command(join_cm,override=True)
+            self.tree.add_command(trick_cm,override=True)
+            self.tree.add_command(bucket_cm,override=True)
+            self.tree.add_command(treat_modal,override=True)
+            await self.load_extension("cogs.player")
+            # await self.load_extension("cogs.game")
+        else:
+            self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
+            self.tree.add_command(Game.game_group,guild=self.guild_id,override=True)
+            self.tree.add_command(join_cm,guild=self.guild_id,override=True)
+            self.tree.add_command(trick_cm,guild=self.guild_id,override=True)
+            self.tree.add_command(bucket_cm,guild=self.guild_id,override=True)
+            self.tree.add_command(treat_modal,guild=self.guild_id,override=True)
+            await self.load_extension("cogs.player")
+            # await self.load_extension("cogs.game")
         
         print("Syncing tree...")
         try:
             # Sync the commands
-            logger.info(f"Attempting to sync commands for guild ID: {self.guild_id}")
-            self.tree.copy_global_to(guild=self.guild_id) #this is what loaded in my slash command to the guild i wanted
-            synced = await self.tree.sync(guild=self.guild_id)
+            if self.guild_id is None:
+                # self.tree.copy_global_to()
+                synced = await self.tree.sync()
+                logger.info(f"Attempting to sync commands globally")
+            else:
+                self.tree.copy_global_to(guild=self.guild_id)
+                synced = await self.tree.sync(guild=self.guild_id)
+                logger.info(f"Attempting to sync commands for guild ID: {self.guild_id.id}")
 
-            # Log detailed info about synced commands
-            logger.info(f"Successfully synced {len(synced)} commands for guild ID: {self.guild_id}")
-            for command in synced:
-                logger.info(f"Command synced: {command.name} - {command.description}")
-                if hasattr(command, 'options'):
-                    for option in command.options:
-                        logger.info(f" - Option: {option.name} ({option.type}) - {option.description}")
+                # Log detailed info about synced commands
+                logger.info(f"Successfully synced {len(synced)} commands for guild ID: {self.guild_id.id}")
+
+            for i, command in enumerate(synced):
+                is_last_command = i == len(synced) - 1
+                log_command(command, is_last=is_last_command)
 
         except Exception as e:
             logger.error(f"Error syncing commands for guild ID {self.guild_id}: {str(e)}")
 
     async def on_ready(self):
         print(f'Logged in as {self.user} and bot is ready!')
+
+
+def log_command(command, depth=0, parent_cmd=None, is_last=False, parent_has_args=False):
+    if depth > 0:
+        indent = "│   " * (depth - 1) + ("└── " if is_last else "├── ")
+    else:
+        indent = ""
+
+    full_command = f"{parent_cmd} {command.name}" if parent_cmd else f"/{command.name}"
+
+    # Display the command or subcommand description
+    if depth == 0:
+        logger.info(f"{full_command} : {command.description}")
+    else:
+        logger.info(f"{indent}{command.name} : {command.description}")
+
+    # Handle subcommands and options
+    if hasattr(command, 'options') and command.options:
+        subcommand_found = False
+        for i, option in enumerate(command.options):
+            is_last_option = i == len(command.options) - 1
+            if option.type in (discord.AppCommandOptionType.subcommand, discord.AppCommandOptionType.subcommand_group):
+                log_command(option, depth + 1, full_command, is_last=is_last_option, parent_has_args=False)
+                subcommand_found = True
+
+        # Display options with properly connected lines if no subcommands were found
+        if not subcommand_found:
+            args_indent = "│   " * depth if not is_last else "    " * depth
+            logger.info(f"{args_indent}Arguments:")
+            for i, opt in enumerate(command.options):
+                is_last_arg = i == len(command.options) - 1
+                opt_indent = "│   " * depth + ("└── " if is_last_arg else "├── ")
+                
+                # Log option name, description, and the type of option
+                opt_type = opt.type.name if hasattr(opt.type, 'name') else str(opt.type)
+                logger.info(f"{opt_indent}{opt.name} : {opt.description} (Type: {opt_type})")
+
 
 intents = discord.Intents.all()
 # intents = discord.Intents.default()
@@ -172,6 +240,7 @@ async def on_app_command_error(interaction: discord.Interaction, error):
         if interaction.response.is_done():
             await interaction.followup.send("An error occurred while processing the command.", ephemeral=True)
         else:
+            print(f"An error occurred while processing:\n\tError: {error}")
             await interaction.response.send_message("An error occurred while processing the command.", ephemeral=True)
         # await utils.post_admin_message(bot, interaction.guild.id, f"An error occurred while processing:\n\tError: {error}.\n\tInvoked by: {interaction.user.name}\n\tAttempted: {interaction.command.name}")
 
