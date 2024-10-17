@@ -15,8 +15,9 @@ Not paitent enough to wait on a cauldron event, no worries try your hand at pump
 
 ## Commands
 
-- [Moderator](/docs/moderator_commands.md)
+- [Moderator](/docs/moderator_commands.md): Locked commands to a specific role set by server admin.
 - [Player](/docs/player_commands.md)
+- [Active Commands](/docs/all_current_commands.md): 
 
 
 ## Development
