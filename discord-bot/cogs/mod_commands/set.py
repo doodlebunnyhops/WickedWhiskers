@@ -101,7 +101,7 @@ async def set_game_join_msg(interaction: discord.Interaction, channel: discord.T
         await interaction.followup.send(personal_message, ephemeral=True)
     else:
         await interaction.response.send_message(personal_message, ephemeral=True)
-    post_to_target_channel(interaction,admin_message,"admin")
+    await post_to_target_channel(interaction,admin_message,"admin")
 
 # Define choices for the channel type
 @set_group.command(name="channel", description="Set the channel for either event or admin messages to be posted.")
