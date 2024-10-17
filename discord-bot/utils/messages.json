@@ -314,11 +314,11 @@
             "500":"{user} has lost {amount} candy to The Agency’s merciless greed. With so much candy taken, how long can they last?",
             "1000":"{user} was hit hard by The Agency, losing a staggering {amount} candy! Greed is hungry, and it looks like they’re next on his list!",
             "else":"The Agency’s greed knows no bounds! They’ve taken an unfathomable {amount} candy from {user}, leaving them vulnerable to the darkness that lurks behind every corner.",
-            "negative": "The Agency shows no mercy to {user}. They are now in debt to the dark forces with a **negative candy balance** of {new_candy_count}... perhaps Greed will come to collect sooner than they think.",
+            "negative": "The Agency shows no mercy to {user}. They are now in debt to the dark forces with a **negative candy balance** of {new_candy_in_bucket}... perhaps Greed will come to collect sooner than they think.",
             "all": "The Agency has stripped {user} of all their candy! With nothing left, they stand empty-handed, and Greed is surely satisfied... for now.",
             "1": "{user} felt the icy grip of The Agency as they took away a single candy. One candy might seem small, but when Greed is involved, nothing is ever trivial."
         },
-        "personal_message": "{amount} candy has been removed from {user}. They now have {max(new_candy_count, 0)} candy."
+        "personal_message": "{amount} candy has been removed from {user}. They now have {max(new_candy_in_bucket, 0)} candy."
     },
     "give_treat": {
         "event_messages": {

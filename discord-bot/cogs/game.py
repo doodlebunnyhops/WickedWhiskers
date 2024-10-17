@@ -2,6 +2,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from cogs.game_commands.set import set_group
+from cogs.game_commands.add import add_group
 
 class Game(commands.Cog):
     def __init__(self, bot):
@@ -9,7 +10,9 @@ class Game(commands.Cog):
         self.commands_to_toggle = ["join", "trick", "treat"]
 
     game_group = app_commands.Group(name="game",description="Game options and commands")
+    
     game_group.add_command(set_group)
+    game_group.add_command(add_group)
     
 
 

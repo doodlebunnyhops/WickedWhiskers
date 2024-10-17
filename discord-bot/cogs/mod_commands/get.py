@@ -185,7 +185,7 @@ async def get_player_stats(interaction: discord.Interaction, user: discord.Membe
 
     if player_data:
         try:
-            candy_count, successful_steals, failed_steals, candy_given, tickets_purchased, active = list(player_data.values())
+            candy_in_bucket, successful_tricks, failed_tricks, treats_given, potions_purchased, active = list(player_data.values())
             active_status = "Active" if active == 1 else "Inactive"
 
             # Prepare the response based on the selected details option
@@ -194,18 +194,18 @@ async def get_player_stats(interaction: discord.Interaction, user: discord.Membe
             if get.value == "stats" or get.value == "all":
                 # Standard player stats
                 response_message += (
-                    f"{user.display_name} has {candy_count} candy.\n"
-                    f"Potions In Stock: {tickets_purchased}\n"
-                    f"Successful steals: {successful_steals}\n"
-                    f"Failed steals: {failed_steals}\n"
-                    f"Candy given: {candy_given}\n"
+                    f"{user.display_name} has {candy_in_bucket} candy.\n"
+                    f"Potions In Stock: {potions_purchased}\n"
+                    f"Successful steals: {successful_tricks}\n"
+                    f"Failed steals: {failed_tricks}\n"
+                    f"Candy given: {treats_given}\n"
                     f"Status: {active_status}\n"
                 )
             
             if get.value == "hidden_values" or get.value == "all":
                 # Hidden values
                 # evilness, sweetness, trick_success_rate = hidden_values
-                trick_success_rate = calculate_thief_success_rate(candy_count)
+                trick_success_rate = calculate_thief_success_rate(candy_in_bucket)
                 response_message += (
                     f"Hidden Values:\n"
                     # f"Evilness: {evilness}\n"

@@ -51,7 +51,7 @@ class Bot(Modal):
             await interaction.response.send_message("\n".join(error_messages), ephemeral=True)
         else:
             # If all validations pass, proceed to update the settings
-            # Example: db_utils.update_bot_settings(event_channel.id, admin_channel.id, invite_channel.id if invite_channel else None, admin_role.id, potion_cost, steal_success_rate)
+            # Example: db_utils.update_bot_settings(event_channel.id, admin_channel.id, invite_channel.id if invite_channel else None, admin_role.id, potion_cost, trick_success_rate)
             await interaction.response.send_message(f"Settings have been updated:\n"
                                                     f"Event Channel: {event_channel.name}\n"
                                                     f"Admin Channel: {admin_channel.name}\n"
@@ -73,7 +73,7 @@ class Game(Modal):
 
         # Extract the values entered by the user
         potion_cost = self.children[0].value
-        steal_success_rate = self.children[1].value
+        trick_success_rate = self.children[1].value
 
         # Validate Potion Cost
         try:
@@ -85,12 +85,12 @@ class Game(Modal):
 
         # Validate Steal Success Rate
         try:
-            steal_success_rate = steal_success_rate.strip('%')  # Remove the '%' sign if present
-            steal_success_rate = float(steal_success_rate)
-            if steal_success_rate <= 0 or steal_success_rate > 100:
-                raise ValueError(f"Steal success rate must be a number between 1 and 100.\n\tProvided value: {steal_success_rate}")
+            trick_success_rate = trick_success_rate.strip('%')  # Remove the '%' sign if present
+            trick_success_rate = float(trick_success_rate)
+            if trick_success_rate <= 0 or trick_success_rate > 100:
+                raise ValueError(f"Steal success rate must be a number between 1 and 100.\n\tProvided value: {trick_success_rate}")
         except ValueError:
-            error_messages.append(f"❌ Steal success rate must be a valid percentage between 1 and 100.\n\t\tProvided value: {steal_success_rate}")
+            error_messages.append(f"❌ Steal success rate must be a valid percentage between 1 and 100.\n\t\tProvided value: {trick_success_rate}")
 
         # If there are any validation errors, display them all at once
         if error_messages:
@@ -99,8 +99,8 @@ class Game(Modal):
             await interaction.response.send_message("\n".join(error_messages), ephemeral=True)
         else:
             # If all validations pass, proceed to update the settings
-            # Example: db_utils.update_bot_settings(event_channel.id, admin_channel.id, invite_channel.id if invite_channel else None, admin_role.id, potion_cost, steal_success_rate)
+            # Example: db_utils.update_bot_settings(event_channel.id, admin_channel.id, invite_channel.id if invite_channel else None, admin_role.id, potion_cost, trick_success_rate)
             await interaction.response.send_message(f"Game Settings have been updated:\n"
                                                     f"Potion Cost: {potion_cost}\n"
-                                                    f"Steal Success Rate: {steal_success_rate}%",
+                                                    f"Steal Success Rate: {trick_success_rate}%",
                                                     ephemeral=True)

@@ -3,7 +3,7 @@ import discord
 import settings
 
 from discord import InteractionType, AppCommandType
-from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_lottery_pool
+from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_cauldron_event
 from utils.utils import post_to_target_channel,create_embed
 from utils.checks import get_game_settings
 
@@ -71,10 +71,10 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
     target_data =get_player_data(target_id, guild_id)
 
     #Scenarios where target has no candy to have stolen
-    if target_data["candy_count"] == 0:
+    if target_data["candy_in_bucket"] == 0:
         # Target has no candy, special handling
-        if thief_data["candy_count"] > 5 and random.random() < 0.05:  # 5% chance thief feels bad and gives some candy
-            given_candy = random.randint(1, min(5, thief_data["candy_count"] - 5))  # Give between 1 and 5 candy
+        if thief_data["candy_in_bucket"] > 5 and random.random() < 0.05:  # 5% chance thief feels bad and gives some candy
+            given_candy = random.randint(1, min(5, thief_data["candy_in_bucket"] - 5))  # Give between 1 and 5 candy
             if given_candy == 1:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "1", user=interaction.user.mention, target=target.mention)
             if given_candy == 2:
@@ -86,14 +86,14 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             if given_candy == 5:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","thief_gives_candy", "5", user=interaction.user.mention, target=target.mention)
             
-            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] - given_candy)
-            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + given_candy)
-            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', thief_data["candy_in_bucket"] - given_candy)
+            update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] + given_candy)
+            update_player_field(thief_id, guild_id, 'failed_tricks', thief_data["failed_tricks"] + 1)
             personal_message = f"{interaction.user.display_name}, you felt so bad for {target.display_name}'s empty stash that you gave {given_candy} candy out of sympathy! You failed the trick, but you gained a friend maybe?"
             
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",embeded_message,discord.Color.dark_purple(),raven_url,"Raven",None)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
         elif random.random() < 0.03:  # 3% chance of ghastly duel and candy vanishes into the lottery
             duel_candy = random.randint(50, 1000)
             #if duel candy is between 50 and 100
@@ -106,32 +106,32 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","duel", "301-600", user=interaction.user.mention, target=target.mention)
             elif duel_candy >= 601:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","duel", "601+", user=interaction.user.mention, target=target.mention)
-            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
-            update_lottery_pool(guild_id, duel_candy)
+            update_player_field(thief_id, guild_id, 'failed_tricks', thief_data["failed_tricks"] + 1)
+            update_cauldron_event(guild_id, duel_candy)
             personal_message = f"{interaction.user.display_name}, you tried to trick {target.display_name} but you got into a fight instead! No candy was stolen :( The candy vanished into the cauldron!"
             
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_magenta())
             
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
         else:
             # No candy exchange, the target laughs at the thief
-            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
+            update_player_field(thief_id, guild_id, 'failed_tricks', thief_data["failed_tricks"] + 1)
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","target_laughs", user=interaction.user.mention, target=target.mention)
             personal_message = f"{interaction.user.display_name} I'm so sorry but {target.display_name} has no candy to trick them out of!"
 
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(), raven_url,"Raven")
 
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
         return
 
 
     # Determine the success rate of the steal
-    success_rate = calculate_thief_success_rate(thief_data["candy_count"])
+    success_rate = calculate_thief_success_rate(thief_data["candy_in_bucket"])
 
     # If target doesn't have enough candy, reduce the amount to the maximum
-    stolen_amount = min(random.randint(1, 10), target_data["candy_count"])
+    stolen_amount = min(random.randint(1, 10), target_data["candy_in_bucket"])
 
     if random.random() < success_rate:
         # Successful steal
@@ -139,44 +139,44 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
         # Extra probability checks for successful now possibly failed steal
         if random.random() < 0.01:  # 1% chance of trick
             # Trick: both lose the candy, and it's added to the lottery
-            if thief_data["candy_count"] < stolen_amount or target_data["candy_count"] < stolen_amount:
+            if thief_data["candy_in_bucket"] < stolen_amount or target_data["candy_in_bucket"] < stolen_amount:
                 # If either player doesn't have enough candy, reduce the amount to the minimum
-                stolen_amount = min(thief_data["candy_count"], target_data["candy_count"])
-            update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - stolen_amount))
-            update_player_field(target_id, guild_id, 'candy_count', max(0, target_data["candy_count"] - stolen_amount))
-            update_player_field(thief_id, guild_id, 'failed_steals', thief_data["failed_steals"] + 1)
+                stolen_amount = min(thief_data["candy_in_bucket"], target_data["candy_in_bucket"])
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', max(0, thief_data["candy_in_bucket"] - stolen_amount))
+            update_player_field(target_id, guild_id, 'candy_in_bucket', max(0, target_data["candy_in_bucket"] - stolen_amount))
+            update_player_field(thief_id, guild_id, 'failed_tricks', thief_data["failed_tricks"] + 1)
 
             # Add the lost candy to a lottery
-            lottery_pool = stolen_amount * 2  # both lose the candy
+            cauldron_event = stolen_amount * 2  # both lose the candy
             # Add the candy to the lottery pool
-            update_lottery_pool(interaction.guild.id, lottery_pool)
+            update_cauldron_event(interaction.guild.id, cauldron_event)
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","both_lose", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name} well you tried to trick {target.display_name}! But you both lost!"
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
 
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             return
 
         elif random.random() < 0.03 and stolen_amount > 5:  # 3% chance target gets 1 candy back if more than 5 stolen
-            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + (stolen_amount - 1))
-            update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
-            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + 1)  # Target gets 1 candy back
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', thief_data["candy_in_bucket"] + (stolen_amount - 1))
+            update_player_field(thief_id, guild_id, 'successful_tricks', thief_data["successful_tricks"] + 1)
+            update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] + 1)  # Target gets 1 candy back
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name}, you tricked {stolen_amount -1} candy from {target.display_name}! Success!"
             embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             return
 
         else:
             # Regular success
-            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + stolen_amount)
-            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - stolen_amount)
-            update_player_field(thief_id, guild_id, 'successful_steals', thief_data["successful_steals"] + 1)
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', thief_data["candy_in_bucket"] + stolen_amount)
+            update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] - stolen_amount)
+            update_player_field(thief_id, guild_id, 'successful_tricks', thief_data["successful_tricks"] + 1)
             if stolen_amount == 0:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","regular_success",0, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             elif stolen_amount == 1:
@@ -192,41 +192,41 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             personal_message = f"{interaction.user.display_name} you tricked {target.display_name} out of {stolen_amount}!"
             embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             return
     else: #LEFT OFF HERE
         # Failed steal, reduce the max thief can lose to the amount they have
-        penalty = min(random.randint(1, 5), thief_data["candy_count"])
+        penalty = min(random.randint(1, 5), thief_data["candy_in_bucket"])
         
         # Extra probability checks for failed steal
         if random.random() < 0.01:  # 1% chance both fumble and lose candy, added to the lottery
-            update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
-            update_player_field(target_id, guild_id, 'candy_count', max(0, target_data["candy_count"] - penalty))
-            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
-            lottery_pool = penalty * 2  # both lose the candy
-            update_lottery_pool(interaction.guild.id, lottery_pool)
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', max(0, thief_data["candy_in_bucket"] - penalty))
+            update_player_field(target_id, guild_id, 'candy_in_bucket', max(0, target_data["candy_in_bucket"] - penalty))
+            update_player_field(thief_id, guild_id,'failed_tricks', thief_data["failed_tricks"] + 1)
+            cauldron_event = penalty * 2  # both lose the candy
+            update_cauldron_event(interaction.guild.id, cauldron_event)
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "both_lose", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),  raven_url,"Raven")
             personal_message = f"{interaction.user.display_name} you fumbled the trick and lost {penalty} candy!!"
 
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             return
         elif random.random() < 0.03:  # 3% chance thief tries again and gets half candy
             half_stolen = max(1, penalty // 2)  # Half the candy, rounded up
-            update_player_field(thief_id, guild_id, 'candy_count', thief_data["candy_count"] + half_stolen)
-            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] - half_stolen)
-            update_player_field(thief_id, guild_id,'successful_steals', thief_data["successful_steals"] + 1)
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', thief_data["candy_in_bucket"] + half_stolen)
+            update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] - half_stolen)
+            update_player_field(thief_id, guild_id,'successful_tricks', thief_data["successful_tricks"] + 1)
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "thief_half", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
             embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you initially failed but managed to get {half_stolen} candy!!"
 
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             return
         else:
             # Regular failure
@@ -248,14 +248,14 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             else:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "regular_failure",10, 
                                                                             user=interaction.user.mention, target=target.mention,amount=penalty)
-            update_player_field(thief_id, guild_id, 'candy_count', max(0, thief_data["candy_count"] - penalty))
-            update_player_field(target_id, guild_id, 'candy_count', target_data["candy_count"] + penalty)
-            update_player_field(thief_id, guild_id,'failed_steals', thief_data["failed_steals"] + 1)
+            update_player_field(thief_id, guild_id, 'candy_in_bucket', max(0, thief_data["candy_in_bucket"] - penalty))
+            update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] + penalty)
+            update_player_field(thief_id, guild_id,'failed_tricks', thief_data["failed_tricks"] + 1)
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you failed your tricks :( and lost {penalty} candy..."
 
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             await interaction.response.send_message(personal_message, ephemeral=True)
+            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
             return
 
 
@@ -292,36 +292,36 @@ async def player_bucket(interaction: discord.Interaction):
         return
 
     player_data = get_player_data(user.id, guild_id)
-    candy_count = player_data["candy_count"]
-    # successful_steals = player_data["successful_steals"]
-    # failed_steals = player_data["failed_steals"]
-    # candy_given = player_data["candy_given"]
+    candy_in_bucket = player_data["candy_in_bucket"]
+    # successful_tricks = player_data["successful_tricks"]
+    # failed_tricks = player_data["failed_tricks"]
+    # treats_given = player_data["treats_given"]
 
     witch_name = random.choice(["luna", "raven"])
 
-    personal_message = interaction.client.message_loader.get_message(f"{witch_name}_bucket", user=user.mention, amount=candy_count)
+    personal_message = interaction.client.message_loader.get_message(f"{witch_name}_bucket", user=user.mention, amount=candy_in_bucket)
     await interaction.response.send_message(personal_message, ephemeral=True)
 
-def calculate_thief_success_rate(thief_candy_count):
+def calculate_thief_success_rate(thief_candy_in_bucket):
     """
     Calculate the success rate of a steal based on the amount of candy the thief has.
     The more candy they have, the harder it becomes to successfully steal.
 
     Args:  
-        thief_candy_count (int): The amount of candy the thief has.
+        thief_candy_in_bucket (int): The amount of candy the thief has.
     """
     base_success_rate = 1  # Start with a 100% base success rate
     max_candy_threshold = 500  # The point where success becomes very difficult
     min_success_rate = 0.01  # New minimum success rate of 1%
 
     # For candy less than 500, use the original formula
-    if thief_candy_count < max_candy_threshold:
-        success_rate = base_success_rate * (1 - (thief_candy_count / max_candy_threshold))
+    if thief_candy_in_bucket < max_candy_threshold:
+        success_rate = base_success_rate * (1 - (thief_candy_in_bucket / max_candy_threshold))
     else:
         # Start with a base success rate of 10% at 500 candy
         success_rate = 0.10  
         # For every 100 candy over 500, reduce success rate by an additional 1%
-        extra_candy = thief_candy_count - max_candy_threshold
+        extra_candy = thief_candy_in_bucket - max_candy_threshold
         success_rate -= (extra_candy // 100) * 0.01  # Decrease by 1% per 100 extra candy
 
     # Cap the success rate at 1%
@@ -382,7 +382,7 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         if amount < 0:
             personal_message = f"{giver.mention}, you can't give negative candy!"
             return event_message,personal_message
-        if giver_data["candy_count"] < amount:
+        if giver_data["candy_in_bucket"] < amount:
             personal_message = f"{giver.display_name}, you don't have enough candy to give!"
             return event_message,personal_message
     except ValueError:
@@ -393,12 +393,6 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         logger.error(f"Error in utils.helper.give_treat: {str(e)}")
         return event_message,personal_message
     
-
-    # Perform the candy transfer
-    update_player_field(giver.id, guild_id, 'candy_count', giver_data["candy_count"] - amount)
-    update_player_field(recipient.id, guild_id, 'candy_count', recipient_data["candy_count"] + amount)
-    update_player_field(giver.id, guild_id, 'candy_given', giver_data["candy_given"] + 1)
-
     #Treat Responses
     if amount == 0:
         event_message = interaction.client.message_loader.get_message(
@@ -407,7 +401,7 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         personal_message = interaction.client.message_loader.get_message(
             "give_treat", "personal_message","0", user=giver.display_name, target=recipient.name,amount=amount
             )
-        update_player_field(giver.id, guild_id, 'candy_given', giver_data["candy_given"] - 1)
+        #No Candy is given so no need to update the fields, shame on you player lol
         embeded = create_embed(f"{giver.display_name} Gave {recipient.display_name} {amount} Candy...",event_message,discord.Color.magenta(),luna_url,"Luna",None)
         
         return embeded,personal_message
@@ -448,4 +442,8 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
             )
     embeded = create_embed(f"{giver.display_name} Gave {recipient.display_name} {amount} Candy :heart:",event_message,discord.Color.magenta(),luna_url,"Luna",None)
     
+    # Perform the candy transfer
+    update_player_field(giver.id, guild_id, 'candy_in_bucket', giver_data["candy_in_bucket"] - amount)
+    update_player_field(recipient.id, guild_id, 'candy_in_bucket', recipient_data["candy_in_bucket"] + amount)
+    update_player_field(giver.id, guild_id, 'treats_given', giver_data["treats_given"] + 1)
     return embeded,personal_message
