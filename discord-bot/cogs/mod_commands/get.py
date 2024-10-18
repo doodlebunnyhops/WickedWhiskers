@@ -4,7 +4,7 @@ from discord import app_commands
 import db_utils
 import utils.checks as checks
 from utils.utils import post_to_target_channel
-from utils.helper import calculate_thief_success_rate
+from utils.player import calculate_thief_success_rate
 
 # Subcommand group for setting (used within the server group)
 get_group = app_commands.Group(name="get", description="get commands")
@@ -45,11 +45,11 @@ async def get_role(interaction: discord.Interaction):
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
 @get_group.command(name="join_game_msg", description="Gets the link to the message where you can join the game.")
-async def get_game_join_msg(interaction: discord.Interaction):
+async def get_join_game_msg(interaction: discord.Interaction):
     guild_id = interaction.guild.id
 
     # Fetch the game invite message and channel ID from the database
-    result = db_utils.get_game_join_msg_settings(guild_id)
+    result = db_utils.get_join_game_msg_settings(guild_id)
 
     if result is None:
         # No message stored for the guild
@@ -69,10 +69,10 @@ async def get_game_join_msg(interaction: discord.Interaction):
         game_invite_message = await game_invite_channel.fetch_message(game_invite_message_id)
         #MessagingLoader
         personal_message = interaction.client.message_loader.get_message(
-            "get_game_join_msg", "personal_message", channel=game_invite_channel.name,jump_url=game_invite_message.jump_url, user=interaction.user.name
+            "get_join_game_msg", "personal_message", channel=game_invite_channel.name,jump_url=game_invite_message.jump_url, user=interaction.user.name
         )
         admin_message = interaction.client.message_loader.get_message(
-            "get_game_join_msg","admin_messages", channel=game_invite_channel.name,jump_url=game_invite_message.jump_url, user=interaction.user.name
+            "get_join_game_msg","admin_messages", channel=game_invite_channel.name,jump_url=game_invite_message.jump_url, user=interaction.user.name
         )
 
          # Respond with the formatted message
@@ -167,57 +167,51 @@ async def get_channel(interaction: discord.Interaction, channel_type: app_comman
     await interaction.response.send_message(personal_message, ephemeral=True)
     await post_to_target_channel(interaction,admin_message,channel_type="admin")
 
-@get_group.command(name="player", description="View a player's stats.")
+@get_group.command(name="settings", description="Get the current settings for the bot.")
 @checks.check_if_has_permission_or_role()
-@app_commands.choices(get=[
-    app_commands.Choice(name="Stats", value="stats"),
-    app_commands.Choice(name="Hidden Values", value="hidden_values"),
-    app_commands.Choice(name="All", value="all")
-])
-@app_commands.describe(
-    user="The user whose stats you want to view",
-    get="The details you want to view (stats, hidden values, or both)"
-)
-async def get_player_stats(interaction: discord.Interaction, user: discord.Member, get: app_commands.Choice[str]):
+async def get_settings(interaction: discord.Interaction):
     guild_id = interaction.guild.id
-    # Fetch the player's stats from the database
-    player_data = db_utils.get_player_data(user.id, guild_id)
 
-    if player_data:
-        try:
-            candy_in_bucket, successful_tricks, failed_tricks, treats_given, potions_purchased, active = list(player_data.values())
-            active_status = "Active" if active == 1 else "Inactive"
+    # Fetch the settings from the database
+    settings = db_utils.get_guild_settings(guild_id)
+    roles = db_utils.fetch_roles_by_guild(guild_id)
 
-            # Prepare the response based on the selected details option
-            response_message = ""
+    if settings is None and roles is None:
+        await interaction.response.send_message("No settings have been configured for this guild.", ephemeral=True)
+        return
 
-            if get.value == "stats" or get.value == "all":
-                # Standard player stats
-                response_message += (
-                    f"{user.display_name} has {candy_in_bucket} candy.\n"
-                    f"Potions In Stock: {potions_purchased}\n"
-                    f"Successful steals: {successful_tricks}\n"
-                    f"Failed steals: {failed_tricks}\n"
-                    f"Candy given: {treats_given}\n"
-                    f"Status: {active_status}\n"
-                )
-            
-            if get.value == "hidden_values" or get.value == "all":
-                # Hidden values
-                # evilness, sweetness, trick_success_rate = hidden_values
-                trick_success_rate = calculate_thief_success_rate(candy_in_bucket)
-                response_message += (
-                    f"Hidden Values:\n"
-                    # f"Evilness: {evilness}\n"
-                    # f"Sweetness: {sweetness}\n"
-                    f"Trick Success Rate: {trick_success_rate*100}%\n"
-                )
+    # Unpack the settings
+    event_channel_id, admin_channel_id, game_invite_message_id, game_invite_channel_id = settings
 
-            await interaction.response.send_message(response_message, ephemeral=True)
-        
-        except Exception as e:
-            logging.error(f"Error fetching player stats: {str(e)}")
-            await interaction.response.send_message("An error occurred while fetching player stats.", ephemeral=True)
-    
+    print(f'event_channel_id: {event_channel_id}, admin_channel_id: {admin_channel_id}, game_invite_message_id: {game_invite_message_id}, game_invite_channel_id: {game_invite_channel_id}')
+    # Fetch the channel objects
+    event_channel = interaction.guild.get_channel(event_channel_id)
+    admin_channel = interaction.guild.get_channel(admin_channel_id)
+    game_invite_channel = interaction.guild.get_channel(game_invite_channel_id) if game_invite_channel_id else None
+
+    #Fetch the invite message
+    if game_invite_channel:
+        invite_message = await game_invite_channel.fetch_message(game_invite_message_id) if game_invite_message_id else None
+
+        # Set invite message to formatted [url-name](invite_message.jump_url) if not None
+        invite_message_text = f"[Link]({invite_message.jump_url})" if invite_message else "Not Set"
     else:
-        await interaction.response.send_message(f"{user.display_name} has not joined the game yet.", ephemeral=True)
+        invite_message_text = "Not Set"
+
+    #Fetch the role objects
+    roles = [interaction.guild.get_role(role_id) for role_id in roles]
+
+    # Prepare the response message
+    response_message = (
+        f"**Current Settings:**\n"
+        f"Event Channel: {event_channel.mention if event_channel else 'Not Set'}\n"
+        f"Admin Channel: {admin_channel.mention if admin_channel else 'Not Set'}\n"
+        f"Invite Channel: {game_invite_channel.mention if game_invite_channel else 'Not Set'}\n"
+        f"Invite Message: {invite_message_text}\n"
+        f"Roles with access to restricted commands: {', '.join([role.name for role in roles if role is not None])}\n"
+    )
+
+    # Respond with the formatted message
+    await interaction.response.send_message(response_message, ephemeral=True)
+    # await post_to_target_channel(interaction,admin_message,channel_type="admin")
+

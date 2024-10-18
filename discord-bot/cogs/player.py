@@ -1,7 +1,7 @@
 from discord import app_commands
 from discord.ext import commands
 import discord
-from utils import helper
+from utils import player as helper
 from utils.utils import create_character_embed
 from db_utils import get_game_settings
 # from slashcmds.subgroup import subgroup
@@ -10,14 +10,9 @@ from db_utils import get_game_settings
 class Player(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    buy_group = app_commands.Group(name="buy",description="Buy items from the shop")
+    # buy_group = app_commands.Group(name="buy",description="Buy items from the shop")
     # subgroup = app_commands.Group(name="subgroup",description="...")
     # group.add_command(subgroup)
-
-    @buy_group.command(name="potion", description="Buy Potion for a chance to win a prize from the cauldron!")
-    async def potion(self, interaction: discord.Interaction):
-        await interaction.response.send_message("You have bought a potion! Use it to get a prize from the cauldron!", ephemeral=True)
-        # await helper.player_join(interaction,None)
 
     @app_commands.command(name="join", description="Join the game!")
     async def join(self, interaction: discord.Interaction):

@@ -1,27 +1,27 @@
 {
     "luna_bucket": [
-        "You have **{amount}** candy.\n\nOh my stars! Look at all that candy in your bucket! 🍬 You’ve been so kind, {user}. Keep spreading the sweetness! 🌟",
-        "You have **{amount}** candy.\n\nWow, {user}, your bucket is practically overflowing! 🎃 Sharing is caring, don't forget to treat others with some of your goodies! 🍭",
-        "You have **{amount}** candy.\n\nAww, {user}, you’ve gathered quite the haul! 🌙 Keep being the generous spirit you are, it’s working wonders! 🍬",
-        "You have **{amount}** candy.\n\nLook at all those treats! 🍭 Luna is so proud of your kind heart, {user}! Let’s keep the good vibes rolling! 💖",
-        "You have **{amount}** candy.\n\nYour bucket is shining as bright as the moon, {user}! 🌕 Keep being sweet, you’re doing amazing! 🍬",
-        "You have **{amount}** candy.\n\nOh, {user}! You've got so much candy! 🍬 Remember, sharing is magical too! Keep making others smile! ✨",
-        "You have **{amount}** candy.\n\nWow, your bucket is brimming with goodies! 🍭 Keep up the kindness, {user}, Luna is watching and cheering for you! 🌟",
-        "You have **{amount}** candy.\n\nYou've been so generous and look at the reward! 🍬 Your bucket is a reflection of your sweet soul, {user}! Keep it up! 🎃",
-        "You have **{amount}** candy.\n\nYour bucket is glowing with all the candy you’ve earned! 🍭 Luna’s heart is full seeing your kindness! 🌕",
-        "You have **{amount}** candy.\n\nWell, {user}, you’ve certainly earned those sweets! 🍬 Your kindness is shining through every piece! Keep the sweetness flowing! 🌸"
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nOh my stars! Look at all that candy in your bucket! 🍬 You’ve been so kind, {user}. Keep spreading the sweetness! 🌟\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nWow, {user}, your bucket is practically overflowing! 🎃 Sharing is caring, don't forget to treat others with some of your goodies! 🍭\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nAww, {user}, you’ve gathered quite the haul! 🌙 Keep being the generous spirit you are, it’s working wonders! 🍬\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nLook at all those treats! 🍭 Luna is so proud of your kind heart, {user}! Let’s keep the good vibes rolling! 💖\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nYour bucket is shining as bright as the moon, {user}! 🌕 Keep being sweet, you’re doing amazing! 🍬\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nOh, {user}! You've got so much candy! 🍬 Remember, sharing is magical too! Keep making others smile! ✨\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nWow, your bucket is brimming with goodies! 🍭 Keep up the kindness, {user}, Luna is watching and cheering for you! 🌟\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nYou've been so generous and look at the reward! 🍬 Your bucket is a reflection of your sweet soul, {user}! Keep it up! 🎃\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nYour bucket is glowing with all the candy you’ve earned! 🍭 Luna’s heart is full seeing your kindness! 🌕\n\n*~ Luna*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nWell, {user}, you’ve certainly earned those sweets! 🍬 Your kindness is shining through every piece! Keep the sweetness flowing! 🌸\n\n*~ Luna*"
     ],
-  "raven_bucket": [
-        "You have **{amount}** candy.\n\nHmm, not bad, {user}. But don’t get too comfortable… I bet some of that candy would look better in someone else’s bucket. 😈🍬",
-        "You have **{amount}** candy.\n\nHa! You call that a bucket of candy? Raven’s seen better. Better watch your back, or you might lose it all. 👁️🎃",
-        "You have **{amount}** candy.\n\nNice try, {user}, but a real trickster would have taken more. Let’s see if you can hold onto that candy... for now. 😏💀",
-        "You have **{amount}** candy.\n\nOh, {user}, look at all that candy! It’d be a shame if someone took a bite out of your stash... or all of it! 🍭💀",
-        "You have **{amount}** candy.\n\nHmm, you've got a decent haul... for now. But trust me, {user}, the real challenge is keeping it. 💀🍬",
-        "You have **{amount}** candy.\n\nMwahaha, {user}, you think you’ve got enough candy to be safe? Don’t get too confident—Raven’s always watching. 😈🎃",
-        "You have **{amount}** candy.\n\nOh, look at you, {user}, thinking that candy’s safe in your bucket. Don’t let your guard down, I might pay you a visit. 🕸️💀",
-        "You have **{amount}** candy.\n\nAhh, {user}, that’s a nice pile of candy… for now. I’ll be keeping an eye on it. You never know when it might disappear. 😏🍬",
-        "You have **{amount}** candy.\n\nThat’s a lot of candy, {user}, but don’t think for a second that it’ll stay there. Raven has plans for it... hehehe. 😈🕷️",
-        "You have **{amount}** candy.\n\nWell, well, {user}, you’ve done alright. But the question is—can you *keep* it? Raven always loves a good twist... 🕸️👁️"
+    "raven_bucket": [
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nHmm, not bad, {user}. But don’t get too comfortable… I bet some of that candy would look better in someone else’s bucket. 😈🍬\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nHa! You call that a bucket of candy? Raven’s seen better. Better watch your back, or you might lose it all. 👁️🎃\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nNice try, {user}, but a real trickster would have taken more. Let’s see if you can hold onto that candy... for now. 😏💀\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nOh, {user}, look at all that candy! It’d be a shame if someone took a bite out of your stash... or all of it! 🍭💀\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nHmm, you've got a decent haul... for now. But trust me, {user}, the real challenge is keeping it. 💀🍬\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nMwahaha, {user}, you think you’ve got enough candy to be safe? Don’t get too confident—Raven’s always watching. 😈🎃\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nOh, look at you, {user}, thinking that candy’s safe in your bucket. Don’t let your guard down, I might pay you a visit. 🕸️💀\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nAhh, {user}, that’s a nice pile of candy… for now. I’ll be keeping an eye on it. You never know when it might disappear. 😏🍬\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nThat’s a lot of candy, {user}, but don’t think for a second that it’ll stay there. Raven has plans for it... hehehe. 😈🕷️\n\n*~ Raven*",
+        "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nWell, well, {user}, you’ve done alright. But the question is—can you *keep* it? Raven always loves a good twist... 🕸️👁️\n\n*~ Raven*"
     ],
     "who_is_luna":{
         "description":"Luna is the kind and whimsical witch of the cauldron, full of sweet intentions and an ever-optimistic spirit. She loves to see players share candy and spread joy, always cheering for generosity and good deeds. Though she can be a bit clumsy, her heart is always in the right place, and she’s never too far from a playful giggle. Luna thrives on kindness and believes in the magic of giving, making her the perfect embodiment of everything sweet and fun in the game. If you’re treating others well, Luna is always watching with a smile!",
@@ -102,7 +102,7 @@
         "All set, {user}! The {channel_type} channel is **{channel}**. *And now, I’m off for a well-deserved coffee.* 😌"
         ]
     },
-    "set_game_join_msg": {
+    "set_join_game_msg": {
         "admin_messages": [
           "The game join message has been posted in **{channel}** by {user}. *Everything’s set and ready to go!* [Join here!]({jump_url}) 🎉",
           "All done, {user}! The game join message is live in **{channel}**. *Let’s get those players in!* [Join now!]({jump_url}) 🎃",
@@ -142,7 +142,7 @@
             ]
         }
     },
-    "get_game_join_msg": {
+    "get_join_game_msg": {
         "admin_messages": [
             "Woohoo! The game join message is here: [Join the game!]({jump_url}) in **{channel}**. *Let’s get this party started, {user}!* 🎃",
             "The game is ready to go, {user}! [Game Join Message]({jump_url}) in **{channel}**. *The more, the merrier!* 😄",
@@ -167,7 +167,7 @@
         "Here’s who’s got access: **{roles}**. *Did you really doubt I had this covered?* 😏"
         ]
     },
-    "update_game_join_msg": {
+    "update_join_game_msg": {
         "admin_messages": [
             "The game join message has been updated by {user} in **{channel}**. *Let’s hope the players are paying attention this time...* [Join here!]({jump_url}) 😏",
             "Alright, {user}, the game join message is set in **{channel}**. *Now let’s see who’s brave enough to join.* [Click here!]({jump_url})",
@@ -322,36 +322,97 @@
     },
     "give_treat": {
         "event_messages": {
-            "0": [
-                "😱 Oh no, {user}! What are you trying to pull?! Poor {target} only got an empty candy wrapper! Luna’s cauldron is embarrassed! 😢",
-                "Uh-oh! {user} gave {target}... nothing! 😨 Was the cauldron empty? Whoopsie! Luna’s cackling from the mix-up! 🧙‍♀️",
-                "Oopsie-doopsie! {user} tried to give candy, but {target} got an empty wrapper! Luna's broom is shaking from giggles! 😅"
+            "double_candy": [
+                "✨ Luna waves her wand in excitement as {user} gives {target} a treat, but oh dear, her magic has a mind of its own! 🎃 Suddenly, the treat **doubles**! Both {target} and {user} now have the same amount of candy—it’s a magical treat exchange! 🌟 Luna giggles, realizing her spell went a bit haywire, but isn’t it wonderful when magic surprises us like that? 🌙",
+                "🌙 Luna’s magic twirls through the air as {user} gives {target} a treat, but something goes delightfully wrong! 💫 The candy **doubles** in an instant, and now {user}, you’ve got back what you gave! It’s like a beautiful mistake—treats all around! 🍬 Luna can’t stop giggling—oops! But what fun! 🎃",
+                "✨ With a flick of her wand, Luna celebrates {user}'s generosity, but oh my, her magic went a bit too far! 🌙 Suddenly, both {user} and {target} are left with double the candy—how enchanting! 🍬 It seems Luna’s excitement just couldn’t be contained. Treats for everyone, hooray! 🎉",
+                "🌟 Oops! Luna got a little too eager when {user} gave {target} a treat! 🍬 With one wave of her wand, the candy **doubled** for both of you—how magical! 🎃 She giggles in delight, knowing her spell went haywire, but sometimes a little magic mishap just makes things better! 🌕",
+                "🎃 Luna twirls her wand to celebrate {user} giving {target} some candy, but oops—her magic is just too excited today! 🍬 The treat has **doubled** for both of you, making it a sweet exchange. Luna can’t help but laugh—she loves when magic gets carried away! 🌙"
             ],
-            "1": [
-                "✨ {user} didn't give much, but oh! {target} munches on their precious single candy! Luna's heart is melting! 🍬",
-                "A single sweet treat from {user}! {target} enjoys every last nibble! Luna's bubbling with joy! 🍭🧙‍♀️",
-                "Aww, {user} gave {target} just one candy... but it’s packed with Halloween magic! 🍬 Luna is twirling in delight! 💫"
+            "cauldron": [
+                "✨ Luna’s heart overflows with joy as {user} gives {target} a generous treat! 🌟 She decides to channel the kindness into the cauldron, and with a flick of her wand, a glowing piece of candy floats into it. Suddenly, the cauldron bubbles and bursts with energy, overflowing with **{cauldron_candy_amount}** pieces of candy! 🎃 But that’s not all—both {user} and {target} feel something special too, as a little extra magic flows their way! 🍬",
+                "🌙 After {user} gives {target} a treat, Luna is so moved by the generosity that she decides to share the magic with everyone! 🍭 With a wave of her wand, a bright piece of candy lands in the cauldron, causing it to bubble and swirl with energy. The cauldron overflows with **{cauldron_candy_amount}** pieces of candy! 🎃 And as a special thank-you, both {user} and {target} receive a little magical gift too! 🍬",
+                "🌕 Luna’s magic couldn’t hold back after seeing {user}’s kindness toward {target}! 🌟 She waves her wand, sending a piece of glowing candy into the cauldron. Suddenly, the cauldron overflows with **{cauldron_candy_amount}** pieces of candy, spilling magic all around! 🎃 Both {user} and {target} receive a little extra treat as Luna’s way of saying thanks for spreading the joy! 🍬",
+                "🍬 Luna watches {user} give {target} a treat with such kindness, her heart fills with joy! 🌙 She channels that energy into the cauldron, and with a wave of her wand, the cauldron overflows with **{cauldron_candy_amount}** pieces of candy, bubbling with newfound magic! 🎃 Both {user} and {target} also get a small magical surprise as a reward for their generosity! 🍬",
+                "🎃 Luna beams as {user} gives {target} a treat! 🍭 Her excitement can’t be contained, so she waves her wand, sending a piece of candy into the cauldron. It starts bubbling with renewed magic, eventually overflowing with **{cauldron_candy_amount}** pieces of candy! 🍬 Both {user} and {target} receive a special little something for their kindness, as Luna’s magic fills the air! 🌙"
             ],
-            "3": [
-                "🎃 {user} just shared {amount} candies with {target}! Luna's cauldron is bubbling with excitement! So sweet! 🍬",
-                "Wowza! {user} gave {target} {amount} candies! Luna’s broomstick wobbled from happiness! Halloween magic is strong tonight! 🌙",
-                "{user} is spreading sweetness everywhere with {amount} candies! {target} is smiling, and Luna’s cackling with joy! 🧙‍♀️🍭"
+            "generous_60": [
+                "🌙 Oh my stars, {user}! You’ve given {target} more than half of your candy! That’s *so* generous, Luna can hardly believe it! 🍬 You’re shining like the moon with kindness, and Luna’s magic sparkles all around you! 🌟",
+                "🎃 Wow, {user}! You just gave {target} a *huge* chunk of your candy! 🍭 Luna’s heart is so full, she can feel your kindness lighting up the whole game! 🌕 You’re a true treat-giver, and the magic of generosity flows through you! ✨",
+                "🌟 Oh my goodness, {user}! You gave {target} more than half your candy! 🍬 Luna’s magic dances in the air, celebrating your kindness! You’re a shining example of what it means to give, and she’s so proud of you! 🎃",
+                "🍬 Luna gasps as she watches you, {user}, give so much of your candy to {target}! 🌙 Such generosity is rare and special, and it fills Luna with joy! 🌕 You’ve made the world a little sweeter with your selfless act! ✨",
+                "🌕 Oh, {user}, you’ve given more than half of your candy to {target}! 🍭 Luna is absolutely over the moon with your kindness! Your generosity shines as bright as the stars, and she couldn’t be prouder of you! 🌟",
+                "🌙 {user}, you’ve given so much candy to {target}—more than half of what you had! 🍬 Luna’s magic can’t help but swirl around you in excitement! You’ve made the world of treats brighter with your act of kindness! 🎃",
+                "🌟 Luna is in awe, {user}! You just gave {target} a *huge* portion of your candy! 🍬 Your generosity has filled her with so much joy that the stars seem to twinkle brighter! 🌕 You’re a true gift to the game! 🎃",
+                "🎃 Luna can hardly believe it, {user}! You gave more than half of your candy to {target}! 🍭 Your kindness is so pure that Luna’s magic overflows with happiness. 🌟 You’re a shining example of what it means to share! 🌕",
+                "🍬 Luna’s eyes widen in wonder, {user}! You’ve given so much to {target}—more than half of your candy! 🌙 You’ve made the world of treats sweeter with your generosity, and Luna couldn’t be prouder! 🎃",
+                "🌟 Oh, {user}, you’ve shared more than half of your candy with {target}! 🍬 Luna’s magic sparkles around you, celebrating such incredible kindness! 🌕 You’ve made the game a little brighter for everyone! 🎃"
             ],
-            "6": [
-                "Woohoo! {user} gave {target} {amount} candies! Luna’s cauldron is overflowing with joy! 💖 Look at all that candy! 🍬🍬",
-                "Luna’s thrilled! {user} shared {amount} pieces of candy with {target}! The Halloween spirit is stronger than ever! 🎃🧹",
-                "{user}, you sweet soul! {target} just got {amount} candies, and Luna’s broom is flying loops from excitement! 🧙‍♀️✨"
+            "candy_for_all": [
+                "🍬 Luna claps her hands in pure delight! *Oh, {user}, your kindness towards {target} has turned into something magical!* 🎉 Every player in the game gets a piece of candy—it's a treat party now! 🎃",
+                "🎊 Luna giggles with excitement! *You’ve started something wonderful, {user}, by treating {target}!* 🍭 Every player feels the magic as a sweet treat lands in their bucket, thanks to you! 🌟 What a celebration!",
+                "✨ *Oops!* Luna’s magic got a little out of hand! Because of your generosity, {user}, and {target}’s happiness, everyone just got a treat! 🍬 It’s a candy party for all! 🎃",
+                "🍬 Luna’s heart swells with joy! Your generosity towards {target}, {user}, is so overwhelming that she sent candy to *every* player! 🎉 It’s a spontaneous treat party—enjoy the celebration! 🌙",
+                "🎉 *Look what you’ve started, {user}, by treating {target}!* Luna’s magic is dancing through the air, and everyone’s buckets just got a little fuller with candy! 🍬 What a sweet treat for all! 🌟",
+                "🍭 *Wow, {user}, your kindness towards {target} has made Luna so happy!* In her excitement, she sent a piece of candy to everyone in the game! 🎃 It’s a full-blown celebration now, thanks to your generosity! 🌕",
+                "✨ *Oh my stars!* Luna couldn’t help herself, {user}! Your act of kindness toward {target} has turned into a game-wide treat party! 🍬 Everyone just received a candy—what a magical moment! 🎉",
+                "🍬 Luna’s magic sparkles in the air! *Your generosity towards {target}, {user}, has created a ripple of joy across the game!* 🎃 Now, every player has a little something sweet to celebrate! 🌟",
+                "🎃 *Luna is overjoyed!* Your gift to {target} was so generous, {user}, that she accidentally turned it into a treat party! 🍬 Every player just got a piece of candy—what a fun surprise! 🌕",
+                "🍭 *It’s a magical moment!* Luna’s happiness from seeing you treat {target} has spread to everyone in the game, {user}! Every player now has a treat in their bucket, and it’s all because of your kind heart! 🎉"
             ],
-            "9": [
-                "🎉 {user}, you absolute candy superstar! {target} is swimming in {amount} candies, and Luna can barely contain her excitement! 🍬🌟",
-                "Wowza wowza! {user} gave a massive {amount} candies to {target}!!! Luna’s cauldron is practically dancing with joy! 💃🧙‍♀️",
-                "Eeeee! {user} just handed over {amount} candies to {target}! Luna’s so happy she might fly off her broom! 🎃🍬🧹"
+            "generous_30": [
+                "You have such a big heart, {user}! That was a wonderfully generous treat of **{amount}** candy you gave {target}. 🍬 Luna is beaming with pride at your kindness! 🌙",
+                "Oh my stars, {user}! You've given {target} a generous portion of **{amount}** candy! 🍭 Luna’s heart is full seeing such kindness in the game. Keep spreading the magic! ✨",
+                "Wow, {user}! You’ve really outdone yourself with that gift of **{amount}** candy to {target}. 🍬 Luna can’t help but smile at your generosity—it’s truly magical! 🌟",
+                "That was a grand gesture, {user}! You’ve given so much—**{amount}** candy to {target}, and Luna is thrilled to see such generosity fill the game! 🎃 Keep up the good work! 🌙",
+                "Luna is absolutely glowing with joy! {user}, your generous treat of **{amount}** candy to {target} is spreading so much positivity! 🍭 The kindness is infectious, keep it up! 🌕",
+                "What a generous gift, {user}! {target} must be so grateful for those **{amount}** pieces of candy. 🍬 Luna is watching over you with admiration, your kindness is something special! ✨",
+                "You really know how to make {target}'s day, {user}, with that gift of **{amount}** candy! Luna is so proud of your generosity—it’s acts like these that make the world a sweeter place! 🍭",
+                "Wow, {user}! What a beautiful act of kindness, gifting **{amount}** candy to {target}! 🍬 Luna is sparkling with pride—your generous heart is a true gift to this game. 🌙",
+                "Your generous spirit shines, {user}! Luna can see the magic in your actions, and {target} is lucky to receive **{amount}** candy! 🍭 Keep up the kindness! 🌟",
+                "Luna is absolutely delighted, {user}! That was such a generous gift of **{amount}** candy to {target}. 🍬 She can feel the magic of your kindness spreading throughout the game! 🌕"
             ],
-            "10": [
-                "💫✨ OH MY CANDY! {user} just gave {target} a HUGE {amount} candies! Luna’s spinning in circles! This is the best treat EVER! 🍭🎉",
-                "🧙‍♀️ Luna’s cauldron is overflowing! {user} handed {amount} candies to {target}—the Halloween magic is unstoppable!! 🎃🍬✨",
-                "Hocus pocus! {user} gave a *gigantic* {amount} candies to {target}! Luna’s broomstick can barely handle the excitement! 💫🍭🧹"
-            ]
+            "generous_11": [
+                "Oh, {user}, look at that! You've given {amount} candy to {target}! Such a sweet gesture! 🌟 Luna’s heart shines brighter when kindness like this is shown!",
+                "How wonderful, {user}! You gave {amount} candy to {target}. 🎃 Your generosity makes Luna so happy! Just a sprinkle of magic to brighten everyone’s day! ✨",
+                "{user}, you’ve gifted {target} with {amount} candy! Luna thinks that’s just splendid! 🍭 Small acts of kindness like this keep the magic alive! 🌕",
+                "Well done, {user}! {target} is lucky to receive {amount} candy from you! 🍬 Luna is so proud of your thoughtful gift! Keep spreading the sweetness! 💖",
+                "Luna is overjoyed, {user}! {target} must be thrilled with your gift of {amount} candy! 🎉 Kindness like this makes the game so much more fun! 🌙",
+                "{user}, you gave {amount} candy to {target}?! That’s just wonderful! 🍬 Luna's magic sparkles with joy every time kindness is shared like this! ✨",
+                "Oh my stars, {user}! {target} is lucky to have a friend like you! {amount} candy given with such care and sweetness! 🍭 Luna’s magic feels even stronger!"
+            ],
+            "standard":{
+                "0": [
+                    "😱 Oh no, {user}! What are you trying to pull?! Poor {target} only got an empty candy wrapper! Luna’s cauldron is embarrassed! 😢",
+                    "Uh-oh! {user} gave {target}... nothing! 😨 Was the cauldron empty? Whoopsie! Luna’s cackling from the mix-up! 🧙‍♀️",
+                    "Oopsie-doopsie! {user} tried to give candy, but {target} got an empty wrapper! Luna's broom is shaking from giggles! 😅"
+                ],
+                "1": [
+                    "✨ {user} didn't give much, but oh! {target} munches on their precious single candy! Luna's heart is melting! 🍬",
+                    "A single sweet treat from {user}! {target} enjoys every last nibble! Luna's bubbling with joy! 🍭🧙‍♀️",
+                    "Aww, {user} gave {target} just one candy... but it’s packed with Halloween magic! 🍬 Luna is twirling in delight! 💫"
+                ],
+                "3": [
+                    "🎃 {user} just shared {amount} candies with {target}! Luna's cauldron is bubbling with excitement! So sweet! 🍬",
+                    "Wowza! {user} gave {target} {amount} candies! Luna’s broomstick wobbled from happiness! Halloween magic is strong tonight! 🌙",
+                    "{user} is spreading sweetness everywhere with {amount} candies! {target} is smiling, and Luna’s cackling with joy! 🧙‍♀️🍭"
+                ],
+                "6": [
+                    "Woohoo! {user} gave {target} {amount} candies! Luna’s cauldron is overflowing with joy! 💖 Look at all that candy! 🍬🍬",
+                    "Luna’s thrilled! {user} shared {amount} pieces of candy with {target}! The Halloween spirit is stronger than ever! 🎃🧹",
+                    "{user}, you sweet soul! {target} just got {amount} candies, and Luna’s broom is flying loops from excitement! 🧙‍♀️✨"
+                ],
+                "9": [
+                    "🎉 {user}, you absolute candy superstar! {target} is swimming in {amount} candies, and Luna can barely contain her excitement! 🍬🌟",
+                    "Wowza wowza! {user} gave a massive {amount} candies to {target}!!! Luna’s cauldron is practically dancing with joy! 💃🧙‍♀️",
+                    "Eeeee! {user} just handed over {amount} candies to {target}! Luna’s so happy she might fly off her broom! 🎃🍬🧹"
+                ],
+                "10": [
+                    "💫✨ OH MY CANDY! {user} just gave {target} a HUGE {amount} candies! Luna’s spinning in circles! This is the best treat EVER! 🍭🎉",
+                    "🧙‍♀️ Luna’s cauldron is overflowing! {user} handed {amount} candies to {target}—the Halloween magic is unstoppable!! 🎃🍬✨",
+                    "Hocus pocus! {user} gave a *gigantic* {amount} candies to {target}! Luna’s broomstick can barely handle the excitement! 💫🍭🧹"
+                ]
+            }
         },
         "personal_message": {
             "0": [
@@ -425,18 +486,18 @@
                     ],
                     "101-300": [
                         "Mwahaha! {user} and {target}, your brutal battle was a spectacle! No candy for either of you, but Raven *has* slipped a secretive stash into the cauldron. How much, you ask? *You'll never know...* 😈🍬",
-                        "{user} and {target}, your duel was so entertaining that Raven decided to throw a **mysterious** amount of candy into the cauldron! Somewhere between 101 and 300 pieces, but don’t get too comfortable with that range... 😏👁️",
+                        "{user} and {target}, your duel was so entertaining that Raven decided to throw a **mysterious** amount of candy into the cauldron! Somewhere between [....] and ]...[ pieces, but don’t get too comfortable with that range... 😏👁️",
                         "Chaos, pure chaos! {user} and {target} gave Raven such joy with that duel. I’ve added some candy to the cauldron in celebration! How much? That's Raven’s little secret... and the cauldron's new treasure. 💀🎃"
                     ],
                     "301-600": [
-                        "A duel for the ages! {user} and {target}, you’ve left Raven cackling with glee. No candy for you, but the cauldron overflows with a secret amount of candy. Raven’s encrypted it well... between whispers and shadows. 😈🍭",
-                        "Ah, {user} and {target}, what a delightful display of chaos! Raven’s added a generous stash of candy to the cauldron—between 301 and 600 pieces, but you’ll never know the exact number. Keep fighting... it amuses me! 😏🕸️",
-                        "{user} and {target}, Raven’s so pleased by your duel that she’s slipped candy into the cauldron. 301 to 600 pieces, but you’ll never know the true amount. Isn’t mystery just the sweetest? 💀🎃"
+                        "A duel for the ages! {user} and {target}, you’ve left Raven cackling with glee. No candy for you, but the cauldron overflows with `(@^#&` candy. Raven’s encrypted it well... between whispers and shadows. 😈🍭",
+                        "Ah, {user} and {target}, what a delightful display of chaos! Raven’s added a generous stash of candy to the cauldron—between `%@&` and `^_^` pieces, but you’ll never know the exact number. Keep fighting... it amuses me! 😏🕸️",
+                        "{user} and {target}, Raven’s so pleased by your duel that she’s slipped candy into the cauldron. `%@&` and `^_^` pieces, but you’ll never know the true amount. Isn’t mystery just the sweetest? 💀🎃"
                     ],
                     "601+": [
-                        "Oh, what a sight! {user} and {target}, you’ve truly made Raven’s night! The duel was magnificent—no candy for you, but the cauldron is now brimming with a secret amount of candy, from 601 to 1000 pieces. The exact amount? Let’s just say it’s locked behind Raven’s enchanted vault! 😈🍬",
-                        "Raven is *beyond* thrilled! {user} and {target} left it all in the duel. To celebrate, she’s poured a **massive** stash of candy into the cauldron. How much? Only the cauldron knows... somewhere between 601 and 1000. 😏👁️",
-                        "Spectacular! {user} and {target} entertained Raven so much that she’s added a **huge** hidden amount of candy to the cauldron. Somewhere between 601 and 1000 pieces. But the exact number? Let’s just say it’s *encrypted* in Raven’s twisted mind... 💀🎃"
+                        "Oh, what a sight! {user} and {target}, you’ve truly made Raven’s night! The duel was magnificent—no candy for you, but the cauldron is now brimming with a secret amount of candy, from `$3**` to `)(^@&#@` pieces. The exact amount? Let’s just say it’s locked behind Raven’s enchanted vault! 😈🍬",
+                        "Raven is *beyond* thrilled! {user} and {target} left it all in the duel. To celebrate, she’s poured a **massive** stash of candy into the cauldron. How much? Only the cauldron knows... somewhere between `$3**` to `)(^@&#@`. 😏👁️",
+                        "Spectacular! {user} and {target} entertained Raven so much that she’s added a **huge** hidden amount of candy to the cauldron. Somewhere between `$3**` to `)(^@&#@` pieces. But the exact number? Let’s just say it’s *encrypted* in Raven’s twisted mind... 💀🎃"
                     ]
                 },
                 "target_laughs": [
