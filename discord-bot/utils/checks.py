@@ -13,6 +13,9 @@ def check_if_has_permission_or_role():
         guild_id = interaction.guild.id
         member = interaction.user
 
+        get_game_settings(guild_id)
+
+
         # Check for permission or role (using your `has_role_or_permission` logic)
         if not utils.has_role_or_permission(member, guild_id):
             logging.info(f"{interaction.user.name} attempted '/{interaction.command.qualified_name}', denied for no permission or role")

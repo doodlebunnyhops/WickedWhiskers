@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from db_utils import is_player_active
-from utils.helper import give_treat
+from utils.player import give_treat
 from utils.utils import post_to_target_channel
 
 

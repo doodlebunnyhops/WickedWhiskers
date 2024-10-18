@@ -13,13 +13,16 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import context_menu.player as player
-from db_utils import initialize_database, get_game_join_msg_settings,is_player_active,create_player_data
+# import context_menu.shop as shop
+from db_utils import initialize_database, get_join_game_msg_settings,is_player_active,create_player_data
 from cogs.mod import Mod
 from cogs.game import Game
 from utils.messages import MessageLoader
 import settings
 # import context_menu
 from modals.player import Treat
+from modals.shop import BuyPotion
+# from modals.shop import BuyPotion
 
 print(discord.__version__)
 print(discord.__file__)
@@ -48,7 +51,7 @@ class MyBot(commands.Bot):
         print("Loading spooky messages...")
         self.message_loader = MessageLoader('utils/messages.json')
 
-        #Set Context Menus callback
+        #Set Context Menus callback REMINDER, discord limits to 5 context menus per bot!
         join_cm = app_commands.ContextMenu(name="Join Game", callback=player.join)
         trick_cm = app_commands.ContextMenu(name="Trick Player", callback=player.trick)
         bucket_cm = app_commands.ContextMenu(name="Check Bucket", callback=player.bucket)
@@ -57,6 +60,12 @@ class MyBot(commands.Bot):
         async def treat_modal(interaction: discord.Interaction, user: discord.Member):
             # Show the modal for user input
             modal = Treat(target_user=user)
+            await interaction.response.send_modal(modal)
+        
+        @bot.tree.context_menu(name="Potion Shop")
+        async def shop_modal(interaction: discord.Interaction, user: discord.Member):
+            # Show the modal for user input
+            modal = BuyPotion(target_user=user)
             await interaction.response.send_modal(modal)
             
         # @self.tree.context_menu(name="Join Game")
@@ -75,7 +84,7 @@ class MyBot(commands.Bot):
             self.tree.add_command(bucket_cm,override=True)
             self.tree.add_command(treat_modal,override=True)
             await self.load_extension("cogs.player")
-            # await self.load_extension("cogs.game")
+            await self.load_extension("cogs.shop")
         else:
             self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
             self.tree.add_command(Game.game_group,guild=self.guild_id,override=True)
@@ -84,7 +93,7 @@ class MyBot(commands.Bot):
             self.tree.add_command(bucket_cm,guild=self.guild_id,override=True)
             self.tree.add_command(treat_modal,guild=self.guild_id,override=True)
             await self.load_extension("cogs.player")
-            # await self.load_extension("cogs.game")
+            await self.load_extension("cogs.shop")
         
         print("Syncing tree...")
         try:
@@ -172,7 +181,7 @@ async def on_raw_reaction_add(payload):
 
         # Fetch the game invite message ID from the database for the current guild
         try:
-            result = get_game_join_msg_settings(guild.id)
+            result = get_join_game_msg_settings(guild.id)
             if result is None:
                 logger.warning(f"No invite message ID found for guild {guild.id}")
                 return

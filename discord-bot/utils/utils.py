@@ -126,7 +126,7 @@ def create_invite_embed(message_loader, message_choice=None):
     return embed
 
 
-def create_embed(title: str = None, description: str = None, color: discord.Color = discord.Color.orange(),thumbnail_url=None,character=None,author_url=None):
+def create_embed(title: str = None, description: str = None, color: discord.Color = discord.Color.orange(),thumbnail_url=None,character=None,author_url=None,image_url=None):
     """
     Utility function to create a Discord embed.
     
@@ -136,6 +136,7 @@ def create_embed(title: str = None, description: str = None, color: discord.Colo
     :param thumbnail_url: The URL of the thumbnail image.
     :param character: The character name for the author field.
     :param author_url: The URL of the author's image.
+    :param image_url: The URL of the main image.
     :return: A discord.Embed object.
     """
     embed = discord.Embed(title=title, description=description, color=color)
@@ -146,6 +147,8 @@ def create_embed(title: str = None, description: str = None, color: discord.Colo
         embed.set_author(name=character)
         if author_url:
             embed.set_author(name=character, icon_url=author_url)
+    if image_url:    
+        embed.set_image(url=image_url)
 
     return embed
 
