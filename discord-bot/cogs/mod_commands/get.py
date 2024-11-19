@@ -181,7 +181,7 @@ async def get_settings(interaction: discord.Interaction):
         return
 
     # Unpack the settings
-    event_channel_id, admin_channel_id, game_invite_message_id, game_invite_channel_id = settings
+    event_channel_id, admin_channel_id, game_invite_message_id, game_invite_channel_id, *_ = settings
 
     print(f'event_channel_id: {event_channel_id}, admin_channel_id: {admin_channel_id}, game_invite_message_id: {game_invite_message_id}, game_invite_channel_id: {game_invite_channel_id}')
     # Fetch the channel objects

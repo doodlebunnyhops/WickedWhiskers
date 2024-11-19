@@ -178,7 +178,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             # update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] + 1) # Unnecessary as the target already has the candy
 
             update_player_field(thief_id, guild_id, 'total_candy_stolen', thief_data["total_candy_stolen"] + stolen_amount)
-            update_player_field(target_id, guild_id, 'total_candy_lost', target_id["total_candy_lost"] + stolen_amount -1 )
+            update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + stolen_amount -1 )
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name}, you tricked {stolen_amount -1} candy from {target.display_name}! Success!"
@@ -226,7 +226,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id,'failed_tricks', thief_data["failed_tricks"] + 1)
 
             update_player_field(thief_id, guild_id, 'total_candy_lost', thief_data["total_candy_lost"] + penalty)
-            update_player_field(target_id, guild_id, 'total_candy_lost', target_id["total_candy_lost"] + penalty)
+            update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + penalty)
 
             cauldron_event = penalty * 2  # both lose the candy
             update_cauldron_pool(interaction.guild.id, cauldron_event)
@@ -246,7 +246,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id,'successful_tricks', thief_data["successful_tricks"] + 1)
 
             update_player_field(thief_id, guild_id, 'total_candy_stolen', thief_data["total_candy_stolen"] + half_stolen)
-            update_player_field(target_id, guild_id, 'total_candy_lost', target_id["total_candy_lost"] + half_stolen)
+            update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + half_stolen)
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "thief_half", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
@@ -281,7 +281,7 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id,'failed_tricks', thief_data["failed_tricks"] + 1)
 
             update_player_field(thief_id, guild_id, 'total_candy_stolen', thief_data["total_candy_stolen"] + penalty)
-            update_player_field(target_id, guild_id, 'total_candy_lost', target_id["total_candy_lost"] + penalty)
+            update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + penalty)
 
             embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you failed your tricks :( and lost {penalty} candy..."
@@ -336,40 +336,48 @@ async def player_bucket(interaction: discord.Interaction):
     personal_message = interaction.client.message_loader.get_message(f"{witch_name}_bucket", user=user.mention, candy_amount=candy_in_bucket,potion_amount=potions_purchased)
     await interaction.response.send_message(personal_message, ephemeral=True)
 
-def calculate_sweetness(total_candy_given, treats_given):
+def calculate_sweetness(total_candy_given, total_candy_stolen):
     """
-    Calculate the sweetness of a player based on their stats.
+    Calculate the percentage of pure sweetness based on candy given and stolen.
 
     Args:
         total_candy_given (int): The total amount of candy given by the player.
-        treats_given (int): The number of treats given by the player.
-    
+        total_candy_stolen (int): The total amount of candy stolen by the player.
+
     Returns:
-        float: The player's sweetness value.
+        float: The player's pure sweetness percentage.
     """
-    #check for division by zero
-    if total_candy_given == 0:
-        return 0
-    else:
-        sweetness = treats_given / total_candy_given
+    # Total actions
+    total_actions = total_candy_given + total_candy_stolen
+    
+    # If no actions were taken, player can't be sweet or evil
+    if total_actions == 0:
+        return 0.0
+
+    # Calculate sweetness percentage
+    sweetness = (total_candy_given / total_actions)
     return sweetness
 
-def calculate_evilness(total_candy_stolen, successful_tricks, failed_tricks):
+def calculate_evilness(total_candy_given, total_candy_stolen):
     """
-    Calculate the evilness of a player based on their stats.
+    Calculate the percentage of pure evil based on candy stolen and given.
 
     Args:
+        total_candy_given (int): The total amount of candy given by the player.
         total_candy_stolen (int): The total amount of candy stolen by the player.
-        successful_tricks (int): The number of successful tricks by the player.
-    
+
     Returns:
-        float: The player's evilness value.
+        float: The player's pure evil percentage.
     """
-    #check for division by zero
-    if total_candy_stolen == 0:
-        return 0
-    else:
-        evilness = (successful_tricks - failed_tricks) / total_candy_stolen
+    # Total actions
+    total_actions = total_candy_given + total_candy_stolen
+
+    # If no actions were taken, player can't be sweet or evil
+    if total_actions == 0:
+        return 0.0
+
+    # Calculate evil percentage
+    evilness = (total_candy_stolen / total_actions)
     return evilness
 
 def calculate_thief_success_rate(thief_candy_in_bucket):
@@ -481,7 +489,7 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         #time box this frist condition
         if random.random() < .05: # Luna's Magic Multitplies double the candy to the recipient and giver gets some too
            embeded, personal_message = double_candy(interaction,guild_id,giver,giver_data,recipient,recipient_data,amount)
-        elif random.random < .05: #Luna fills the cauldron with the candy
+        elif random.random() < .05: #Luna fills the cauldron with the candy
             embeded, personal_message = luna_cauldron_fill(interaction,guild_id,giver,giver_data,recipient,recipient_data,amount,1000)
         else: #generous 60 responses
             embeded, personal_message = generous_response(interaction,guild_id,giver,giver_data,recipient,recipient_data,amount,60)

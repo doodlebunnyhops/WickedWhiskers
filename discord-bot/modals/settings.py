@@ -36,6 +36,7 @@ class Bot(Modal):
         # Validate Invite Channel (optional)
         if invite_channel_name:
             invite_channel = discord.utils.get(guild.channels, name=invite_channel_name)
+            
             if not invite_channel or not isinstance(invite_channel, discord.TextChannel):
                 error_messages.append(f"❌ Invite, `{invite_channel_name}`, Channel not found or is not a valid text channel.")
 
@@ -59,7 +60,7 @@ class Bot(Modal):
             await interaction.response.send_message(f"Settings have been updated:\n"
                                                     f"Event Channel: {event_channel.mention}\n"
                                                     f"Admin Channel: {admin_channel.mention}\n"
-                                                    f"Invite Channel: {invite_channel.name if invite_channel else 'Not Set'}\n"
+                                                    f"Invite Channel: {invite_channel.mention if invite_channel else 'Not Set'}\n"
                                                     f"Admin Role: {admin_role.mention}\n",
                                                     ephemeral=True)
             

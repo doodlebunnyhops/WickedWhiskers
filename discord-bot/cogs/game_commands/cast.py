@@ -83,3 +83,4 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
 
     winners = ", ".join([interaction.guild.get_member(winner).display_name for winner in selected_winners])
     await interaction.response.send_message(f"{witch} has cast a spell with {winners} winners!")
+

@@ -509,9 +509,22 @@ def get_top_active_players(guild_id, limit=10):
 def add_player_to_game(player_id, guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Check if the player already exists in the database
+    cursor.execute('SELECT 1 FROM players WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
+    existing_player = cursor.fetchone()
+
+    if existing_player:
+        # Player already exists
+        # print(f"Player {player_id} already exists in guild {guild_id}.")
+        return False  
+
+    # Insert new player if they don't exist
     cursor.execute('INSERT INTO players (player_id, guild_id, candy_in_bucket, successful_tricks, failed_tricks, treats_given, active, potions_purchased, frozen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                    (player_id, guild_id, 50, 0, 0, 0, 1, 0, 0))
+                   (player_id, guild_id, 50, 0, 0, 0, 1, 0, 0))
     conn.commit()
+    return True  # Indicate successful addition
+
 
 # Fetch all player data
 def fetch_player_data(player_id, guild_id):
@@ -963,3 +976,37 @@ def reset_potions_purchased(guild_id):
     cursor = conn.cursor()
     cursor.execute('UPDATE players SET potions_purchased = 0 WHERE guild_id = ?', (guild_id,))
     conn.commit()
+
+
+def get_leaderboard_query(leaderboard_type, guild_id, top_n=10):
+    """
+    Retrieves a leaderboard based on the type requested.
+    
+    Args:
+        leaderboard_type (str): The type of leaderboard to fetch (e.g., top_treaters, top_tricksters).
+        guild_id (int): The guild to get the leaderboard for.
+        top_n (int): The number of top players to retrieve (default is 10).
+    
+    Returns:
+        list: A list of players sorted by the specified leaderboard type.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    leaderboard_query = {
+        'top_tricksters': "SELECT player_id, successful_tricks FROM players WHERE guild_id = ? ORDER BY successful_tricks DESC LIMIT ?",
+        'top_treaters': "SELECT player_id, treats_given FROM players WHERE guild_id = ? ORDER BY treats_given DESC LIMIT ?",
+        'top_thieves': "SELECT player_id, total_candy_stolen FROM players WHERE guild_id = ? ORDER BY total_candy_stolen DESC LIMIT ?",
+        'most_generous': "SELECT player_id, total_candy_given FROM players WHERE guild_id = ? ORDER BY total_candy_given DESC LIMIT ?",
+        'most_evil': "SELECT player_id, (successful_tricks - failed_tricks) AS evilness FROM players WHERE guild_id = ? ORDER BY evilness DESC LIMIT ?",
+        'most_sweet': "SELECT player_id, treats_given FROM players WHERE guild_id = ? ORDER BY treats_given DESC LIMIT ?",
+        'highest_risk_takers': "SELECT player_id, (total_candy_lost + total_candy_won_from_pumpkins) AS risk_takers FROM players WHERE guild_id = ? ORDER BY risk_takers DESC LIMIT ?",
+        'candy_hoarders': "SELECT player_id, candy_in_bucket FROM players WHERE guild_id = ? ORDER BY candy_in_bucket DESC LIMIT ?"
+    }
+
+    query = leaderboard_query.get(leaderboard_type)
+    if query:
+        cursor.execute(query, (guild_id, top_n))
+        return cursor.fetchall()
+    else:
+        raise ValueError(f"Invalid leaderboard type: {leaderboard_type}")
