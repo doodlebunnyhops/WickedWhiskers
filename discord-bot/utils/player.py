@@ -98,9 +98,9 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id, 'failed_tricks', thief_data["failed_tricks"] + 1)
             personal_message = f"{interaction.user.display_name}, you felt so bad for {target.display_name}'s empty stash that you gave {given_candy} candy out of sympathy! You failed the trick, but you gained a friend maybe?"
             
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
+            embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
         elif random.random() < 0.15:  # 15% chance of ghastly duel and candy vanishes into the lottery
             duel_candy = random.randint(50, 1000)
             #if duel candy is between 50 and 100
@@ -118,20 +118,20 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             personal_message = f"{interaction.user.display_name}, you tried to trick {target.display_name} but you got into a fight instead! No candy was stolen :( The candy vanished into the cauldron!"
             
             # URL HERE
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_green(),None,"Raven",raven_url,raven_cauldron)
+            embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_green(),None,"Raven",raven_url,raven_cauldron)
             
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
         else:
             # No candy exchange, the target laughs at the thief
             update_player_field(thief_id, guild_id, 'failed_tricks', thief_data["failed_tricks"] + 1)
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "no_candy","target_laughs", user=interaction.user.mention, target=target.mention)
             personal_message = f"{interaction.user.display_name} I'm so sorry but {target.display_name} has no candy to trick them out of!"
 
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(), raven_url,"Raven")
+            embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(), raven_url,"Raven")
 
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
         return
 
 
@@ -156,7 +156,6 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             
             update_player_field(thief_id, guild_id, 'total_candy_lost', thief_data["total_candy_lost"] + stolen_amount)
             update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + stolen_amount)
-            update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + stolen_amount)
 
 
             # Add the lost candy to a lottery
@@ -166,10 +165,10 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","both_lose", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name} well you tried to trick {target.display_name}! But you both lost!"
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
+            embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
 
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
             return
 
         elif random.random() < 0.15 and stolen_amount > 5:  # 3% chance target gets 1 candy back if more than 5 stolen
@@ -182,10 +181,10 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name}, you tricked {stolen_amount -1} candy from {target.display_name}! Success!"
-            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
+            embedded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
             return
 
         else:
@@ -210,10 +209,10 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             else:
                 event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick", "regular_success",10, user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name} you tricked {target.display_name} out of {stolen_amount}!"
-            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
+            embedded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
             return
     else:
         # Failed steal, reduce the max thief can lose to the amount they have
@@ -233,11 +232,11 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "both_lose", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),  raven_url,"Raven")
+            embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),  raven_url,"Raven")
             personal_message = f"{interaction.user.display_name} you fumbled the trick and lost {penalty} candy!!"
 
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
             return
         elif random.random() < 0.10:  # 3% chance thief tries again and gets half candy
             half_stolen = max(1, penalty // 2)  # Half the candy, rounded up
@@ -250,11 +249,11 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "thief_half", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)
-            embeded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
+            embedded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you initially failed but managed to get {half_stolen} candy!!"
 
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
             return
         else:
             # Regular failure
@@ -283,11 +282,11 @@ async def player_trick(interaction: discord.Interaction,member: discord.Member):
             update_player_field(thief_id, guild_id, 'total_candy_stolen', thief_data["total_candy_stolen"] + penalty)
             update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + penalty)
 
-            embeded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
+            embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you failed your tricks :( and lost {penalty} candy..."
 
             await interaction.response.send_message(personal_message, ephemeral=True)
-            await post_to_target_channel(channel_type="event", message=embeded_message, interaction=interaction)
+            await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
             return
 
 

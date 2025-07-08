@@ -8,7 +8,7 @@ bot_token = os.getenv("DISCORD_BOT_TOKEN")
 application_id = os.getenv("DISCORD_APPLICATION_ID")
 guild_id = os.getenv("DISCORD_GUILD_ID")
 
-print(f"DISCORD_BOT_TOKEN: {bot_token}")
+
 print(f"DISCORD_APPLICATION_ID: {application_id}")
 print(f"DISCORD_GUILD_ID: {guild_id}")
 
