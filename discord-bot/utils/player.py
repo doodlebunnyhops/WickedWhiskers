@@ -3,7 +3,7 @@ import discord
 import settings
 
 from discord import InteractionType, AppCommandType
-from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_cauldron_pool,get_active_players_by_guild,update_many_players_fields
+from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_cauldron_pool,get_active_players_by_guild,update_many_players_fields, update_cauldron_contribution
 from utils.utils import post_to_target_channel,create_embed
 from utils.checks import get_game_settings
 
@@ -14,11 +14,14 @@ luna_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1296
 luna_banner = "https://cdn.discordapp.com/attachments/1293052178742644889/1296215769687785524/luna_banner.png?ex=6712cc02&is=67117a82&hm=ef0c794acb0a20732ff871fb5569dce4b4e6715d2b3bdef26b2a1590df9e55b8&"
 luna_candy_rain = "https://cdn.discordapp.com/attachments/1293052178742644889/1296632348305260655/DALLE_2024-10-17_20.30.10_-_A_magical_ethereal_banner_featuring_Luna_a_kind-hearted_witch_joyfully_throwing_candy_everywhere._The_scene_should_be_whimsical_with_candy_flying_.webp?ex=6712fe7a&is=6711acfa&hm=a992cd2de84d3caf47c4fa5cc62d6cace613988877a03843cdc2c3c94fc75a05&"
 luna_pumpkin = "https://cdn.discordapp.com/attachments/1293052178742644889/1392004481377505420/luna_pumpkin.png?ex=686df4b2&is=686ca332&hm=21641a4513bea85db3455dfcf6b156ce5ecb700bdacab3c121ff69e19f5f4062&"
+luna_pumpkin_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1392015037341630464/luna_pumpkin_cauldrin.png?ex=686dfe87&is=686cad07&hm=14206e1fa690e777a9ba4ab32e6830b7f3c435875370df5a8e519f8d10d23bbc&"
 
 raven_url = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541158182912/DALLE_2024-10-16_15.07.44_-_A_cartoon_image_of_Raven_the_mischievous_and_dark-hearted_witch._Raven_has_sharp_angular_features_with_glowing_red_eyes_and_long_wild_black_hair_st.webp?ex=67116b64&is=671019e4&hm=d73877b572138632c5cdeb572f0784ba6423ad1d6a1f980587d9eb1a3eeb3eef&"
 raven_banner = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199542307422288/DALLE_2024-10-16_15.11.24_-_A_dark_and_ominous_cartoon-style_banner_that_complements_Ravens_chaotic_theme._The_banner_features_swirling_dark_clouds_ravens_flying_across_the_sky.webp?ex=67116b65&is=671019e5&hm=c6090570417a102d9985551330e15b29053022a6c4f80e36c755c955ca83f8ea&"
 raven_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1296600976509239347/file-0FWSjqbaPehhRtWe2Vcknp28.webp?ex=6712e142&is=67118fc2&hm=1ccf92cca812d1c9326d8fbd2d85a2a0d9d9fbacee0537f49eb7beeeaeb65c4d&"
 raven_pumpkin = "https://cdn.discordapp.com/attachments/1293052178742644889/1392004481012469870/raven_pumpkin.png?ex=686df4b2&is=686ca332&hm=88841f6abf54e0c8948519b407c236384e2813ea4659da45b87b938fbb152125&"
+raven_pumpkin_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1392015038071443539/raven_pumpkin_cauldrin.png?ex=686dfe87&is=686cad07&hm=15756b604e74e651f6dc3ffa067f050fa6faa13b6d62e7bd3d3b4284f997c380&"
+
 
 async def player_join(interaction: discord.Interaction,member: discord.Member):
     guild_id = interaction.guild.id
@@ -391,29 +394,39 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
     candy_won = 0  # Initialize candy won variable
     candy_lost = 0  # Initialize candy lost variable
     embedded_message = None  # Initialize embedded message variable
+    cauldron_roll = random.random()
+
 
     #roll for win or loss
     win_chance = random.random()  # Random float between 0.0 and 1.0
-    if win_chance < 0.25:  # 50% chance to win
+    if win_chance < 0.25:  # 25% chance to win candy
         #Roll again for chance of extra candy
         extra_candy_chance = random.random()  # Random float between 0.0 and 1.0
         if extra_candy_chance < 0.2:  # 20% chance to get extra candy
             #give player 2x the amount of candy they spent
             candy_won = amount * 2
             event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "win_extra", user=user.mention, candy_amount=candy_won)
-            personal_message = f"{user.display_name}, you smashed the pumpkin and got {candy_won} candy! You also got some extra candy for your efforts!"
+            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "win_extra", user=user.mention, candy_amount=candy_won)
         else:
             # give random amount of candy between 1 and 5
             candy_won = random.randint(1, 5)
             event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "win", user=user.mention, candy_amount=candy_won)
-            personal_message = f"{user.display_name}, you smashed the pumpkin and got {candy_won} candy!"
-        embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin, "Luna", None)
+            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "win", user=user.mention, candy_amount=candy_won)
 
-    elif win_chance < 0.55:  # 30% chance to break even
+        if cauldron_roll < 0.3:
+            update_cauldron_pool(guild_id, candy_won)
+            update_cauldron_contribution(user.id, guild_id, candy_won)
+            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "luna", user=user.mention, candy_amount=candy_won)
+            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "luna", user=user.mention, candy_amount=candy_won)
+            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin_cauldron, "Luna", None, luna_pumpkin_cauldron)
+        else:
+            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin, "Luna", None)
+
+    elif win_chance < 0.55:  # 55% chance to break even
         # Player breaks even, no candy lost or gained
         candy_won = 0
         event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "break_even", user=user.mention)
-        personal_message = f"{user.display_name}, you smashed the pumpkin but didn't gain any candy."
+        personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "break_even", user=user.mention)
         #randomly choose luna or raven pumpkin
         if random.random() < 0.5:
             embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin, "Luna", None)
@@ -429,15 +442,24 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
                 # If the player doesn't have enough candy, they lose all of it
                 candy_lost = candy_in_bucket 
                 event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "lose_all", user=user.mention, candy_amount=candy_lost) 
-                personal_message = f"{user.display_name}, you smashed the pumpkin but lost {candy_lost} candy! You didn't have enough candy, so you lost all of it!"      
+                personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "lose_all", user=user.mention, candy_amount=candy_lost)
             else:
                 event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "lose_double", user=user.mention, candy_amount=candy_lost)
-                personal_message = f"{user.display_name}, you smashed the pumpkin and lost {candy_lost} candy! You lost double the amount you spent!"
+                personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "lose_double", user=user.mention, candy_amount=candy_lost)
         else:
             candy_lost = amount
             event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "lose", user=user.mention, candy_amount=candy_lost)
-            personal_message = f"{user.display_name}, you smashed the pumpkin and lost {candy_lost} candy!"
-        embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), raven_pumpkin, "Raven", None)
+            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "lose", user=user.mention, candy_amount=candy_lost)
+
+        #cauldron roll
+        if cauldron_roll < 0.9:
+            update_cauldron_pool(guild_id, candy_lost)
+            update_cauldron_contribution(user.id, guild_id, candy_lost)
+            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "raven", user=user.mention, candy_amount=candy_lost)
+            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "raven", user=user.mention, candy_amount=candy_lost)
+            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), raven_pumpkin_cauldron, "Raven", None)
+        else:
+            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), raven_pumpkin, "Raven", None)
 
     # Update player's stats based on the outcome
     if candy_won > 0:

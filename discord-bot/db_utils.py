@@ -139,6 +139,67 @@ def shutdown():
     close_db_connection()
 
 
+#Functions player cauldron
+
+def get_cauldron_contribution(player_id, guild_id):
+    """
+    Fetches the cauldron contribution for a specific player in a guild.
+    
+    Args:
+        player_id (int): The unique identifier of the player.
+        guild_id (int): The unique identifier of the guild.
+        
+    Returns:
+        int: The amount of candy contributed to the cauldron by the player.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT cauldron_contributions 
+        FROM players 
+        WHERE player_id = ? AND guild_id = ?
+    ''', (player_id, guild_id))
+    result = cursor.fetchone()
+    return result[0] if result else 0
+
+def update_cauldron_contribution(player_id, guild_id, amount):
+    """
+    Updates the cauldron contribution for a specific player in a guild.
+    
+    Args:
+        player_id (int): The unique identifier of the player.
+        guild_id (int): The unique identifier of the guild.
+        amount (int): The amount of candy contributed to the cauldron.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    current_contribution = get_cauldron_contribution(player_id, guild_id)
+    new_contribution = current_contribution + amount
+    cursor.execute('''
+        UPDATE players 
+        SET cauldron_contributions = ?
+        WHERE player_id = ? AND guild_id = ?
+    ''', (new_contribution, player_id, guild_id))
+    conn.commit()
+
+def set_cauldron_contribution(player_id, guild_id, amount):
+    """
+    Sets the cauldron contribution for a specific player in a guild.
+    
+    Args:
+        player_id (int): The unique identifier of the player.
+        guild_id (int): The unique identifier of the guild.
+        amount (int): The amount of candy contributed to the cauldron.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE players 
+        SET cauldron_contributions = ?
+        WHERE player_id = ? AND guild_id = ?
+    ''', (amount, player_id, guild_id))
+    conn.commit()
+
 #Functions cauldron_pool
 def get_cauldron_pool(guild_id):
     """

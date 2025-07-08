@@ -691,6 +691,20 @@
                 "👻 {user} attempted to smash a pumpkin with negative candy? The pumpkin is furious! No candy for you!",
                 "🍬 {user} thought they could trick the pumpkin with negative candy? The pumpkin just laughs!",
                 "🕷️ {user} tried to smash a pumpkin with negative candy? The pumpkin is now cursed! No candy for you!"
+            ],
+            "luna":[
+                "🌙 {user}'s candy glows brightly! Luna smiles and sends a magical copy of {candy_amount} candy swirling into the cauldron.",
+                "✨ A well-earned win, {user}! Luna doubles the joy — your {candy_amount} candy stays, and a twin dances into the brew.",
+                "🍬 Luna claps her hands—{candy_amount} candy for you, {user}, and {candy_amount} more gifted to the cauldron.",
+                "💫 The cauldron sparkles as Luna mirrors {candy_amount} candy into its shimmering swirl. A blessing well-deserved!",
+                "🎉 {user} earns their {candy_amount} candy fair and square! Luna conjures an extra batch to bubble in the cauldron."
+            ],
+            "raven": [
+                "🔥 No! That {candy_amount} candy was MINE—thieving cauldron! {user}, I’ll get it back, just you wait.",
+                "🦴 The cauldron stole {candy_amount} candy from *me*?! I’ll hex that pot next time... {user}, don’t look so smug.",
+                "🕯 I lost, and so did my stash! {candy_amount} candy, devoured while the cauldron *laughed* at me...",
+                "💀 It was supposed to go to *me*, not the cauldron! {candy_amount} candy—gone in a blink. Stop staring, {user}.",
+                "☠️ Raven snarls as the cauldron gurgles victoriously. {candy_amount} of her candy... just *gone*."
             ]
         },
         "personal_message":{
@@ -718,6 +732,28 @@
                 "👻 *Well, {user}, that pumpkin was a dud!* No candy gained or lost, but Luna is proud of your smashing spirit! Keep trying! 🎃",
                 "🍂 *Oh, {user}, just seeds and cobwebs this time!* No candy, but Luna is cheering you on for your smashing efforts! Better luck next time! 🍬",
                 "😌 *Sometimes you win, sometimes you lose... and sometimes you break even!* {user}, no candy this time, but Luna appreciates your smashing skills! 🌕"
+            ],
+            "no_amount": [
+                "🎃 *Oh dear, {user}, you forgot to pay the pumpkin toll!* No candy for you this time, but Luna is here to remind you next time! 🍬",
+                "😱 *Oops! {user} forgot to pay the pumpkin toll!* No candy, just a sad pumpkin. Luna will help you remember next time! 🎃",
+                "👻 *{user}, you attempted to smash a pumpkin without paying!* The pumpkin is not amused, but Luna is here to cheer you up! 🍭"
+            ],
+            "negative_amount": [
+                "😳 *Oh no, {user}, did you really just try to pay negative candy?* The pumpkin is confused and angry! Luna is here to help you next time! 🎃",
+                "👻 *{user}, you tried to pay the pumpkin with negative candy?* The pumpkin is furious, but Luna will guide you better next time! 🍬",
+                "🍭 *Oh dear, {user}, you thought you could trick the pumpkin with negative candy?* The pumpkin just laughs, but Luna is here to help you learn! 🎃"
+            ],
+            "luna": [
+                "🌙 *Luna is so proud of you, {user}! Your candy glows brightly!* {candy_amount} candy stays with you, and Luna sends a magical copy swirling into the cauldron! Keep up the great work! 🍬",
+                "✨ *Wow, {user}, you did it!* Luna doubles the joy — your {candy_amount} candy stays, and a twin dances into the brew. Keep smashing those pumpkins! 🎉",
+                "🍬 *Luna claps her hands—{candy_amount} candy for you, {user}, and {candy_amount} more gifted to the cauldron.* You’re making her so happy! Keep it up! 🌟"
+            ],
+            "raven": [
+                "🦇 {user}, Raven let out a shriek — she just lost {candy_amount} 🍬 to the cauldron!",
+                "🎃 The cauldron bubbles mockingly as {user} watches Raven’s stolen {candy_amount} candy vanish into its depths...",
+                "😡 {user}, Raven tried to keep the candy... but the cauldron claimed all {candy_amount} 🍭 of it!",
+                "🔥 Curses! Raven dropped {candy_amount} 🍬 into the cauldron, and {user} got to witness her meltdown.",
+                "🕯️ {user}, Raven snarled as {candy_amount} candy slipped from her grasp into the greedy cauldron..."
             ]
         }
     }
