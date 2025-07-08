@@ -13,16 +13,16 @@ update_group = app_commands.Group(name="update", description="Update commands")
     channel="Channel where the invite message will be posted"
 )
 @checks.check_if_has_permission_or_role()
-async def update_game_join_msg(interaction: discord.Interaction, channel: discord.TextChannel):
+async def update_join_game_msg(interaction: discord.Interaction, channel: discord.TextChannel):
     guild_id = interaction.guild.id
 
     # Fetch the previous game invite message and channel ID from the database
-    result = db_utils.get_game_join_msg_settings(guild_id)
+    result = db_utils.get_join_game_msg_settings(guild_id)
     
     if result is None:
         # The Invite Message wasn't created yet, lets go ahead and make it
         no_previous_msg = interaction.client.message_loader.get_message(
-        "update_game_join_msg", "no_previous_msg"
+        "update_join_game_msg", "no_previous_msg"
         )
         await interaction.response.send_message(no_previous_msg, ephemeral=True)
     
@@ -41,7 +41,7 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
         except discord.NotFound:
             # The old message no longer exists, proceed to post a new one
             msg_deleted_check = interaction.client.message_loader.get_message(
-                "update_game_join_msg", "msg_deleted_check")
+                "update_join_game_msg", "msg_deleted_check")
             if interaction.response.is_done():
                 await interaction.followup.send(msg_deleted_check, ephemeral=True)
             else:
@@ -57,7 +57,7 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
         except discord.errors.NotFound:
             # The old message no longer exists, proceed to post a new one
             msg_deleted_check = interaction.client.message_loader.get_message(
-                "update_game_join_msg", "msg_deleted_check")
+                "update_join_game_msg", "msg_deleted_check")
             if interaction.response.is_done:
                 await interaction.followup.send(msg_deleted_check, ephemeral=True)
             else:
@@ -79,14 +79,14 @@ async def update_game_join_msg(interaction: discord.Interaction, channel: discor
     new_channel_id = channel.id             # Get the new channel ID
 
     # Update the database with the new message and channel ID
-    db_utils.set_game_join_msg_settings(guild_id, new_message_id, new_channel_id)
+    db_utils.set_join_game_msg_settings(guild_id, new_message_id, new_channel_id)
 
     #MessagingLoader
     personal_message = interaction.client.message_loader.get_message(
-        "update_game_join_msg", "personal_message", channel=channel.name,jump_url=new_invite_message.jump_url, user=interaction.user.name
+        "update_join_game_msg", "personal_message", channel=channel.name,jump_url=new_invite_message.jump_url, user=interaction.user.name
     )
     admin_message = interaction.client.message_loader.get_message(
-        "update_game_join_msg","admin_messages", channel=channel.name,jump_url=new_invite_message.jump_url, user=interaction.user.name
+        "update_join_game_msg","admin_messages", channel=channel.name,jump_url=new_invite_message.jump_url, user=interaction.user.name
     )
 
         # Respond with the formatted message

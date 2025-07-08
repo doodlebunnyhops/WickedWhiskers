@@ -2,7 +2,7 @@
 
 
 import discord
-from utils import helper
+from utils import player as helper
 
 # @app_commands.context_menu(name="Join Game")
 # @checks.must_target_self()
