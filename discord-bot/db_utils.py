@@ -681,12 +681,23 @@ def update_many_players_fields(player_ids, guild_id, fields):
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Prepare the query, using SQL expressions for each field update (e.g., "field = field + 1")
-    query = 'UPDATE players SET ' + ', '.join([f'{field} = {value}' for field, value in fields.items()]) + \
-            ' WHERE player_id IN ({}) AND guild_id = ?'.format(','.join('?' for _ in player_ids))
+    # Old Way 
+    # # Prepare the query, using SQL expressions for each field update (e.g., "field = field + 1")
+    # query = 'UPDATE players SET ' + ', '.join([f'{field} = {value}' for field, value in fields.items()]) + \
+    #         ' WHERE player_id IN ({}) AND guild_id = ?'.format(','.join('?' for _ in player_ids))
+
+    # # Execute the query
+    # cursor.execute(query, player_ids + [guild_id])
     
-    # Execute the query
-    cursor.execute(query, player_ids + [guild_id])
+    # New way - untested
+    query = 'UPDATE players SET ' + ', '.join([f'{field} = ?' for field in fields]) + \
+        ' WHERE player_id IN ({}) AND guild_id = ?'.format(','.join('?' for _ in player_ids))
+    
+    # Prepare the values for the query
+    values = list(fields.values()) + player_ids + [guild_id]
+        # Execute the query
+    cursor.execute(query, values)
+
     conn.commit()
 
 # Boolean is player exists

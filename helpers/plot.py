@@ -16,7 +16,7 @@ data_dict = {key: value for key, value in data.items()}
 # df['sweetness'] = (df['total_candy_given'] / df['treats_given']) - (2 * df['successful_tricks'] + df['failed_tricks'])
 data_dict['sweetness'] = [(total_candy_given / treats_given) - (2 * successful_tricks + failed_tricks) for total_candy_given, treats_given, successful_tricks,failed_tricks in zip(data_dict['total_candy_given'], data_dict['treats_given'], data_dict['successful_tricks'], data_dict['failed_tricks'])]
 
-#print resultsby player_id
+# Print results by player_id
 for player_id, sweetness in zip(data_dict['player_id'], data_dict['sweetness']):
     print(f"Player ID: {player_id}, Sweetness: {sweetness}")
 
