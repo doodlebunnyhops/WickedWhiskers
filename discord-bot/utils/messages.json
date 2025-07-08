@@ -633,5 +633,92 @@
                 "10": {}
             }
         }
+    },
+    "smash_pumpkin":{
+        "event_messages":{
+            "win": [
+            "{user} cracked open a pumpkin and found a sweet stash of {candy_amount} candy!",
+            "🎉 {user} got lucky! Inside the pumpkin was {candy_amount} delicious candy!",
+            "{user}'s pumpkin went *pop*! They snagged {candy_amount} candy!",
+            "🍬 Jackpot! {user} uncovered {candy_amount} candy hiding in the gooey guts!",
+            "Looks like {user} picked the right pumpkin — {candy_amount} candy inside!"
+            ],
+            "lose": [
+            "😱 Trick time! {user} was ambushed by candy goblins and lost {candy_amount} candy!",
+            "{user}'s pumpkin hissed and vanished... taking {candy_amount} candy with it!",
+            "🎃 Uh-oh... {user} got tricked hard. {candy_amount} candy disappeared!",
+            "🦇 A sneaky bat stole {candy_amount} candy right out of {user}'s pocket!",
+            "{user} smashed the wrong pumpkin — it cursed them and ate {candy_amount} candy!"
+            ],
+            "win_extra": [
+            "✨ {user}'s pumpkin *burst* open with bonus loot — {candy_amount} candy! Double trouble!",
+            "🎁 {user} not only smashed a pumpkin... they *double smashed*! {candy_amount} candy!",
+            "{user} found a golden gummy core! {candy_amount} candy explodes out!",
+            "That pumpkin must’ve been cursed in the *best* way — {user} walks off with {candy_amount} candy!",
+            "💥 BOOM! {user}'s pumpkin was filled to the brim — {candy_amount} candy spills everywhere!"
+            ],
+            "lose_double": [
+            "💀 Double trouble! {user} triggered a cursed pumpkin and lost **{candy_amount}** candy!",
+            "🕷️ The pumpkin screamed... and drained {user} of {candy_amount} candy!",
+            "{user} smashed a haunted gourd — it took **twice** the toll: {candy_amount} candy gone!",
+            "☠️ Uh oh... {user} disturbed something *ancient*. It demanded {candy_amount} candy in return.",
+            "🩸 The pumpkin exploded in a puff of red mist... {user} lost {candy_amount} candy to the void!"
+            ],
+            "lose_all": [
+            "💀 Double trouble! {user} triggered a cursed pumpkin and lost **all** their candy!",
+            "🕷️ The pumpkin screamed... and drained {user} of **all** their candy!",
+            "{user} smashed a haunted gourd — it took **all** their candy!",
+            "☠️ Uh oh... {user} disturbed something *ancient*. It demanded **all** their candy in return.",
+            "🩸 The pumpkin exploded in a puff of red mist... {user} lost **all** their candy to the void!"
+            ],
+            "break_even": [
+            "{user} smashed the pumpkin... but all they found was a puff of spooky air.",
+            "👻 {user}'s pumpkin dissolved into mist — no candy, no curse.",
+            "Well that was anticlimactic. {user} walks away with nothing gained or lost.",
+            "{user} cracked a dud! No candy this time, but no trick either.",
+            "🍂 Just seeds and cobwebs. {user} breaks even on this smash."
+            ],
+            "no_amount":[
+                "🎃 {user} tried to smash a pumpkin, but forgot to pay the toll! No candy for you!",
+                "😱 Oops! {user} forgot to pay the pumpkin toll. No candy, just a sad pumpkin!",
+                "👻 {user} attempted to smash a pumpkin without paying. The pumpkin is not amused!",
+                "🍬 No candy for {user}! You must pay the toll before smashing pumpkins!",
+                "🕷️ {user} tried to smash a pumpkin without payment. The pumpkin laughs and vanishes!"
+            ],
+            "negative_amount":[
+                "...did...did {user} really just try to pay negative candy? The pumpkin is confused and angry! No candy for you!",
+                "😳 {user} tried to pay the pumpkin with negative candy? The pumpkin is not amused!",
+                "👻 {user} attempted to smash a pumpkin with negative candy? The pumpkin is furious! No candy for you!",
+                "🍬 {user} thought they could trick the pumpkin with negative candy? The pumpkin just laughs!",
+                "🕷️ {user} tried to smash a pumpkin with negative candy? The pumpkin is now cursed! No candy for you!"
+            ]
+        },
+        "personal_message":{
+            "win": [
+                "🎉 *Congratulations, {user}! You smashed a pumpkin and found {candy_amount} candy!* Luna is so proud of your bravery! Keep up the smashing! 🎃",
+                "✨ *Wow, {user}, you cracked open that pumpkin like a pro!* {candy_amount} candy is now yours to enjoy! Luna is cheering for you! 🍬",
+                "🍭 *Hooray, {user}! You hit the jackpot with that pumpkin!* {candy_amount} candy is yours, and Luna is dancing with joy! Keep smashing those pumpkins! 🌟"
+            ],
+            "lose": [
+                "😱 *Oh no, {user}! That pumpkin was a trickster!* It stole {candy_amount} candy from you! Luna feels your pain—better luck next time! 🎃",
+                "💔 *Aww, {user}, that pumpkin was a sneaky one!* It took away {candy_amount} candy from you. Luna is sending you hugs! 🍬",
+                "👻 *Oh dear, {user}, that pumpkin was cursed!* It vanished with {candy_amount} candy. Luna will help you find more next time! 🌕"
+            ],
+            "win_extra": [
+                "✨ *Amazing, {user}! You smashed that pumpkin and found an extra stash of {candy_amount} candy!* Luna is so impressed by your skills! Keep it up! 🎉",
+                "🎁 *Wowza, {user}! That pumpkin was hiding a treasure trove of {candy_amount} candy!* Luna is over the moon with excitement for you! 🍭",
+                "💥 *Incredible, {user}! You hit the jackpot with that pumpkin!* An extra {candy_amount} candy just for you! Luna is cheering you on! 🌟"
+            ],
+            "lose_double": [
+                "💀 *Oh no, {user}! That cursed pumpkin took away **{candy_amount}** candy!* Luna is here to comfort you in this spooky time. Better luck next time! 🎃",
+                "🕷️ *Yikes, {user}, that pumpkin was a real trickster!* It drained **{candy_amount}** candy from you. Luna will help you recover soon! 🍬",
+                "☠️ *Oh dear, {user}, that haunted gourd took **twice** the toll!* {candy_amount} candy is gone, but Luna is here to lift your spirits! Keep trying! 🌕 "
+            ],
+            "break_even": [
+                "👻 *Well, {user}, that pumpkin was a dud!* No candy gained or lost, but Luna is proud of your smashing spirit! Keep trying! 🎃",
+                "🍂 *Oh, {user}, just seeds and cobwebs this time!* No candy, but Luna is cheering you on for your smashing efforts! Better luck next time! 🍬",
+                "😌 *Sometimes you win, sometimes you lose... and sometimes you break even!* {user}, no candy this time, but Luna appreciates your smashing skills! 🌕"
+            ]
+        }
     }
 }

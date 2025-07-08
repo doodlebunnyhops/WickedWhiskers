@@ -51,7 +51,19 @@ class Player(commands.Cog):
     @app_commands.command(name="bucket", description="See how much candy you have!")
     async def bucket(self, interaction: discord.Interaction):
         await helper.player_bucket(interaction)
-        
+
+    @app_commands.command(name="smash_pumpkin", description="Smash a pumpkin for candy!")
+    @app_commands.describe(
+        amount="The amount of candy to spend on smashing the pumpkin"
+    )
+    async def smash_pumpkin(self, interaction: discord.Interaction, amount: int):
+        guild_id = interaction.guild.id
+        game_disabled, _,_ = get_game_settings(guild_id)
+        if game_disabled:
+            print(f"Game is disabled for guild {guild_id}")
+            await interaction.response.send_message("The game is currently paused.", ephemeral=True)
+            return
+        await helper.smash_pumpkin(interaction, amount)
 
 async def setup(bot):
     await bot.add_cog(Player(bot))

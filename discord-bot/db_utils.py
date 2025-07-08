@@ -42,6 +42,7 @@ def initialize_database():
     total_candy_lost (int): The total amount of candy lost by the player.
     total_candy_given (int): The total amount of candy given by the player.
     pumpkins_smashed (int): The total number of pumpkins smashed by the player.
+    total_candy_lost_on_pumpkins (int): The total amount of candy lost on pumpkins by the player.
     total_candy_won_from_pumpkins (int): The total amount of candy won from pumpkins by the player.
     total_candy_spent_on_pumpkins (int): The total amount of candy spent on smashing pumpkins by the player.
     cauldron_contributions (int): The total amount of candy contributed to the Cauldron by the player.
@@ -70,6 +71,7 @@ def initialize_database():
         pumpkins_smashed INTEGER DEFAULT 0,  -- Tracks total pumpkins smashed by the player
         total_candy_won_from_pumpkins INTEGER DEFAULT 0,  -- Tracks total candy won from pumpkins
         total_candy_spent_on_pumpkins INTEGER DEFAULT 0,  -- Tracks total candy spent on smashing pumpkins
+        total_candy_lost_on_pumpkins INTEGER DEFAULT 0,  -- Tracks total candy lost on pumpkins
         cauldron_contributions INTEGER DEFAULT 0,  -- Tracks candy contributed to the Cauldron
         cauldron_wins INTEGER DEFAULT 0,  -- Tracks how many times a player has won from the Cauldron
         cauldron_losses INTEGER DEFAULT 0,  -- Tracks how many times a player has lost from the Cauldron
@@ -554,6 +556,10 @@ def get_player_data(player_id, guild_id):
             - 'total_candy_lost' (int): The total amount of candy lost by the player.
             - 'total_candy_given' (int): The total amount of candy given by the player.
             - 'active' (int): The player's active status (1 for active, 0 for inactive).
+            - 'pumpkins_smashed' (int): The total number of pumpkins smashed by the player.
+            - 'total_candy_won_from_pumpkins' (int): The total amount of candy won from smashing pumpkins.
+            - 'total_candy_spent_on_pumpkins' (int): The total amount of candy spent on smashing pumpkins.
+            - 'total_candy_lost_on_pumpkins' (int): The total amount of candy lost on pumpkins.
         None: If no player data is found in the database.
     """
     conn = get_db_connection()
@@ -563,7 +569,9 @@ def get_player_data(player_id, guild_id):
     cursor.execute('''
         SELECT candy_in_bucket, successful_tricks, failed_tricks, treats_given, 
                potions_purchased, total_candy_stolen, total_candy_lost, 
-               total_candy_given, active 
+               total_candy_given, active, pumpkins_smashed,
+               total_candy_won_from_pumpkins, total_candy_spent_on_pumpkins,
+               total_candy_lost_on_pumpkins
         FROM players 
         WHERE player_id = ? AND guild_id = ?
     ''', (player_id, guild_id))
@@ -582,7 +590,11 @@ def get_player_data(player_id, guild_id):
             'total_candy_stolen': result[5],
             'total_candy_lost': result[6],
             'total_candy_given': result[7],
-            'active': result[8]
+            'active': result[8],
+            'pumpkins_smashed': result[9],
+            'total_candy_won_from_pumpkins': result[10],
+            'total_candy_spent_on_pumpkins': result[11],
+            'total_candy_lost_on_pumpkins': result[12]
         }
     else:
         return None
@@ -620,6 +632,7 @@ def reset_player_data(player_id, guild_id):
             total_candy_lost = 0,
             total_candy_given = 0,
             pumpkins_smashed = 0,
+            total_candy_lost_on_pumpkins = 0,
             total_candy_won_from_pumpkins = 0,
             total_candy_spent_on_pumpkins = 0,
             cauldron_contributions = 0,

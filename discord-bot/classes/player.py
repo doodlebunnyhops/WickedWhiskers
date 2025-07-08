@@ -11,6 +11,10 @@ class Player:
             self.treats_given = data.get('treats_given', 0)
             self.potions_purchased = data.get('potions_purchased', 0)
             self.active = data.get('active', False)
+            self.pumpkins_smashed = data.get('pumpkins_smashed', 0)
+            self.total_candy_won_from_pumpkins = data.get('total_candy_won_from_pumpkins', 0)
+            self.total_candy_spent_on_pumpkins = data.get('total_candy_spent_on_pumpkins', 0)
+            self.total_candy_lost_on_pumpkins = data.get('total_candy_lost_on_pumpkins', 0)
         else:
             self.candy_in_bucket = 0
             self.successful_tricks = 0
@@ -18,6 +22,10 @@ class Player:
             self.treats_given = 0
             self.potions_purchased = 0
             self.active = False
+            self.pumpkins_smashed = 0
+            self.total_candy_won_from_pumpkins = 0
+            self.total_candy_spent_on_pumpkins = 0
+            self.total_candy_lost_on_pumpkins = 0
 
     def __repr__(self):
         return (f"Player(candy_in_bucket={self.candy_in_bucket}, "
@@ -25,7 +33,11 @@ class Player:
                 f"failed_tricks={self.failed_tricks}, "
                 f"treats_given={self.treats_given}, "
                 f"potions_purchased={self.potions_purchased}, "
-                f"active={self.active})")
+                f"active={self.active}, "
+                f"pumpkins_smashed={self.pumpkins_smashed}, "
+                f"total_candy_won_from_pumpkins={self.total_candy_won_from_pumpkins}, "
+                f"total_candy_spent_on_pumpkins={self.total_candy_spent_on_pumpkins}, "
+                f"total_candy_lost_on_pumpkins={self.total_candy_lost_on_pumpkins})")
 
     def update_candy_in_bucket(self, amount):
         self.candy_in_bucket += amount
@@ -54,6 +66,10 @@ class Player:
         update_player_field(self.player_id, self.guild_id, 'treats_given', self.treats_given)
         update_player_field(self.player_id, self.guild_id, 'potions_purchased', self.potions_purchased)
         update_player_field(self.player_id, self.guild_id, 'active', self.active)
+        update_player_field(self.player_id, self.guild_id, 'pumpkins_smashed', self.pumpkins_smashed)
+        update_player_field(self.player_id, self.guild_id, 'total_candy_won_from_pumpkins', self.total_candy_won_from_pumpkins)
+        update_player_field(self.player_id, self.guild_id, 'total_candy_spent_on_pumpkins', self.total_candy_spent_on_pumpkins)
+        update_player_field(self.player_id, self.guild_id, 'total_candy_lost_on_pumpkins', self.total_candy_lost_on_pumpkins)
 
 # Example usage:
 # player = Player(candy_in_bucket=50, successful_tricks=5, failed_tricks=3, treats_given=10, potions_purchased=2, active=True)
