@@ -940,5 +940,24 @@
         ],
         "mirror_no_target": "The mirror cannot find an eligible target. {target} keeps the Mirror charge, and no candy moves.",
         "mirror_members_unavailable": "The mirror could not verify the server’s players. No candy or potion charge was used. Please try again."
+    },
+    "mod_candy": {
+        "title": "🍬 A little candy magic",
+        "give_named": "🌙 A flick of the wand! {moderator} granted **{amount} candy** to {player}.",
+        "give_anonymous": "🌙 A mysterious wand twinkles! {player} received **{amount} candy**.",
+        "take_named": "🦇 A rustle of wings! {moderator} removed **{amount} candy** from {player}.",
+        "take_anonymous": "🦇 A shadow passes over the sweets! **{amount} candy** was removed from {player}.",
+        "saved": "✨ The adjustment of **{amount} candy** for {player} is saved and posted in the event channel.",
+        "denied": "🦇 This wand is for moderators! You need Manage Server or a configured moderator role.",
+        "invalid_player": "🌙 Choose a player in this server, not a bot.",
+        "invalid_amount": "🍬 Choose Give or Take and a positive whole-number amount.",
+        "not_joined": "🌙 That player has no game record in this server yet.",
+        "insufficient": "🦇 That player does not have enough candy for this removal. No candy was changed.",
+        "balance_limit": "🌙 That adjustment would put the bucket outside its supported range. No candy was changed.",
+        "no_channel": "🌙 Set an event channel with `/bot set channel` before adjusting candy.",
+        "channel_permissions": "🌙 I need View Channel, Send Messages, and Embed Links in the event channel. No candy was changed.",
+        "failed": "🌙 The spell fizzled. No candy was changed; please try again.",
+        "already_processed": "🌙 This adjustment has already been saved. It has not been applied again.",
+        "post_failed": "🌙 The candy adjustment is saved, but the event announcement failed. Do not repeat the command to retry the announcement; that would create another adjustment."
     }
 }

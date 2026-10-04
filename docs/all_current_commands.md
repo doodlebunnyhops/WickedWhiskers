@@ -116,3 +116,18 @@ The posted **Open Shop** button opens the same private shop and survives bot res
 The current cast path is `/game cast spell`, with **no arguments**, and is unavailable. There is no `witch`, `winners`, or potion-ticket option. Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
 
 See [player guide](player_commands.md), [moderator guide](moderator_commands.md), [command audit](command-audit.md), and [potion design and behavior](potion-shop.md).
+
+
+## Moderator candy adjustments
+
+`/bot candy player:<member> action:Give|Take amount:<positive integer> include_moderator:True|False`
+
+Requires Manage Server or a role registered with `/bot set role`. The include_moderator option is required each time: True names the moderator in the event announcement; False omits them. The player and amount are always shown. No bucket balance is included in announcements or confirmations.
+
+Give creates candy for the selected player; it does not deduct from the moderator. Take removes exactly the requested amount and rejects requests exceeding the player's balance. Zero and negative amounts are rejected. The player must already have a game record in this server. Administrative corrections remain available while gameplay is paused or a player is frozen/inactive.
+
+These changes affect only the selected player's balance. They do not increment tricks, treats, sweetness/evilness counters, or cauldron contributions, and do not change cauldron selection weights or the pool. Moderator identity is still recorded in the internal audit even when omitted from the public announcement.
+
+Configure an event channel and grant the bot View Channel, Send Messages, and Embed Links before use. If Discord rejects the announcement after the adjustment has saved, the moderator receives a private warning; do not issue another command to retry the post, since a new command is a new adjustment. Replaying the same interaction cannot apply the adjustment twice.
+
+All new responses use `mod_candy` in `discord-bot/utils/messages.json` through `messages.py`.

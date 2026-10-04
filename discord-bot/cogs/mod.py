@@ -7,6 +7,7 @@ from cogs.mod_commands.get import get_group
 from cogs.mod_commands.set import set_group
 from cogs.mod_commands.reset import reset_group
 from cogs.mod_commands.send import send_group
+from cogs.mod_commands.candy import candy
 
 # importlib.reload(utils)
 # importlib.reload(db_utils)
@@ -24,6 +25,7 @@ class Mod(commands.Cog):
     cmds_group.add_command(update_group)
     cmds_group.add_command(reset_group)
     cmds_group.add_command(send_group)
+    cmds_group.add_command(candy)
     
 
 # Setup function to add the "cog" and the group
