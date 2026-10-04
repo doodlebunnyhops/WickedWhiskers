@@ -9,7 +9,7 @@ Current for `feature/potion-shop`, reviewed 2026-10-04. See the [complete refere
 3. Use `/trick member:<player>` to attempt a theft, or `/treat member:<player> amount:<number>` to give candy. Both players must be active and must be different people. Special Luna/Raven scenarios can change rewards and costs.
 4. Use `/whois character:Luna` or `character:Raven` for character information.
 
-`/smash_pumpkin amount:<number>` is available, but its balance calculations still need repair. Do not assume “break even” means a zero net cost; see the audit before using it in a live season.
+`/smash_pumpkin amount:<number>` wagers candy with no separate entry fee: 10% big win, 30% small reward, 20% break even, 30% normal loss, and 10% big loss. A big loss can empty your bucket. See [payouts and examples](pumpkin-smashing.md).
 
 There are no registered `/escape`, `/return`, `/stats`, or `/view potions` commands. Leaderboards currently require a game moderator through `/game get leaderboard`.
 
@@ -25,13 +25,11 @@ Purchases always use your own candy and inventory—even when you opened the sho
 | Raven’s Cunning | 5 | Add 15 percentage points to the next 3 eligible initial trick rolls, capped at 95% without lowering a higher base rate. |
 | Luna’s Calling | 10 | Give 5 candy each to up to 3 distinct other eligible members. Shared 60-second server cooldown. |
 
-Four additional potions are available: **Mirror Brew (10)** redirects an attempt, **Sticky Fingers (8)** boosts an ordinary theft, **Second Chance (8)** rerolls a failed initial trick roll, and **Luna’s Favor (5)** adds a capped bonus to an ordinary treat. See [all potion interactions and message keys](potion-interactions.md) for targeting, stacking, rounding and charge rules.
-
 Your server may change prices or disable sales. Disabled sales do not invalidate bottles already owned. Ward and Cunning can coexist; activating an already-active copy is rejected without consuming the spare bottle. Effects survive restart and have no time expiry. A Ward-blocked attempt or an empty unprotected bucket does not spend a Cunning charge.
 
 Luna excludes the summoner, bots, departed, frozen and inactive players. No recipients, failed member verification, or an active cooldown preserves the bottle. Purchase/use is blocked while paused or for frozen/inactive players. `/inventory` remains a read-only way to inspect your state.
 
-Potions grant perks; purchases do not fund the cauldron or enter a prize draw. All active players qualify for the moderator cauldron draw. Luna favors treating and Raven favors successful tricks. Winners are distinct; the full pool is shared between them and added to their buckets.
+Potions grant perks; purchases do not fund the cauldron or enter a prize draw. Cauldron draws remain unavailable.
 
 ## Member menus
 

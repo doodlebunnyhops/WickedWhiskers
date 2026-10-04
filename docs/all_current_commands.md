@@ -1,7 +1,7 @@
 # Current command reference
 
 Audited on 2026-10-04 against `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`.
-The actual bot setup was loaded offline with Discord login and sync mocked: **37 slash-command leaves, 5 user context menus, and the default `!help` prefix command**. Registration does not mean every handler is complete. This is a source/registration review, not a live Discord acceptance test.
+The actual bot setup was loaded offline with Discord login and sync mocked: **36 slash-command leaves, 5 user context menus, and the default `!help` prefix command**. Registration does not mean every handler is complete. This is a source/registration review, not a live Discord acceptance test.
 
 `<argument>` is required; `[argument]` is optional. In Discord, choose the named argument and its offered value; do not type angle brackets. Group names such as `/bot`, `/game`, and `/shop` alone are not executable commands. Use these commands in a server.
 
@@ -23,7 +23,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/treat <member> <amount>` | Player/public | Give candy to another active player; special events may alter the cost/reward. |
 | `/whois <character>` | Player/public | Show Luna or Raven character information. |
 | `/bucket` | Player/public | Show your candy and total unactivated potion bottles. |
-| `/smash_pumpkin <amount>` | Player/public | Wager candy on a pumpkin. Registered, but accounting needs repair; see the audit. |
+| `/smash_pumpkin <amount>` | Player/public | Wager candy on a pumpkin; no entry fee, losses capped at your bucket. See [pumpkin rules](pumpkin-smashing.md). |
 | `/shop browse` | Player/public | Open your private potion-selection and quantity modal, then review and confirm checkout. |
 | `/shop manage` | Shop manager | Show this server’s catalog; use controls and a modal to change prices or sale availability. |
 | `/shop manager_role [role]` | Manage Server | Set the dedicated shop-manager role. Omit role to clear it. |
@@ -60,11 +60,10 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game set state <state>` | Game moderator | Enable or pause gameplay. Reaction-based joining currently bypasses the pause. |
 | `/game add player <user>` | Game moderator | Enroll a player; existing inactive records are not reliably reactivated. |
 | `/game get settings` | Game moderator | Show pause state and stored trick rate; directs pricing changes to /shop manage. |
-| `/game get cauldron_eligibility` | Game moderator | Privately show active-player count, six outcome-specific eligibility counts, rules and up to five candidate IDs/weights per outcome. No draw or writes. |
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
-| `/game get leaderboard <type>` | Game moderator | Show top 10 for one category, or browse all eight using the category selector and Previous/Next. Evil/Sweet percentages match player stats. |
-| `/game cast spell <witch> <winners>` | Game moderator | Select distinct active players; Luna favors treating, Raven successful tricks. Awards the full pool and posts a witch-image embed to the Event channel. |
+| `/game get leaderboard <type>` | Game moderator | Show up to 10 results for one category. All errors; Evil/Sweet percentage formatting is incorrect. |
+| `/game cast spell` | Game moderator | Unavailable placeholder. No draw, candy payout, or pool reset occurs. |
 
 ## Arguments and choices
 
@@ -88,7 +87,6 @@ Argument names below are exactly those registered with Discord. Text channels ar
 | `/game set state` | `state`: Enable, Disable |
 | `/game add player` | `user`: user |
 | `/game get player` | `user`: user; `get`: Stats, Hidden Values, All |
-| `/game cast spell` | `witch`: Luna, Raven; `winners`: Many, One |
 | `/game get leaderboard` | `type`: Top Tricksters, Top Treaters, Top Thieves, Most Generous, Most Evil, Most Sweet, Highest Risk Takers, Candy Hoarders, All |
 | `/trick` | `member`: user |
 | `/treat` | `member`: user; `amount`: integer |
@@ -115,12 +113,6 @@ The posted **Open Shop** button opens the same private shop and survives bot res
 
 `/buy potion`, `/shop prices`, `/escape`, `/return`, `/stats`, `/view potions`, `/freeze`, `/reset game`, `/dump cauldron`, `/cast_spell`, `/remove player`, `/update player status`, `/view player count`, and `/add player candy` are **not registered** in this branch. Some messages/helpers still mention old commands. A Python helper is not automatically a Discord command.
 
-The cast path is `/game cast spell witch:Luna|Raven winners:One|Many`. Both arguments are required. It weights active players by treating/tricking, selects distinct winners and awards candy and announces the result in the Event channel; see the cauldron limitations in [potion-shop details](potion-shop.md#cauldron-and-other-limits). Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
+The current cast path is `/game cast spell`, with **no arguments**, and is unavailable. There is no `witch`, `winners`, or potion-ticket option. Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
 
 See [player guide](player_commands.md), [moderator guide](moderator_commands.md), [command audit](command-audit.md), and [potion design and behavior](potion-shop.md).
-
-## Cauldron eligibility diagnostics
-
-Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, the draw shows a player-ID fallback if the member is not cached.
-
-All active database players qualify, independent of potion purchases and pool balance. Luna normal/fumble weight = 1 + treats given; Raven normal/explosion weight = 1 + successful tricks. Luna special weight = 1 + max(0, treats given − successful tricks); Raven rage reverses that difference. Negative stats are treated as zero. Every outcome retains baseline weight 1; when nobody has a positive special-outcome difference, all players have equal chances. Normal/first special/second special probabilities remain 76.5%/15%/8.5%. One selects one player; Many chooses a random count from 2 through the number of distinct active players (or 1 when only one player or one candy is available), then draws with weights without replacement. Selected players cannot repeat. The report and draw share these formulas. The full pool is awarded atomically: equal shares, with remainder pieces assigned in draw order. Many caps its random winner count at the smaller of active-player count and available candy, so every winner receives at least one. The pool becomes zero. Discord interaction IDs prevent duplicate payouts, and cauldron_draws plus cauldron_event record each completed draw.

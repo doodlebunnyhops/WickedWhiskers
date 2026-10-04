@@ -10,16 +10,16 @@ Hacktoberfest 2024 is ON!
 
 This is a discord bot that enabls players in your server to interact in a halloween themed game.  `/trick` members out of their candy or `/treat` them with some?
 
-Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. `/game cast spell` selects distinct active players, favoring treating for Luna and successful tricks for Raven and awards them the full pool. See [cauldron limitations](docs/potion-shop.md#cauldron-and-other-limits).
+Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. Cauldron payout rules are still unfinished; its old ticket-based draw is unavailable while the shared pool is preserved.
 
-Pumpkin smashing is registered as `/smash_pumpkin amount:<number>`, but its accounting still needs repair before a live season. See the [command audit](docs/command-audit.md).
+Try `/smash_pumpkin amount:<number>` with balanced small-reward/normal-loss odds and true break-even outcomes. Big losses can empty your bucket, but never make it negative. See [pumpkin rules](docs/pumpkin-smashing.md).
 
 
 ## Commands
 
 - [Moderator](docs/moderator_commands.md): Setup, permissions, game controls, and shop management.
 - [Player](/docs/player_commands.md)
-- [All current commands](docs/all_current_commands.md): 37 slash commands, five member-menu actions, arguments, and limitations.
+- [All current commands](docs/all_current_commands.md): 36 slash commands, five member-menu actions, arguments, and limitations.
 - [Command audit](docs/command-audit.md): Confirmed bugs, incomplete behavior, and suggested repairs.
 
 
@@ -42,7 +42,3 @@ If you plan to reuse, modify, or distribute any part of this code, please follow
    - "Original creator: doodlebunnyhops"
 
 For more detailed attribution guidelines, see the `ATTRIBUTION.md` file.
-
-## Linux service
-
-Use the [systemd setup guide](docs/systemd.md) to install the bot as a boot-started service with crash recovery and journal logs. From this checkout, run `bash scripts/install-service.sh` as your normal bot account.

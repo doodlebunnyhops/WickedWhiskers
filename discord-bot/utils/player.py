@@ -403,138 +403,44 @@ async def player_bucket(interaction: discord.Interaction):
     await interaction.response.send_message(personal_message, ephemeral=True)
 
 async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
-    """
-    Handle the /smash_pumpkin command to allow players to smash a pumpkin for candy.
-    
-    Args:
-        interaction (discord.Interaction): The interaction object containing guild and user information.
-    """
-    guild_id = interaction.guild.id
-    game_disabled, _,_ = get_game_settings(guild_id)
-    if game_disabled:
-        print(f"Game is disabled for guild {guild_id}")
-        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
+    from utils.pumpkins import smash, PumpkinError
+    import sqlite3
+
+    message = interaction.client.message_loader.get_message
+    await interaction.response.defer(ephemeral=True)
+    try:
+        result, repeated = smash(interaction.guild.id, interaction.user.id, amount, interaction.id)
+    except PumpkinError as error:
+        await interaction.followup.send(message("smash_pumpkin", "errors", str(error)), ephemeral=True)
         return
-
-    user = interaction.user
-    if not is_player_active(user.id, guild_id):
-        await interaction.response.send_message(f"{user.mention}, you must join the game to participate! /join", ephemeral=True)
+    except sqlite3.Error:
+        logger.exception("Pumpkin settlement rolled back for guild %s", interaction.guild.id)
+        await interaction.followup.send(message("smash_pumpkin", "errors", "settlement_failed"), ephemeral=True)
         return
-
-    # Fetch player data
-    player_data = get_player_data(user.id, guild_id)
-    candy_in_bucket = player_data["candy_in_bucket"]
-
-    #check if player has enough candy to smash a pumpkin
-    if candy_in_bucket < amount:
-        await interaction.response.send_message(f"{user.mention}, you don't have enough candy to smash a pumpkin! You have {candy_in_bucket} candy in your bucket.", ephemeral=True)
+    if repeated:
+        await interaction.followup.send(message("smash_pumpkin", "already_processed"), ephemeral=True)
         return
-    if amount == 0:
-        event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "no_amount", user=user.mention)
-        personal_message = f"{user.display_name}, you need to specify an amount of candy to smash a pumpkin! Use `/smash_pumpkin <amount>` to smash a pumpkin."
-        await interaction.response.send_message(personal_message, ephemeral=True)
-        await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
-        return
-    if amount < 0:
-        event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "negative_amount", user=user.mention)
-        personal_message = f"{user.display_name}, you can't smash a pumpkin with a negative amount of candy! Use `/smash_pumpkin <amount>` to smash a pumpkin."
-        await interaction.response.send_message(personal_message, ephemeral=True)
-        await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
-        return
-    
-    #charge the player for the amount of candy they want to spend
-    # Deduct the base cost to smash a pumpkin
-    candy_in_bucket -= amount
-    update_player_field(user.id, guild_id, 'candy_in_bucket', candy_in_bucket)
-
-    # Update player's total_candy_spent_on_pumpkins
-    update_player_field(user.id, guild_id, 'total_candy_spent_on_pumpkins', player_data["total_candy_spent_on_pumpkins"] + amount)
-
-    # Increment number of pumpkins_smashed
-    update_player_field(user.id, guild_id, 'pumpkins_smashed', player_data["pumpkins_smashed"] + 1)
-
-    candy_won = 0  # Initialize candy won variable
-    candy_lost = 0  # Initialize candy lost variable
-    embedded_message = None  # Initialize embedded message variable
-    cauldron_roll = random.random()
-
-
-    #roll for win or loss
-    win_chance = random.random()  # Random float between 0.0 and 1.0
-    if win_chance < 0.25:  # 25% chance to win candy
-        #Roll again for chance of extra candy
-        extra_candy_chance = random.random()  # Random float between 0.0 and 1.0
-        if extra_candy_chance < 0.2:  # 20% chance to get extra candy
-            #give player 2x the amount of candy they spent
-            candy_won = amount * 2
-            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "win_extra", user=user.mention, candy_amount=candy_won)
-            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "win_extra", user=user.mention, candy_amount=candy_won)
-        else:
-            # give random amount of candy between 1 and 5
-            candy_won = random.randint(1, 5)
-            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "win", user=user.mention, candy_amount=candy_won)
-            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "win", user=user.mention, candy_amount=candy_won)
-
-        if cauldron_roll < 0.3:
-            update_cauldron_pool(guild_id, candy_won)
-            update_cauldron_contribution(user.id, guild_id, candy_won)
-            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "luna", user=user.mention, candy_amount=candy_won)
-            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "luna", user=user.mention, candy_amount=candy_won)
-            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin_cauldron, "Luna", None, luna_pumpkin_cauldron)
-        else:
-            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin, "Luna", None)
-
-    elif win_chance < 0.55:  # 55% chance to break even
-        # Player breaks even, no candy lost or gained
-        candy_won = 0
-        event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "break_even", user=user.mention)
-        personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "break_even", user=user.mention)
-        #randomly choose luna or raven pumpkin
-        if random.random() < 0.5:
-            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), luna_pumpkin, "Luna", None)
-        else:
-            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), raven_pumpkin, "Raven", None)
-    else:
-        # Player loses candy
-        #roll again for chance of losing amountx2 candy
-        lose_chance = random.random()  # Random float between 0.0 and 1.0
-        if lose_chance < 0.2:  # 20% chance to lose double the amount
-            candy_lost = amount * 2
-            if candy_lost > candy_in_bucket:
-                # If the player doesn't have enough candy, they lose all of it
-                candy_lost = candy_in_bucket 
-                event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "lose_all", user=user.mention, candy_amount=candy_lost) 
-                personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "lose_all", user=user.mention, candy_amount=candy_lost)
-            else:
-                event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "lose_double", user=user.mention, candy_amount=candy_lost)
-                personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "lose_double", user=user.mention, candy_amount=candy_lost)
-        else:
-            candy_lost = amount
-            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "lose", user=user.mention, candy_amount=candy_lost)
-            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "lose", user=user.mention, candy_amount=candy_lost)
-
-        #cauldron roll
-        if cauldron_roll < 0.9:
-            update_cauldron_pool(guild_id, candy_lost)
-            update_cauldron_contribution(user.id, guild_id, candy_lost)
-            event_message = interaction.client.message_loader.get_message("smash_pumpkin", "event_messages", "raven", user=user.mention, candy_amount=candy_lost)
-            personal_message = interaction.client.message_loader.get_message("smash_pumpkin", "personal_message", "raven", user=user.mention, candy_amount=candy_lost)
-            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), raven_pumpkin_cauldron, "Raven", None)
-        else:
-            embedded_message = create_embed(f"{user.display_name} Smashes a Pumpkin", event_message, discord.Color.orange(), raven_pumpkin, "Raven", None)
-
-    # Update player's stats based on the outcome
-    if candy_won > 0:
-        update_player_field(user.id, guild_id, 'candy_in_bucket', candy_in_bucket + candy_won)
-        update_player_field(user.id, guild_id, 'total_candy_won_from_pumpkins', player_data["total_candy_won_from_pumpkins"] + candy_won)
-    else:
-        # If player lost candy, ensure they don't go below 0
-        update_player_field(user.id, guild_id, 'candy_in_bucket', candy_in_bucket - candy_lost)
-        update_player_field(user.id, guild_id, 'total_candy_lost_on_pumpkins', player_data["total_candy_lost_on_pumpkins"] + candy_lost)
-    
-    # Send the personal message to the user
-    await interaction.response.send_message(personal_message, ephemeral=True)
-    await post_to_target_channel(channel_type="event", message=embedded_message, interaction=interaction)
+    values = dict(user=interaction.user.mention, candy_amount=abs(result['delta']),
+                  wager=result['wager'], balance=result['balance'], delta=result['delta'])
+    event = message("smash_pumpkin", "event_messages", result['message_key'], **values)
+    personal = message("smash_pumpkin", "personal_message", result['message_key'], **values)
+    # Append magical contributions rather than replacing the actual outcome (especially a wiped bucket).
+    if result['magic']:
+        event += "\n\n" + message("smash_pumpkin", "event_messages", result['magic'], **values)
+        personal += "\n\n" + message("smash_pumpkin", "personal_message", result['magic'], **values)
+    summary = message("smash_pumpkin", "summary", **values)
+    event += "\n\n" + summary
+    personal += "\n\n" + summary
+    is_win = result['delta'] >= 0
+    image = (luna_pumpkin_cauldron if result['magic'] == 'luna' else luna_pumpkin) if is_win else (raven_pumpkin_cauldron if result['magic'] == 'raven' else raven_pumpkin)
+    embed = create_embed(message("smash_pumpkin", "title", user=interaction.user.display_name),
+                         event, discord.Color.orange(), image, "Luna" if is_win else "Raven", None)
+    await interaction.followup.send(personal, ephemeral=True)
+    try:
+        await post_to_target_channel(interaction, embed, channel_type="event")
+    except discord.HTTPException:
+        logger.exception("Pumpkin result saved but announcement failed")
+        await interaction.followup.send(message("smash_pumpkin", "errors", "post_failed"), ephemeral=True)
 
 def calculate_sweetness(total_candy_given, total_candy_stolen):
     """
