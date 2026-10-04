@@ -19,7 +19,7 @@ Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The 
 ## Incomplete behavior and decisions to make
 
 - `/bot remove join_game_msg` is a registered instruction-only placeholder. Decide whether it should delete the message, clear its mapping, or both.
-- `/game cast spell` is intentionally unavailable. Potions are perks, not tickets. Implement independent eligibility, distinct winners and actual payouts before enabling it.
+- `/game cast spell` has been restored unchanged from `pumpkin` at the owner's request. It announces names without payouts, retains legacy weighting, can error on an empty weighted list, and can repeat player names in Many. A future redesign needs independent eligibility, distinct winners and payouts.
 - `/game set settings` defaults optional `game_enabled` to false. This is current behavior, but surprising: changing a rate alone pauses play. Prefer an optional “leave unchanged” state.
 - `/bot get join_game_msg` has no moderator permission check. The group name does not enforce one. Decide whether public access is intended.
 - `/bot get channel` with Both returns early when a setting is absent. Show each configured/missing channel independently.

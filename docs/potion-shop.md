@@ -68,7 +68,7 @@ Deleting the seasonal database clears all state, including server overrides. The
 
 ## Cauldron and other limits
 
-The old cauldron command was an incomplete ticket-weighted name selector with no payout. It now explicitly reports that cauldron draws are unavailable, while preserving the pool. This prevents perk inventory from being treated as tickets. Independent cauldron eligibility, distinct winners and payout rules still need their own implementation.
+The original `pumpkin` cauldron command has been restored unchanged: `/game cast spell witch:Luna|Raven winners:One|Many`. It selects and announces names; it does not pay candy or reset the pool. Its legacy weighting (including `potions_purchased` for Luna), empty-pool errors, and possible repeated names in Many remain as in the original. New perk purchases do not populate the legacy purchase counter.
 
 This work does not rebalance pumpkins, change the underlying trick-success curve, implement general trick cooldowns, or finish the unrelated return/freeze command set. These remain separate from the potion implementation.
 

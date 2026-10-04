@@ -63,7 +63,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
 | `/game get leaderboard <type>` | Game moderator | Show up to 10 results for one category. All errors; Evil/Sweet percentage formatting is incorrect. |
-| `/game cast spell` | Game moderator | Unavailable placeholder. No draw, candy payout, or pool reset occurs. |
+| `/game cast spell <witch> <winners>` | Game moderator | Restored original name selection and announcement. Legacy weighting remains; no candy payout or pool reset. |
 
 ## Arguments and choices
 
@@ -87,6 +87,7 @@ Argument names below are exactly those registered with Discord. Text channels ar
 | `/game set state` | `state`: Enable, Disable |
 | `/game add player` | `user`: user |
 | `/game get player` | `user`: user; `get`: Stats, Hidden Values, All |
+| `/game cast spell` | `witch`: Luna, Raven; `winners`: Many, One |
 | `/game get leaderboard` | `type`: Top Tricksters, Top Treaters, Top Thieves, Most Generous, Most Evil, Most Sweet, Highest Risk Takers, Candy Hoarders, All |
 | `/trick` | `member`: user |
 | `/treat` | `member`: user; `amount`: integer |
@@ -113,6 +114,6 @@ The posted **Open Shop** button opens the same private shop and survives bot res
 
 `/buy potion`, `/shop prices`, `/escape`, `/return`, `/stats`, `/view potions`, `/freeze`, `/reset game`, `/dump cauldron`, `/cast_spell`, `/remove player`, `/update player status`, `/view player count`, and `/add player candy` are **not registered** in this branch. Some messages/helpers still mention old commands. A Python helper is not automatically a Discord command.
 
-The current cast path is `/game cast spell`, with **no arguments**, and is unavailable. There is no `witch`, `winners`, or potion-ticket option. Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
+The restored cast path is `/game cast spell witch:Luna|Raven winners:One|Many`. Both arguments are required. It retains original legacy weighting and announces names without payouts; see the cauldron limitations in [potion-shop details](potion-shop.md#cauldron-and-other-limits). Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
 
 See [player guide](player_commands.md), [moderator guide](moderator_commands.md), [command audit](command-audit.md), and [potion design and behavior](potion-shop.md).

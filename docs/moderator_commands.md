@@ -37,7 +37,7 @@ Use `/bot update channel channel_type:Event|Admin channel:<channel>` for an exis
 - `/bot reset player user:<member>`: immediately reset an existing player to 50 candy, active/unfrozen status, cleared counters, bottles and effects. There is no confirmation step and unregistered players cause an error.
 - `/game get leaderboard type:<category>`: list up to ten ranked players. The All option is broken; Evil/Sweet formatting incorrectly treats raw scores as percentages.
 - `/game get cauldron`: inspect the pool. `/game set cauldron amount:<nonnegative integer>` replaces its balance.
-- `/game cast spell`: deliberately unavailable pending separate eligibility, distinct-winner and payout implementation.
+- `/game cast spell witch:Luna|Raven winners:One|Many`: restored original selection and announcement, without payouts. Luna still uses legacy potion-purchase counts; new perk purchases do not update those counts.
 
 There is no registered full-season reset, freeze/unfreeze, or remove-player command. Seasonal database deletion is an operational reset, not a slash command, and also clears server configuration and shop price overrides.
 
