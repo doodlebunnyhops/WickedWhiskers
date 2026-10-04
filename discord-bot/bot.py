@@ -84,6 +84,7 @@ class MyBot(commands.Bot):
             self.tree.add_command(treat_modal,override=True)
             await self.load_extension("cogs.player")
             await self.load_extension("cogs.shop")
+            await self.load_extension("cogs.help")
         else:
             self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
             self.tree.add_command(Game.game_group,guild=self.guild_id,override=True)
@@ -93,6 +94,7 @@ class MyBot(commands.Bot):
             self.tree.add_command(treat_modal,guild=self.guild_id,override=True)
             await self.load_extension("cogs.player")
             await self.load_extension("cogs.shop")
+            await self.load_extension("cogs.help")
         
         print("Syncing tree...")
         try:

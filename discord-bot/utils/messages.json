@@ -987,5 +987,159 @@
         "failed": "🌙 The spell fizzled. No candy was changed; please try again.",
         "already_processed": "🌙 This adjustment has already been saved. It has not been applied again.",
         "post_failed": "🌙 The candy adjustment is saved, but the event announcement failed. Do not repeat the command to retry the announcement; that would create another adjustment."
+    },
+    "help": {
+        "choose_topic": "What would you like help with?",
+        "footer": "Only you can see this guide. Menu expires after 10 minutes; use /help again.",
+        "denied": "🦇 That chapter is for moderators. You need Manage Server or a configured game-moderator role.",
+        "not_owner": "🌙 Open your own private guide with /help.",
+        "playing": {
+            "label": "Playing",
+            "hint": "Trick, treat, shop, inventory, bucket, and pumpkins",
+            "title": "🎃 Ready for a little mischief?",
+            "description": "Start here, little spellcaster! Pick Potions from the menu when you want to learn what each bottle does.",
+            "fields": {
+                "join": {
+                    "name": "Join the fun",
+                    "value": "Use `/join`, or click the 🎃 reaction on the server's join message."
+                },
+                "trick": {
+                    "name": "🦇 Trick someone",
+                    "value": "`/trick member:@Player` — attempt to steal candy. Tricks can fail, and potions or witch events can change the outcome."
+                },
+                "treat": {
+                    "name": "🍬 Share a treat",
+                    "value": "`/treat member:@Player amount:5` — give candy to another player. Enter a positive amount you can afford."
+                },
+                "shop": {
+                    "name": "🧪 Shop and potions",
+                    "value": "`/shop browse` opens your private shop, or use **Open Shop** on the shop message. Buying a bottle puts it in your inventory; use `/use` to activate it."
+                },
+                "inventory": {
+                    "name": "🎒 Check your supplies",
+                    "value": "`/inventory` shows owned bottles and active effects. The shop message also has an **Inventory** button. `/bucket` checks your candy."
+                },
+                "pumpkins": {
+                    "name": "🎃 Smash a pumpkin",
+                    "value": "`/smash_pumpkin amount:10` — wager candy: 10% big win, 30% small reward, 20% break even, 30% normal loss, 10% big loss. No separate entry fee. A big loss can empty your entire bucket!"
+                },
+                "where": {
+                    "name": "Where to play",
+                    "value": "Use your server's play channel for commands. Join and shop messages may live in separate channels; their names are chosen by your moderators."
+                }
+            }
+        },
+        "potions": {
+            "label": "Potions",
+            "hint": "What to buy and how to activate it",
+            "title": "🧪 Choose your mischief",
+            "description": "Buy with `/shop browse`, check `/inventory`, then activate with `/use`. Prices and availability can differ by server; check the shop for current prices.",
+            "fields": {
+                "defense": {
+                    "name": "Protect your candy",
+                    "value": "**Witch's Ward:** blocks one incoming player trick.\n**Mirror Brew:** redirects one incoming trick attempt, possibly back at the trickster! If it hits the trickster and succeeds, the candy goes to the cauldron. Ward and Mirror cannot be active together."
+                },
+                "tricks": {
+                    "name": "Boost your tricks",
+                    "value": "**Raven's Cunning:** +15 percentage points on your next 3 eligible initial trick rolls.\n**Sticky Fingers:** +25% candy, rounded up, on your next ordinary successful theft, capped by the target's candy.\n**Second Chance:** rerolls one failed initial trick roll; it cannot bypass protection."
+                },
+                "kindness": {
+                    "name": "Spread some sweetness",
+                    "value": "**Luna's Favor:** on your next ordinary treat of at least 2 candy, adds half the gift (rounded down), up to 5 extra candy.\n**Luna's Calling:** immediately gives 5 candy each to up to 3 random other active, unfrozen players. Shared 60-second server cooldown."
+                },
+                "rules": {
+                    "name": "Before you sip",
+                    "value": "Buying does not activate a potion. Active effects apply to eligible trick/treat actions; they do not protect against pumpkin losses. Potion purchases are perks, not cauldron entries."
+                }
+            }
+        },
+        "setup": {
+            "label": "Server setup",
+            "hint": "Channels, join and shop messages, permissions",
+            "title": "🛠️ Set up your spooky corner",
+            "description": "For Manage Server members or configured game moderators. Channel names below are examples; use your own server's channels.",
+            "fields": {
+                "channels": {
+                    "name": "1 · Set announcement channels",
+                    "value": "`/bot set channel channel_type:Event channel:#play`\n`/bot set channel channel_type:Admin channel:#mod-log`\nAlready configured? Use `/bot update channel` instead. Check `/bot get settings` afterward."
+                },
+                "join": {
+                    "name": "2 · Post the join message",
+                    "value": "`/bot send join_game_msg channel:#join` makes the bot post the join invitation. Add a 🎃 (`:jack_o_lantern:`) reaction to that message once as a moderator so players can click the existing reaction to join."
+                },
+                "shop": {
+                    "name": "3 · Post the shop entrance",
+                    "value": "`/shop post channel:#shop` posts the **Open Shop** and **Inventory** buttons. This requires Manage Server or the designated shop-manager role."
+                },
+                "tidy": {
+                    "name": "4 · Keep entrance channels tidy",
+                    "value": "In #join and #shop, deny **Send Messages** and **Add Reactions** for @everyone. Keep **View Channel** and **Read Message History** allowed. Members can click the existing 🎃 reaction and use shop buttons. Keep **Use Application Commands** allowed in the play channel. Check other roles for permission overrides."
+                },
+                "bot": {
+                    "name": "Bot permissions",
+                    "value": "Allow the bot **View Channel**, **Send Messages**, **Embed Links**, **Read Message History**, and **Add Reactions** where needed. Also allow **Attach Files** in the event channel for large cauldron announcements."
+                },
+                "access": {
+                    "name": "5 · Assign access and enable play",
+                    "value": "`/bot set role role:@Game-Moderator` grants game moderation access.\n`/shop manager_role role:@Shop-Manager` is a separate shop role, set by Manage Server members.\n`/game set state state:Enable` enables play. Use Disable to pause normal gameplay."
+                }
+            }
+        },
+        "management": {
+            "label": "Management",
+            "hint": "Player stats, candy adjustments, prices, leaderboard",
+            "title": "📋 Manage the game",
+            "description": "Use the command that matches your goal. Changes to trick/treat counters can affect cauldron draw weights.",
+            "fields": {
+                "stats": {
+                    "name": "Inspect a player",
+                    "value": "`/game get player user:@Player get:Stats` — view their stats privately. Choose Hidden Values or All for more detail. Use `/inventory` for your own current potions; the old Potions Purchased stat is not bottle inventory."
+                },
+                "adjust": {
+                    "name": "Set a stat to an exact value",
+                    "value": "`/game set player_stat user:@Player stat:Successful Tricks number:5`\nChoices: Candy, Successful Tricks, Failed Tricks, Treats Given. This **replaces** the value; it does not add 5. Use nonnegative values."
+                },
+                "candy": {
+                    "name": "Give or take candy",
+                    "value": "`/bot candy player:@Player action:Give amount:100 include_moderator:False`\nChoose Give or Take and a positive amount. The event post names the player and amount, optionally the moderator, never the bucket balance. Taking too much is rejected. These adjustments do not count as tricks, treats, or cauldron contributions."
+                },
+                "leaderboard": {
+                    "name": "Show the leaderboard",
+                    "value": "`/game get leaderboard type:All` posts a leaderboard with category navigation. Pick a specific category to post just that ranking."
+                },
+                "prices": {
+                    "name": "Manage the shop",
+                    "value": "`/shop manage` changes this server's potion prices and availability. Requires Manage Server or the shop-manager role, which is separate from game-moderator access."
+                },
+                "state": {
+                    "name": "Pause or resume",
+                    "value": "`/game set state state:Disable` or `state:Enable`. Moderator candy adjustments remain available while gameplay is paused."
+                }
+            }
+        },
+        "events": {
+            "label": "Cauldron events",
+            "hint": "Check eligibility, prepare the pool, cast a spell",
+            "title": "🔮 Gather round the cauldron",
+            "description": "A cast awards candy from the shared cauldron and posts a themed witch embed in the event channel.",
+            "fields": {
+                "check": {
+                    "name": "1 · Check the pool and players",
+                    "value": "`/game get cauldron` shows the pool.\n`/game get cauldron_eligibility` shows eligible players and weights for each outcome. Active database players have a baseline chance; Luna favors treating and Raven favors successful tricks."
+                },
+                "pool": {
+                    "name": "2 · Set the pool if needed",
+                    "value": "`/game set cauldron amount:1000` **replaces** the pool with 1,000 candy. It does not add 1,000. Gameplay can also contribute candy; buying potions does not fund the pool."
+                },
+                "cast": {
+                    "name": "3 · Cast the spell",
+                    "value": "`/game cast spell witch:Luna winners:Many`\nChoose **Luna** or **Raven**, then **One** or **Many**. Many selects multiple distinct winners when enough eligible players and candy are available. Each cast pays out the pool; check it again before casting another spell."
+                },
+                "ready": {
+                    "name": "Before casting",
+                    "value": "Set the event channel with `/bot set channel` or `/bot update channel`. Give the bot View Channel, Send Messages, Embed Links, and Attach Files. The pool must contain candy and at least one player must be eligible."
+                }
+            }
+        }
     }
 }
