@@ -104,7 +104,7 @@ def test_wipeout_announcement_and_replay(database,monkeypatch):
     asyncio.run(player.smash_pumpkin(caller,30))
     embed = post.call_args.args[1]
     assert '50' in embed.description and 'Raven' in embed.description
-    assert 'cauldron' in embed.description and 'Bucket: 0' in embed.description
+    assert 'cauldron' in embed.description and 'Bucket:' not in embed.description
     assert 'Net change: -50' in embed.description
     assert post.call_args.kwargs['channel_type'] == 'event'
     assert '0 candy' in caller.followup.send.call_args.args[0]

@@ -793,7 +793,7 @@
             ]
         },
         "title": "🎃 {user} smashed a pumpkin!",
-        "summary": "Wager: {wager} candy • Net change: {delta:+d} • Bucket: {balance} candy",
+        "summary": "Wager: {wager} candy • Net change: {delta:+d}",
         "already_processed": "🎃 That pumpkin is already smashed, little spellcaster! Its candy result has already been saved.",
         "errors": {
             "paused": "🌙 The pumpkin patch is resting while the game is paused.",
