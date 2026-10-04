@@ -21,8 +21,8 @@ from utils.messages import MessageLoader
 import settings
 # import context_menu
 from modals.player import Treat
-from modals.shop import BuyPotion
-# from modals.shop import BuyPotion
+from modals.shop import open_shop
+# from modals.shop import open_shop
 
 print(discord.__version__)
 print(discord.__file__)
@@ -65,8 +65,7 @@ class MyBot(commands.Bot):
         @bot.tree.context_menu(name="Potion Shop")
         async def shop_modal(interaction: discord.Interaction, user: discord.Member):
             # Show the modal for user input
-            modal = BuyPotion(target_user=user)
-            await interaction.response.send_modal(modal)
+            await open_shop(interaction)
             
         # @self.tree.context_menu(name="Join Game")
         # @checks.must_target_self()

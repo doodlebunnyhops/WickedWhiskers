@@ -69,7 +69,6 @@ class Game(Modal):
         super().__init__(title="Game Settings Configuration")
 
         # Add input fields to the modal
-        self.add_item(TextInput(label="Potion Price", placeholder="default 10", required=False,default="10"))
         self.add_item(TextInput(label="Candy Steal Success Rate", placeholder="default 100%", required=False ,default="100%"))
 
     async def on_submit(self, interaction: discord.Interaction):
@@ -77,16 +76,7 @@ class Game(Modal):
         error_messages = []  # List to accumulate errors
 
         # Extract the values entered by the user
-        potion_price = self.children[0].value
-        trick_success_rate = self.children[1].value
-
-        # Validate Potion Cost
-        try:
-            potion_price = int(potion_price)
-            if potion_price <= 0:
-                raise ValueError(f"Potion cost, `{potion_price}`, must be a positive integer.")
-        except ValueError:
-            error_messages.append("❌ Potion cost must be a valid positive integer.")
+        trick_success_rate = self.children[0].value
 
         # Validate Steal Success Rate
         try:
@@ -104,9 +94,9 @@ class Game(Modal):
             await interaction.response.send_message("\n".join(error_messages), ephemeral=True)
         else:
             # If all validations pass, proceed to update the settings
-            db_utils.set_game_setting(guild.id, potion_price=potion_price, trick_success_rate=trick_success_rate)
+            db_utils.set_game_setting(guild.id, trick_success_rate=trick_success_rate)
 
             await interaction.response.send_message(f"Game Settings have been updated:\n"
-                                                    f"Potion Cost: {potion_price}\n"
+                                                    "Potion prices: /shop manage\n"
                                                     f"Steal Success Rate: {trick_success_rate}%",
                                                     ephemeral=True)

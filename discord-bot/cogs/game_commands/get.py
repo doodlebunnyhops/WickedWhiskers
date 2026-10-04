@@ -21,7 +21,7 @@ async def get_game_settings(interaction: discord.Interaction):
     trick_success_rate = round(trick_success_rate, 2)
     response_message = (
         f"Player Game Commands: {'Disabled' if game_disabled == 1 else 'Enabled'}\n"
-        f"Potion Price: {potion_price} candy for 1 potion\n"
+        "Potion prices: use /shop browse or /shop manage\n"
         f"Trick Success Rate: {trick_success_rate}%"
     )
     await interaction.response.send_message(response_message, ephemeral=True)

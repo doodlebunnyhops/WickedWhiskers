@@ -1,4 +1,5 @@
 import discord
+import db_utils as db
 from discord.ext import commands
 
 from db_utils import is_player_active
@@ -22,7 +23,8 @@ class Treat(discord.ui.Modal, title="Amount"):
                 return
             
             #get the event message and personal message responses
-            event_message,personal_message = give_treat(interaction,self.target_user,amount)
+            with db.transaction():
+                event_message,personal_message = give_treat(interaction,self.target_user,amount)
 
             #check if event_message is None, this means there was an error
             if event_message is None:

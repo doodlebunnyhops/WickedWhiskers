@@ -1,5 +1,7 @@
 # WickedWhiskers
 
+Potion shop implementation: see [setup, commands, effects, and testing](docs/potion-shop.md).
+
 There are a lot of commands that haven't been implemented yet! If you're looking to contribute there's plenty to do here :D and then enjoy the discord bot game! 
 
 Hacktoberfest 2024 is ON!
@@ -8,7 +10,7 @@ Hacktoberfest 2024 is ON!
 
 This is a discord bot that enabls players in your server to interact in a halloween themed game.  `/trick` members out of their candy or `/treat` them with some?
 
-Buy Potions to place candy into a cauldron with a chance to win buckets of candy! Be weery, the good witch Luna and bad witch Raven keep an eye on how you play! Ever so often (when a moderator feels like it really), one of the witches will be selected to cast the spell in the cauldron to select their winner(s)...but sometimes it doesn't go according to plan. _partially implmented_
+Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. Cauldron payout rules are still unfinished; its old ticket-based draw is unavailable while the shared pool is preserved.
 
 Not paitent enough to wait on a cauldron event, no worries try your hand at pumpkin smashing! See if candy spills out or you got a dud with no candy :sad: _not implemented yet_
 

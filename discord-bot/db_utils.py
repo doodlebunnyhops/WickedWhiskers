@@ -8,6 +8,8 @@
 # https://github.com/doodlebunnyhops.
 # -----------------------------------------------------------------------------
 import sqlite3
+from contextlib import contextmanager
+from contextvars import ContextVar
 import settings
 
 logger = settings.logging.getLogger("bot")
@@ -19,6 +21,36 @@ def get_db_connection():
     if conn is None:
         conn = sqlite3.connect('candy_game.db')
     return conn
+
+_transaction_depth = ContextVar("transaction_depth", default=0)
+
+def commit_changes():
+    if not _transaction_depth.get():
+        get_db_connection().commit()
+
+@contextmanager
+def transaction():
+    """Group synchronous gameplay writes; never await inside this context."""
+    connection = get_db_connection()
+    depth = _transaction_depth.get()
+    savepoint = f"game_action_{depth}"
+    connection.execute(f"SAVEPOINT {savepoint}" if depth else "BEGIN IMMEDIATE")
+    token = _transaction_depth.set(depth + 1)
+    try:
+        yield connection
+        if depth:
+            connection.execute(f"RELEASE SAVEPOINT {savepoint}")
+        else:
+            connection.commit()
+    except BaseException:
+        if depth:
+            connection.execute(f"ROLLBACK TO SAVEPOINT {savepoint}")
+            connection.execute(f"RELEASE SAVEPOINT {savepoint}")
+        else:
+            connection.rollback()
+        raise
+    finally:
+        _transaction_depth.reset(token)
 
 def close_db_connection():
     global conn
@@ -132,7 +164,9 @@ def initialize_database():
     )
     ''')
 
-    conn.commit()
+    from potions import initialize_schema
+    initialize_schema(conn)
+    commit_changes()
 
 # Close connection on shutdown
 def shutdown():
@@ -180,7 +214,7 @@ def update_cauldron_contribution(player_id, guild_id, amount):
         SET cauldron_contributions = ?
         WHERE player_id = ? AND guild_id = ?
     ''', (new_contribution, player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 def set_cauldron_contribution(player_id, guild_id, amount):
     """
@@ -198,7 +232,7 @@ def set_cauldron_contribution(player_id, guild_id, amount):
         SET cauldron_contributions = ?
         WHERE player_id = ? AND guild_id = ?
     ''', (amount, player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 #Functions cauldron_pool
 def get_cauldron_pool(guild_id):
@@ -220,7 +254,7 @@ def get_cauldron_pool(guild_id):
     else:
         # If no pool exists for the guild, initialize it with 0
         cursor.execute('INSERT INTO cauldron_pool (guild_id, candy_in_cauldron) VALUES (?, ?)', (guild_id, 0))
-        conn.commit()
+        commit_changes()
         return 0
 
 def update_cauldron_pool(guild_id, amount):
@@ -236,7 +270,7 @@ def update_cauldron_pool(guild_id, amount):
     current_pool = get_cauldron_pool(guild_id)
     new_pool = current_pool + amount
     cursor.execute('UPDATE cauldron_pool SET candy_in_cauldron = ? WHERE guild_id = ?', (new_pool, guild_id))
-    conn.commit()
+    commit_changes()
 
 def set_cauldron_pool(guild_id, amount):
     """
@@ -253,7 +287,7 @@ def set_cauldron_pool(guild_id, amount):
         cursor.execute('UPDATE cauldron_pool SET candy_in_cauldron = ? WHERE guild_id = ?', (amount, guild_id))
     else:
         cursor.execute('INSERT INTO cauldron_pool (guild_id, candy_in_cauldron) VALUES (?, ?)', (guild_id, amount))
-    conn.commit()
+    commit_changes()
 
 def reset_cauldron(guild_id):
     """
@@ -266,7 +300,7 @@ def reset_cauldron(guild_id):
     cursor = conn.cursor()
     cursor.execute('DELETE FROM cauldron_pool WHERE guild_id = ?', (guild_id,))
     cursor.execute('UPDATE players SET potions_purchased = 0 WHERE guild_id = ?', (guild_id,))
-    conn.commit()
+    commit_changes()
 
 def reset_cauldron_pool(guild_id):
     """
@@ -278,7 +312,7 @@ def reset_cauldron_pool(guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('UPDATE cauldron_pool SET candy_in_cauldron = 0 WHERE guild_id = ?', (guild_id,))
-    conn.commit()
+    commit_changes()
 
 #Cauldron Event Functions
 def add_cauldron_event(guild_id, caster_id, witch, outcome, num_players_rewarded, total_candy_given):
@@ -300,7 +334,7 @@ def add_cauldron_event(guild_id, caster_id, witch, outcome, num_players_rewarded
     cursor = conn.cursor()
     cursor.execute('INSERT INTO cauldron_event (guild_id, caster_id, witch, outcome, num_players_rewarded, total_candy_given) VALUES (?, ?, ?, ?, ?, ?)', 
                     (guild_id, caster_id, witch, outcome, num_players_rewarded, total_candy_given))
-    conn.commit()
+    commit_changes()
 
 def get_cauldron_events(guild_id, limit=10):
     """
@@ -372,9 +406,12 @@ def get_cauldron_event_by_outcome(guild_id, outcome):
 def reset_game(guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    from potions import clear_season
+    clear_season(conn, guild_id)
+    cursor.execute('DELETE FROM cauldron_pool WHERE guild_id = ?', (guild_id,))
     cursor.execute('DELETE FROM players WHERE guild_id = ?', (guild_id,))
     cursor.execute('DELETE FROM cauldron_event WHERE guild_id = ?', (guild_id,))
-    conn.commit()
+    commit_changes()
 
 # Helper function to get guild settings from the database
 def get_game_settings(guild_id):
@@ -399,7 +436,7 @@ def get_game_settings(guild_id):
     else:
         # Insert default values if guild is not in the table
         cursor.execute('INSERT INTO game_settings (guild_id) VALUES (?)', (guild_id,))
-        conn.commit()
+        commit_changes()
         game_disabled, potion_price, trick_success_rate = False, 10, 100
     return game_disabled, potion_price, trick_success_rate
 
@@ -414,7 +451,7 @@ def set_game_setting(guild_id, game_disabled=None, potion_price=None, trick_succ
         trick_success_rate (int): The new success rate of stealing candies from other players.
     """
 
-    conn = sqlite3.connect('your_database.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # Check if the game settings already exist for the given guild_id
@@ -455,7 +492,7 @@ def set_game_setting(guild_id, game_disabled=None, potion_price=None, trick_succ
              trick_success_rate if trick_success_rate is not None else 100)
         )
 
-    conn.commit()
+    commit_changes()
 
 # Helper function to update the game_disabled state in the database
 def set_game_disabled( guild_id, disabled):
@@ -468,8 +505,8 @@ def set_game_disabled( guild_id, disabled):
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('UPDATE game_settings SET game_disabled = ? WHERE guild_id = ?', (disabled, guild_id))
-    conn.commit()
+    cursor.execute('INSERT INTO game_settings(guild_id, game_disabled) VALUES(?,?) ON CONFLICT(guild_id) DO UPDATE SET game_disabled=excluded.game_disabled', (guild_id, disabled))
+    commit_changes()
 
 def get_join_game_msg_settings(guild_id: int):
     conn = get_db_connection()
@@ -506,7 +543,7 @@ def set_join_game_msg_settings(guild_id: int, message_id: int, channel_id: int):
             VALUES (?, ?, ?)
         ''', (guild_id, message_id, channel_id))
 
-    conn.commit()
+    commit_changes()
 
 # def set_join_game_msg_id(join_msg_id: int, guild_id: int):
 #     conn = get_db_connection()
@@ -519,7 +556,7 @@ def set_join_game_msg_settings(guild_id: int, message_id: int, channel_id: int):
 #         cursor.execute('INSERT INTO guild_settings (guild_id, game_invite_message_id) VALUES (?, ?)', 
 #                        (guild_id, join_msg_id))
     
-#     conn.commit()
+#     commit_changes()
 
 def fetch_roles_by_guild(guild_id: int):
     conn = get_db_connection()
@@ -545,13 +582,13 @@ def set_role_by_guild(guild_id: int,role_id: int):
     if not exists:
         # Insert the new role for the
         cursor.execute("INSERT INTO role_access (guild_id, role_id) VALUES (?, ?)", (guild_id, role_id))
-        conn.commit()
+        commit_changes()
 
 def delete_role_by_guild(role_id: int, guild_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM role_access WHERE guild_id = ? AND role_id = ?", (guild_id, role_id))
-    conn.commit()
+    commit_changes()
 
 # Get players with most candy that are in active status
 def get_top_active_players(guild_id, limit=10):
@@ -585,7 +622,7 @@ def add_player_to_game(player_id, guild_id):
     # Insert new player if they don't exist
     cursor.execute('INSERT INTO players (player_id, guild_id, candy_in_bucket, successful_tricks, failed_tricks, treats_given, active, potions_purchased, frozen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                    (player_id, guild_id, 50, 0, 0, 0, 1, 0, 0))
-    conn.commit()
+    commit_changes()
     return True  # Indicate successful addition
 
 
@@ -647,7 +684,8 @@ def get_player_data(player_id, guild_id):
             'successful_tricks': result[1],
             'failed_tricks': result[2],
             'treats_given': result[3],
-            'potions_purchased': result[4],
+            # Compatibility display field; inventory is the source of truth.
+            'potions_purchased': conn.execute('SELECT COALESCE(SUM(quantity),0) FROM potion_inventory WHERE guild_id=? AND player_id=?', (guild_id, player_id)).fetchone()[0],
             'total_candy_stolen': result[5],
             'total_candy_lost': result[6],
             'total_candy_given': result[7],
@@ -666,20 +704,24 @@ def create_player_data(player_id: int, guild_id: int):
     cursor = conn.cursor()
     cursor.execute('INSERT INTO players (player_id, guild_id, candy_in_bucket, successful_tricks, failed_tricks, treats_given, active, potions_purchased, frozen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                     (player_id, guild_id, 50, 0, 0, 0, 1, 0, 0))
-    conn.commit()
+    commit_changes()
 
 
 # Delete a player's data.
 def delete_player_data(player_id, guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    from potions import clear_player
+    clear_player(conn, guild_id, player_id)
     cursor.execute('DELETE FROM players WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 # Reset a players data to default values.
 def reset_player_data(player_id, guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    from potions import clear_player
+    clear_player(conn, guild_id, player_id)
     cursor.execute('''
         UPDATE players
         SET candy_in_bucket = 50,
@@ -702,21 +744,21 @@ def reset_player_data(player_id, guild_id):
             cauldron_rewards_received = 0
         WHERE player_id = ? AND guild_id = ?
     ''', (player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 # Opt-out function to mark a player as inactive
 def set_player_inactive(player_id, guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('UPDATE players SET active = 0 WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 # Opt-in function to mark a player as active
 def set_player_active(player_id, guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('UPDATE players SET active = 1 WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 # Function to update player data by any field dynamically
 def update_player_field(player_id, guild_id, field, value):
@@ -724,7 +766,7 @@ def update_player_field(player_id, guild_id, field, value):
     cursor = conn.cursor()
     logger.debug(f'UPDATE players SET {field} = {value} WHERE player_id = {player_id} AND guild_id = {guild_id}')
     cursor.execute(f'UPDATE players SET {field} = ? WHERE player_id = ? AND guild_id = ?', (value, player_id, guild_id))
-    conn.commit()
+    commit_changes()
 
 # Function to update multiple player fields at once
 def update_player_fields(player_id, guild_id, fields):
@@ -740,7 +782,7 @@ def update_player_fields(player_id, guild_id, fields):
     cursor = conn.cursor()
     query = 'UPDATE players SET ' + ', '.join([f'{field} = ?' for field in fields]) + ' WHERE player_id = ? AND guild_id = ?'
     cursor.execute(query, fields + [player_id, guild_id])
-    conn.commit()
+    commit_changes()
 
 # Function to update many players field at once
 def update_many_players_fields(player_ids, guild_id, fields):
@@ -755,24 +797,25 @@ def update_many_players_fields(player_ids, guild_id, fields):
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Old Way 
-    # # Prepare the query, using SQL expressions for each field update (e.g., "field = field + 1")
-    # query = 'UPDATE players SET ' + ', '.join([f'{field} = {value}' for field, value in fields.items()]) + \
-    #         ' WHERE player_id IN ({}) AND guild_id = ?'.format(','.join('?' for _ in player_ids))
+    allowed = {"candy_in_bucket", "successful_tricks", "failed_tricks", "treats_given"}
+    if not fields or not player_ids:
+        return
+    clauses, values = [], []
+    for field, value in fields.items():
+        if field not in allowed:
+            raise ValueError("Unsupported bulk field")
+        if value == f"{field} + 1":
+            clauses.append(f"{field} = {field} + 1")
+        elif isinstance(value, int):
+            clauses.append(f"{field} = ?")
+            values.append(value)
+        else:
+            raise ValueError("Unsupported bulk value")
+    placeholders = ",".join("?" for _ in player_ids)
+    cursor.execute(f"UPDATE players SET {', '.join(clauses)} WHERE player_id IN ({placeholders}) AND guild_id = ?",
+                   values + list(player_ids) + [guild_id])
+    commit_changes()
 
-    # # Execute the query
-    # cursor.execute(query, player_ids + [guild_id])
-    
-    # New way - untested
-    query = 'UPDATE players SET ' + ', '.join([f'{field} = ?' for field in fields]) + \
-        ' WHERE player_id IN ({}) AND guild_id = ?'.format(','.join('?' for _ in player_ids))
-    
-    # Prepare the values for the query
-    values = list(fields.values()) + player_ids + [guild_id]
-        # Execute the query
-    cursor.execute(query, values)
-
-    conn.commit()
 
 # Boolean is player exists
 def is_player_exists(player_id: int, guild_id: int) -> bool:
@@ -856,7 +899,7 @@ def set_event_channel(guild_id: int, channel_id: int):
             VALUES (?, ?)
         ''', (guild_id, channel_id))
 
-    conn.commit()
+    commit_changes()
 
 # Function to get event channel for a guild
 def get_event_channel(guild_id):
@@ -879,7 +922,7 @@ def delete_event_channel(guild_id: int):
         WHERE guild_id = ?
     ''', (guild_id,))
 
-    conn.commit()
+    commit_changes()
 
 
 # Function to set admin channel for a guild
@@ -905,7 +948,7 @@ def set_admin_channel(guild_id: int, channel_id: int):
             VALUES (?, ?)
         ''', (guild_id, channel_id))
 
-    conn.commit()
+    commit_changes()
 
 # Function to get admin channel for a guild
 def get_admin_channel(guild_id):
@@ -928,7 +971,7 @@ def delete_admin_channel(guild_id: int):
         WHERE guild_id = ?
     ''', (guild_id,))
 
-    conn.commit()
+    commit_changes()
 
 # Function to update player data by any field dynamically
 def update_guild_setting_field(guild_id, field, value):
@@ -943,7 +986,7 @@ def update_guild_setting_field(guild_id, field, value):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f'UPDATE guild_settings SET {field} = ? WHERE guild_id = ?', (value, guild_id))
-    conn.commit()
+    commit_changes()
 
 def get_guild_settings(guild_id):
     """
@@ -1022,7 +1065,7 @@ def set_guild_settings(guild_id, event_channel_id=None, admin_channel_id=None, g
             (guild_id, event_channel_id, admin_channel_id, game_invite_channel_id, game_invite_message_id)
         )
 
-    conn.commit()
+    commit_changes()
 
 
 # Function to get the current lottery pool for a guild
@@ -1036,7 +1079,7 @@ def set_guild_settings(guild_id, event_channel_id=None, admin_channel_id=None, g
 #     else:
 #         # If no pool exists for the guild, initialize it with 0
 #         cursor.execute('INSERT INTO cauldron_event (guild_id, candy_in_cauldron) VALUES (?, ?)', (guild_id, 0))
-#         conn.commit()
+#         commit_changes()
 #         return 0
 
 # # Function to update the lottery pool
@@ -1046,21 +1089,21 @@ def set_guild_settings(guild_id, event_channel_id=None, admin_channel_id=None, g
 #     current_pool = get_cauldron_event(guild_id)
 #     new_pool = current_pool + amount
 #     cursor.execute('UPDATE cauldron_event SET candy_in_cauldron = ? WHERE guild_id = ?', (new_pool, guild_id))
-#     conn.commit()
+#     commit_changes()
     
 # Function to update the lottery pool
 def reset_cauldron_event(guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('UPDATE cauldron_pool SET candy_in_cauldron = 0 WHERE guild_id = ?', (guild_id,))
-    conn.commit()
+    commit_changes()
 
 # Resets the potions_purchased field for all players in the given guild after the cast_spell event.
 def reset_potions_purchased(guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('UPDATE players SET potions_purchased = 0 WHERE guild_id = ?', (guild_id,))
-    conn.commit()
+    commit_changes()
 
 
 def get_leaderboard_query(leaderboard_type, guild_id, top_n=10):
