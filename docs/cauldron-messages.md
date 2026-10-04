@@ -32,9 +32,9 @@ For example, replace the value of `cauldron.draw.luna.normal` with:
 | `{winner_count}` | Number of distinct selected players |
 | `{user}` | Invoking moderator's mention text |
 
-Announcements suppress Discord mentions. Display names are escaped for Markdown. Payouts are committed before announcements; the embed lists each winner’s actual award and the pool remainder.
+Announcements suppress Discord mentions. Display names are escaped for Markdown. Payouts are committed before announcements; the embed shows the total paid and the pool remainder. Individual award rows are omitted.
 
-Announcements longer than 3,800 characters or award lists longer than 1,000 characters are preserved in an attachment with the full awards and winner IDs. `cauldron.long_announcement` provides the short summary and supports the same placeholders; keep it brief (at most 1,900 characters).
+Announcements longer than 3,800 characters are preserved in an attachment. `cauldron.long_announcement` provides the short summary and supports the same placeholders; keep it brief (at most 1,900 characters).
 
 ## Other cauldron responses
 
@@ -59,7 +59,7 @@ Use valid JSON: double quotes, commas between entries, no trailing commas, and `
 
 ## Event-channel delivery and themed variants
 
-Each draw outcome now has three themed variants (18 total). Luna’s normal draw is gentle and encouraging; her fumble is a clumsy magical accident; her special draw celebrates kindness. Raven’s normal draw is sly and teasing; her explosion is theatrical chaos; her rage is a temper tantrum favoring mischief. Every variant names the selected winners; embed fields show the actual candy paid.
+Each draw outcome now has three themed variants (18 total). Luna’s normal draw is gentle and encouraging; her fumble is a clumsy magical accident; her special draw celebrates kindness. Raven’s normal draw is sly and teasing; her explosion is theatrical chaos; her rage is a temper tantrum favoring mischief. Every variant names the selected winners; the pool summary shows the total candy paid.
 
 Successful `/game cast spell` announcements and any long-message attachments are posted to the configured Event channel. The invoking moderator receives a private confirmation with a link. Configure it with `/bot set channel channel_type:Event channel:<channel>`; use `/bot update channel` to replace a setting. No configured/resolvable channel or missing View Channel, Send Messages, Embed Links or Attach Files permissions stops the draw before selection. Discord delivery errors are reported privately, without automatic retries or public fallback to the command channel. These permissions are all checked before payout. If posting fails afterward, the private response explicitly states that candy was already paid; payouts are not rolled back or automatically repeated.
 
@@ -73,8 +73,8 @@ Additional editable response keys under `cauldron`:
 
 ## Payout embed
 
-The Event-channel post is an embed titled `✨ A spell has been cast! • {witch}`, with the existing `who_is_luna.image_url` or `who_is_raven.image_url` image. Edit those JSON URLs if the Discord-hosted images expire. Themed narrative stays in `cauldron.draw`; amounts are shown separately from flavor text.
+The Event-channel post is an embed titled `✨ A spell has been cast! • {witch}`, with the existing `who_is_luna.image_url` or `who_is_raven.image_url` image. Edit those JSON URLs if the Discord-hosted images expire. Themed narrative stays in `cauldron.draw`; the total payout and pool remainder appear in the pool summary.
 
 The full pool is awarded atomically: equal shares, with remainder pieces assigned in draw order. Many caps its random winner count at the smaller of active-player count and available candy, so every winner receives at least one. The pool becomes zero. Discord interaction IDs prevent duplicate payouts, and cauldron_draws plus cauldron_event record each completed draw.
 
-Additional draw/summary placeholders: `{amount}` (total awarded), `{remaining}` (pool after payout). `cauldron.embed` controls `title`, `award` (`{player}`, `{player_id}`, `{amount}`), `awards_title`, `awards_attached`, `pool_title`, and `pool_value` (`{amount}`, `{winner_count}`, `{remaining}`). `empty_pool`, `payout_failed` and `already_paid` provide private failure/retry responses (`already_paid` accepts `{amount}`). Existing failed selections from before this feature are not paid retroactively; cast a new spell to award the current pool.
+Additional draw/summary placeholders: `{amount}` (total awarded), `{remaining}` (pool after payout). `cauldron.embed` controls `title`, `pool_title`, and `pool_value` (`{amount}`, `{winner_count}`, `{remaining}`). `empty_pool`, `payout_failed` and `already_paid` provide private failure/retry responses (`already_paid` accepts `{amount}`). Existing failed selections from before this feature are not paid retroactively; cast a new spell to award the current pool.

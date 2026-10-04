@@ -45,27 +45,24 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
         await interaction.followup.send(message('cauldron', 'already_paid', amount=result['amount']), ephemeral=True)
         return
     outcome = result['outcome']
-    names, award_lines = [], []
+    names = []
     for award in result['awards']:
         uid = award['player_id']
         member = interaction.guild.get_member(uid)
         name = discord.utils.escape_markdown(member.display_name) if member else message('cauldron', 'missing_member', player_id=uid)
         names.append(name)
-        award_lines.append(message('cauldron', 'embed', 'award', player=name, player_id=uid, amount=award['amount']))
     values = dict(
         witch=message('cauldron', 'witches', witch), outcome=message('cauldron', 'outcomes', outcome),
         winners=', '.join(names), winner_count=len(names), user=interaction.user.mention,
         amount=result['amount'], remaining=result['remaining'],
     )
     announcement = message('cauldron', 'draw', witch, outcome, **values)
-    awards_text = '\n'.join(award_lines)
     file = None
-    if len(announcement) > 3800 or len(awards_text) > 1000:
+    if len(announcement) > 3800:
         import io
-        attachment = announcement + '\n\n' + awards_text
+        attachment = announcement
         file = discord.File(io.BytesIO(attachment.encode()), filename='cauldron-winners.txt')
         announcement = message('cauldron', 'long_announcement', **values)[:1900]
-        awards_text = message('cauldron', 'embed', 'awards_attached', **values)[:1000]
     embed = discord.Embed(
         title=message('cauldron', 'embed', 'title', **values)[:256],
         description=announcement,
@@ -73,7 +70,6 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
     )
     embed.set_image(url=message(f'who_is_{witch}', 'image_url'))
     embed.set_author(name=values['witch'])
-    embed.add_field(name=message('cauldron', 'embed', 'awards_title')[:256], value=awards_text, inline=False)
     embed.add_field(name=message('cauldron', 'embed', 'pool_title')[:256], value=message('cauldron', 'embed', 'pool_value', **values)[:1024], inline=False)
     try:
         kwargs = {'embed': embed, 'allowed_mentions': discord.AllowedMentions.none()}

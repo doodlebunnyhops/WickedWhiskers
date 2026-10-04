@@ -228,7 +228,8 @@ def test_embed_image_title_payout_and_failed_post_retry(database,witch):
     assert 'A spell has been cast!' in embed.title
     assert witch.title() in embed.title
     assert embed.image.url==interaction.client.message_loader.messages[f'who_is_{witch}']['image_url']
-    assert '+10016 candy' in embed.fields[0].value
+    assert len(embed.fields) == 1
+    assert '10016' in embed.fields[0].value
     assert db.get_cauldron_pool(1)==0
     assert 'payouts are saved' in interaction.followup.send.call_args.args[0]
     asyncio.run(cast.cast_spell.callback(interaction,witch,'One'))
