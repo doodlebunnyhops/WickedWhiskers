@@ -236,3 +236,33 @@ def test_embed_image_title_payout_and_failed_post_retry(database,witch):
     assert event.send.await_count==1
     assert 'already awarded' in interaction.followup.send.call_args.args[0]
     assert database.execute('SELECT sum(candy_in_bucket) FROM players WHERE guild_id=1').fetchone()[0]==10266
+
+
+@pytest.mark.parametrize('mode,expected',[('One',1),('many',2)])
+def test_two_player_draw_announces_exactly_the_paid_players(database,monkeypatch,mode,expected):
+    import db_utils as db
+    database.execute('DELETE FROM players WHERE guild_id=1 AND player_id NOT IN (10,20)')
+    database.commit()
+    db.set_cauldron_pool(1,101)
+    # Force the smallest permitted Many count: previously this selected only one.
+    monkeypatch.setattr(cauldron.random,'randint',lambda low,high:low)
+    names={10:'BloominDaisy',20:'Megatron'}
+    interaction=SimpleNamespace(id=123456,client=client(),user=SimpleNamespace(id=99,mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:SimpleNamespace(display_name=names[uid])),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
+    asyncio.run(cast.cast_spell.callback(interaction,'luna',mode))
+    import json
+    result=json.loads(database.execute('SELECT result FROM cauldron_draws WHERE guild_id=1').fetchone()[0])
+    assert len(result['awards'])==expected
+    assert sum(a['amount'] for a in result['awards'])==101
+    embed=event.send.call_args.kwargs['embed']
+    paid={a['player_id']:a['amount'] for a in result['awards']}
+    for uid,name in names.items():
+        assert (name in embed.description)==(uid in paid)
+        balance=database.execute('SELECT candy_in_bucket FROM players WHERE guild_id=1 AND player_id=?',(uid,)).fetchone()[0]
+        assert balance==50+paid.get(uid,0)
+    assert f'**{expected}**' in embed.fields[0].value
+    assert db.get_cauldron_pool(1)==0
+
+
+@pytest.mark.parametrize('players,cap', [([(10,1)],100), ([(10,1),(20,1)],1)])
+def test_many_with_only_one_possible_recipient(players,cap):
+    assert len(cauldron.select_winners(players,'many',max_winners=cap))==1

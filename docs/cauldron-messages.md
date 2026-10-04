@@ -78,3 +78,7 @@ The Event-channel post is an embed titled `✨ A spell has been cast! • {witch
 The full pool is awarded atomically: equal shares, with remainder pieces assigned in draw order. Many caps its random winner count at the smaller of active-player count and available candy, so every winner receives at least one. The pool becomes zero. Discord interaction IDs prevent duplicate payouts, and cauldron_draws plus cauldron_event record each completed draw.
 
 Additional draw/summary placeholders: `{amount}` (total awarded), `{remaining}` (pool after payout). `cauldron.embed` controls `title`, `pool_title`, and `pool_value` (`{amount}`, `{winner_count}`, `{remaining}`). `empty_pool`, `payout_failed` and `already_paid` provide private failure/retry responses (`already_paid` accepts `{amount}`). Existing failed selections from before this feature are not paid retroactively; cast a new spell to award the current pool.
+
+### One versus Many
+
+One pays one selected player. Many randomly selects at least two distinct players whenever there are at least two active players and two candy; it falls back to one only when a second paid winner is impossible. With two active players and enough candy, Many always pays both. Announcement names, the displayed winner count and credited amounts all come from the same saved payout result.

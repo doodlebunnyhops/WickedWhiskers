@@ -37,7 +37,7 @@ def select_winners(weighted_players, mode, max_winners=None):
     if not remaining:
         return []
     limit = min(len(remaining), max_winners) if max_winners is not None else len(remaining)
-    count = random.randint(1, limit) if mode == 'many' else 1
+    count = random.randint(2, limit) if mode == 'many' and limit >= 2 else 1
     selected = []
     for _ in range(count):
         uid = random.choices(list(remaining), weights=list(remaining.values()), k=1)[0]
