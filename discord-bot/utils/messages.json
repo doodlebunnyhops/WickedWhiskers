@@ -943,10 +943,38 @@
     },
     "mod_candy": {
         "title": "🍬 A little candy magic",
-        "give_named": "🌙 A flick of the wand! {moderator} granted **{amount} candy** to {player}.",
-        "give_anonymous": "🌙 A mysterious wand twinkles! {player} received **{amount} candy**.",
-        "take_named": "🦇 A rustle of wings! {moderator} removed **{amount} candy** from {player}.",
-        "take_anonymous": "🦇 A shadow passes over the sweets! **{amount} candy** was removed from {player}.",
+        "give_named": [
+            "🌙 A flick of the wand! {moderator} granted **{amount} candy** to {player}. Luna insists the glitter is edible. Probably.",
+            "🍬 {moderator} granted **{amount} candy** to {player}. “A perfectly measured gift!” Luna declares, hiding the measuring cup she just broke.",
+            "✨ At {moderator}'s request, Luna delivers **{amount} candy** to {player}. Only three sweets tried to escape. She caught them.",
+            "🎃 {moderator} awarded **{amount} candy** to {player}. Luna rings a tiny celebration bell. Raven confiscates the bell.",
+            "🧹 {moderator} sent **{amount} candy** to {player} by broom delivery. Luna apologizes for the landing. And the ceiling.",
+            "🌟 {moderator} granted **{amount} candy** to {player}. “For being wonderfully you!” Luna beams. Raven makes a very loud gagging noise."
+        ],
+        "give_anonymous": [
+            "🌙 A mysterious wand twinkles! {player} received **{amount} candy**. Luna tries to whistle innocently. It comes out as a squeak.",
+            "🍬 **{amount} candy** arrives for {player} with an unsigned note: “Definitely not a bribe from a witch.” How reassuring.",
+            "✨ {player} received **{amount} candy** from a mysterious benefactor. Luna has promised not to tell. Raven is already charging for guesses.",
+            "🎃 A pumpkin courier delivers **{amount} candy** to {player}. The sender is a mystery. So is how the pumpkin rang the doorbell.",
+            "🧹 **{amount} candy** lands beside {player} in an anonymous parcel. Luna whispers, “Act surprised!” far too loudly.",
+            "🌟 Someone granted **{amount} candy** to {player}. Luna calls it a blessing. Raven calls it suspiciously generous."
+        ],
+        "take_named": [
+            "🦇 {moderator} removed **{amount} candy** from {player}. Raven produces a receipt that just says “Mwahaha.”",
+            "🕷️ At {moderator}'s request, Raven removes **{amount} candy** from {player}. “Finally, paperwork I enjoy.”",
+            "🎃 {moderator} took **{amount} candy** from {player}. Raven performs a dramatic victory twirl and trips over her own cloak.",
+            "🧹 {moderator} removed **{amount} candy** from {player}. Raven calls it a sweeping adjustment. Luna begs her to stop making broom jokes.",
+            "🦇 {moderator} took **{amount} candy** from {player}. “Nothing personal, little sweetling,” Raven says, making it sound extremely personal.",
+            "🕯️ {moderator} removed **{amount} candy** from {player}. Raven adds thunder for dramatic effect. Indoors. Luna is not pleased."
+        ],
+        "take_anonymous": [
+            "🦇 **{amount} candy** was removed from {player} by a mysterious hand. Raven's innocent expression needs considerable practice.",
+            "🕷️ An unsigned decree removes **{amount} candy** from {player}. Raven stamps it “VERY OFFICIAL” with a potato.",
+            "🎃 **{amount} candy** vanishes from {player} on mysterious orders. “A tragic administrative haunting,” Raven announces, barely hiding a grin.",
+            "🧹 Someone removed **{amount} candy** from {player}. Raven refuses to name names. Mostly because she enjoys being asked.",
+            "🕯️ **{amount} candy** was removed from {player}. The note reads, “Please direct complaints to the nearest ominous fog.”",
+            "🦇 A secret instruction removes **{amount} candy** from {player}. Luna asks who authorized it. Raven points at a completely bewildered bat."
+        ],
         "saved": "✨ The adjustment of **{amount} candy** for {player} is saved and posted in the event channel.",
         "denied": "🦇 This wand is for moderators! You need Manage Server or a configured moderator role.",
         "invalid_player": "🌙 Choose a player in this server, not a bot.",
