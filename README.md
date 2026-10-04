@@ -10,7 +10,7 @@ Hacktoberfest 2024 is ON!
 
 This is a discord bot that enabls players in your server to interact in a halloween themed game.  `/trick` members out of their candy or `/treat` them with some?
 
-Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. The original `/game cast spell` name-selection command is restored; payouts remain unfinished. See [cauldron limitations](docs/potion-shop.md#cauldron-and-other-limits).
+Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. `/game cast spell` selects distinct active players, favoring treating for Luna and successful tricks for Raven; payouts remain unfinished. See [cauldron limitations](docs/potion-shop.md#cauldron-and-other-limits).
 
 Pumpkin smashing is registered as `/smash_pumpkin amount:<number>`, but its accounting still needs repair before a live season. See the [command audit](docs/command-audit.md).
 

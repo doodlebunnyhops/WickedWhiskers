@@ -10,7 +10,7 @@ from utils.player import calculate_thief_success_rate
 get_group = app_commands.Group(name="get", description="get commands")
 
 
-@get_group.command(name="cauldron_eligibility", description="Inspect eligibility for each restored cauldron outcome")
+@get_group.command(name="cauldron_eligibility", description="Inspect eligibility for each cauldron outcome")
 @checks.check_if_has_permission_or_role()
 async def get_cauldron_eligibility(interaction: discord.Interaction):
     from utils.cauldron import eligibility_report
@@ -22,8 +22,8 @@ async def get_cauldron_eligibility(interaction: discord.Interaction):
         description=(
             f"Active database players: **{len(players)}**\n"
             f"Cauldron candy: **{db_utils.get_cauldron_pool(interaction.guild.id)}**\n"
-            "Eligibility depends on the randomly selected outcome, not the pool balance. "
-            "Counts below are distinct players; weights are their entries in the legacy draw."
+            "All active database players qualify for every outcome. "
+            "Counts below are distinct players; weights set their relative selection chances."
         ),
         color=discord.Color.orange(),
     )
@@ -38,12 +38,13 @@ async def get_cauldron_eligibility(interaction: discord.Interaction):
             inline=False,
         )
     embed.add_field(
-        name="Why active players may not qualify",
+        name="Eligibility and selection",
         value=(
-            "New shop purchases do not update legacy potions_purchased. "
-            "Luna's normal/fumble paths use that old count; Raven's normal/explosion paths require successful tricks. "
-            "The special paths compare legacy sweetness/evilness scores after clamping them to at least 1; "
-            "equal scores exclude everyone. These counts use active database records, including departed members."
+            "Every active player starts at weight 1. Luna favors treats given; Raven favors successful tricks. "
+            "Special outcomes add only positive differences between those stats. "
+            "If nobody has a positive difference, everyone has equal weight. Potions do not affect eligibility. "
+            "Many draws 1 to the active-player count, with no duplicate winners. "
+            "Active database records may include departed members. Selection does not pay out candy yet."
         ),
         inline=False,
     )

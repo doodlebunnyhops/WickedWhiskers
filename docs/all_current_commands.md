@@ -64,7 +64,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
 | `/game get leaderboard <type>` | Game moderator | Show up to 10 results for one category. All errors; Evil/Sweet percentage formatting is incorrect. |
-| `/game cast spell <witch> <winners>` | Game moderator | Restored original name selection and announcement. Legacy weighting remains; no candy payout or pool reset. |
+| `/game cast spell <witch> <winners>` | Game moderator | Select distinct active players; Luna favors treating, Raven successful tricks. No candy payout or pool reset. |
 
 ## Arguments and choices
 
@@ -115,12 +115,12 @@ The posted **Open Shop** button opens the same private shop and survives bot res
 
 `/buy potion`, `/shop prices`, `/escape`, `/return`, `/stats`, `/view potions`, `/freeze`, `/reset game`, `/dump cauldron`, `/cast_spell`, `/remove player`, `/update player status`, `/view player count`, and `/add player candy` are **not registered** in this branch. Some messages/helpers still mention old commands. A Python helper is not automatically a Discord command.
 
-The restored cast path is `/game cast spell witch:Luna|Raven winners:One|Many`. Both arguments are required. It retains original legacy weighting and announces names without payouts; see the cauldron limitations in [potion-shop details](potion-shop.md#cauldron-and-other-limits). Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
+The cast path is `/game cast spell witch:Luna|Raven winners:One|Many`. Both arguments are required. It weights active players by treating/tricking, selects distinct winners and announces names without payouts; see the cauldron limitations in [potion-shop details](potion-shop.md#cauldron-and-other-limits). Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
 
 See [player guide](player_commands.md), [moderator guide](moderator_commands.md), [command audit](command-audit.md), and [potion design and behavior](potion-shop.md).
 
 ## Cauldron eligibility diagnostics
 
-Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, the draw shows a player-ID fallback if the member is not cached.
 
-Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.
+All active database players qualify, independent of potion purchases and pool balance. Luna normal/fumble weight = 1 + treats given; Raven normal/explosion weight = 1 + successful tricks. Luna special weight = 1 + max(0, treats given − successful tricks); Raven rage reverses that difference. Negative stats are treated as zero. Every outcome retains baseline weight 1; when nobody has a positive special-outcome difference, all players have equal chances. Normal/first special/second special probabilities remain 76.5%/15%/8.5%. One selects one player; Many chooses a random count from 1 through the number of distinct active players, then draws with weights without replacement. Selected players cannot repeat. The report and draw share these formulas. Candy payouts and pool resets remain unimplemented.

@@ -19,7 +19,7 @@ Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The 
 ## Incomplete behavior and decisions to make
 
 - `/bot remove join_game_msg` is a registered instruction-only placeholder. Decide whether it should delete the message, clear its mapping, or both.
-- `/game cast spell` has been restored unchanged from `pumpkin` at the owner's request. It announces names without payouts, retains legacy weighting, now responds clearly on an empty weighted list, and can repeat player names in Many. A future redesign needs independent eligibility, distinct winners and payouts.
+- `/game cast spell` now uses shared active-player eligibility and distinct weighted selection. Empty player lists respond clearly; legacy potion weighting and duplicate winners are removed. Candy payouts remain unfinished.
 - `/game set settings` defaults optional `game_enabled` to false. This is current behavior, but surprising: changing a rate alone pauses play. Prefer an optional “leave unchanged” state.
 - `/bot get join_game_msg` has no moderator permission check. The group name does not enforce one. Decide whether public access is intended.
 - `/bot get channel` with Both returns early when a setting is absent. Show each configured/missing channel independently.
@@ -30,7 +30,7 @@ Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The 
 
 ## Intentional behavior preserved
 
-Luna/Raven special scenarios may create candy, cover treat costs, copy pumpkin rewards into the pool, or grant a named Ward bottle. Do not classify candy creation alone as a transfer bug. Potion purchases do not contribute to the pool. Multiple cauldron winners means distinct players, not repeated tickets for one player. Ward/Cunning inventory and effects are separate from any future cauldron eligibility.
+Luna/Raven special scenarios may create candy, cover treat costs, copy pumpkin rewards into the pool, or grant a named Ward bottle. Do not classify candy creation alone as a transfer bug. Potion purchases do not contribute to the pool. Multiple cauldron winners means distinct players, not repeated tickets for one player. Ward/Cunning inventory and effects are separate from cauldron eligibility.
 
 ## Recommended order
 
@@ -38,12 +38,12 @@ Luna/Raven special scenarios may create candy, cover treat costs, copy pumpkin r
 2. Repair leaderboard/settings/invite error paths and range validation.
 3. Unify enrollment and agree freeze/pause behavior; add destructive-action confirmation.
 4. Replace stale runtime guidance and add an in-bot slash-command help entry (default `!help` does not document these slash commands).
-5. Implement the separate cauldron draw and payout flow; consider a public leaderboard command if players should inspect rankings themselves.
+5. Implement cauldron payouts; consider a public leaderboard command if players should inspect rankings themselves.
 
 The command reference now separates actual registration from incomplete behavior, documents all arguments/choices and permission boundaries, and removes ticket-shop and unregistered-command instructions. The Event/Admin settings-display mapping reported earlier was already fixed in `d35f8a3`; no database rewrite is required for that fix.
 
 ## Cauldron eligibility diagnostics
 
-Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, the draw shows a player-ID fallback if the member is not cached.
 
-Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.
+All active database players qualify, independent of potion purchases and pool balance. Luna normal/fumble weight = 1 + treats given; Raven normal/explosion weight = 1 + successful tricks. Luna special weight = 1 + max(0, treats given − successful tricks); Raven rage reverses that difference. Negative stats are treated as zero. Every outcome retains baseline weight 1; when nobody has a positive special-outcome difference, all players have equal chances. Normal/first special/second special probabilities remain 76.5%/15%/8.5%. One selects one player; Many chooses a random count from 1 through the number of distinct active players, then draws with weights without replacement. Selected players cannot repeat. The report and draw share these formulas. Candy payouts and pool resets remain unimplemented.

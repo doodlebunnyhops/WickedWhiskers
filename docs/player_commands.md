@@ -29,7 +29,7 @@ Your server may change prices or disable sales. Disabled sales do not invalidate
 
 Luna excludes the summoner, bots, departed, frozen and inactive players. No recipients, failed member verification, or an active cooldown preserves the bottle. Purchase/use is blocked while paused or for frozen/inactive players. `/inventory` remains a read-only way to inspect your state.
 
-Potions grant perks; purchases do not fund the cauldron or enter a prize draw. The original moderator cast command is restored, but announces names without paying out candy.
+Potions grant perks; purchases do not fund the cauldron or enter a prize draw. All active players qualify for the moderator cauldron draw. Luna favors treating and Raven favors successful tricks. Winners are distinct; the command currently announces names without paying out candy.
 
 ## Member menus
 

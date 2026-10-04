@@ -68,7 +68,7 @@ Deleting the seasonal database clears all state, including server overrides. The
 
 ## Cauldron and other limits
 
-The original `pumpkin` cauldron command has been restored unchanged: `/game cast spell witch:Luna|Raven winners:One|Many`. It selects and announces names; it does not pay candy or reset the pool. Its legacy weighting (including `potions_purchased` for Luna), a clear response when no players qualify, and possible repeated names in Many remain as in the original. New perk purchases do not populate the legacy purchase counter.
+`/game cast spell witch:Luna|Raven winners:One|Many` now uses active-player eligibility and distinct weighted selection. It announces names without paying candy or resetting the pool. See the formulas below.
 
 This work does not rebalance pumpkins, change the underlying trick-success curve, implement general trick cooldowns, or finish the unrelated return/freeze command set. These remain separate from the potion implementation.
 
@@ -86,6 +86,6 @@ Before opening a season, use a test Discord server with a fresh database to veri
 
 ## Cauldron eligibility diagnostics
 
-Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, the draw shows a player-ID fallback if the member is not cached.
 
-Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.
+All active database players qualify, independent of potion purchases and pool balance. Luna normal/fumble weight = 1 + treats given; Raven normal/explosion weight = 1 + successful tricks. Luna special weight = 1 + max(0, treats given − successful tricks); Raven rage reverses that difference. Negative stats are treated as zero. Every outcome retains baseline weight 1; when nobody has a positive special-outcome difference, all players have equal chances. Normal/first special/second special probabilities remain 76.5%/15%/8.5%. One selects one player; Many chooses a random count from 1 through the number of distinct active players, then draws with weights without replacement. Selected players cannot repeat. The report and draw share these formulas. Candy payouts and pool resets remain unimplemented.
