@@ -11,8 +11,8 @@ from utils.messages import MessageLoader
 from utils.player import calculate_evilness, calculate_sweetness
 
 
-def interaction(guild=1):
-    return NS(user=NS(id=10),guild=NS(id=guild,get_member=lambda uid: None),client=NS(message_loader=MessageLoader(str(Path(__file__).resolve().parents[1]/'discord-bot/utils/messages.json'))),response=NS(send_message=AsyncMock(),edit_message=AsyncMock()),edit_original_response=AsyncMock())
+def interaction(guild=1, channel=100):
+    return NS(channel_id=channel,user=NS(id=10),guild=NS(id=guild,get_member=lambda uid: None),client=NS(message_loader=MessageLoader(str(Path(__file__).resolve().parents[1]/'discord-bot/utils/messages.json'))),response=NS(send_message=AsyncMock(),edit_message=AsyncMock()),edit_original_response=AsyncMock())
 
 
 def test_sweet_evil_match_existing_player_formulas(database):
@@ -73,7 +73,7 @@ def test_individual_and_empty_category(database,key):
     result=caller.response.send_message.call_args.kwargs
     assert 'view' not in result
     assert result['embed'].description
-    assert result['ephemeral'] is False
+    assert result['ephemeral'] is True
     empty=interaction(999)
     asyncio.run(get_leaderboard.callback(empty,app_commands.Choice(name=key,value=key)))
     assert empty.response.send_message.call_args.kwargs['ephemeral'] is True
@@ -92,3 +92,22 @@ def test_ten_long_names_stay_within_embed_limit():
     embed=make_embed(caller,'candy_hoarders',[(i,2**63-1) for i in range(15)])
     assert len(embed.description)<4096
     assert len(embed.description.splitlines())==10
+
+
+@pytest.mark.parametrize('key', ['all', *CATEGORIES])
+@pytest.mark.parametrize('channel,admin,event', [
+    (100,100,200), (200,100,200), (300,100,200),
+    (100,None,None), (100,None,100), (100,100,100),
+])
+def test_visibility_by_channel(database,monkeypatch,key,channel,admin,event):
+    monkeypatch.setattr(db,'get_admin_channel',lambda guild:admin)
+    monkeypatch.setattr(db,'get_event_channel',lambda guild:event)
+    async def run():
+        caller=interaction(channel=channel)
+        await get_leaderboard.callback(caller,app_commands.Choice(name=key,value=key))
+        result=caller.response.send_message.call_args.kwargs
+        public = channel == admin or (key != 'all' and channel == event)
+        assert result['ephemeral'] is not public
+        if 'view' in result:
+            result['view'].stop()
+    asyncio.run(run())

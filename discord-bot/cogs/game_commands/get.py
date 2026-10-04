@@ -160,6 +160,9 @@ async def get_player_stats(interaction: discord.Interaction, user: discord.Membe
 async def get_leaderboard(interaction: discord.Interaction, type: app_commands.Choice[str]):
     from utils.leaderboard import CATEGORIES, LeaderboardView, make_embed
 
+    admin_channel_id = db_utils.get_admin_channel(interaction.guild.id)
+    in_admin_channel = bool(admin_channel_id) and interaction.channel_id == admin_channel_id
+
     if type.value == 'all':
         boards = {key: db_utils.get_leaderboard_query(key, interaction.guild.id) for key in CATEGORIES}
         if not any(boards.values()):
@@ -168,12 +171,14 @@ async def get_leaderboard(interaction: discord.Interaction, type: app_commands.C
             )
             return
         view = LeaderboardView(interaction, boards)
-        await interaction.response.send_message(embed=view.embed(), view=view, allowed_mentions=discord.AllowedMentions.none())
+        await interaction.response.send_message(embed=view.embed(), view=view, ephemeral=not in_admin_channel, allowed_mentions=discord.AllowedMentions.none())
     else:
+        event_channel_id = db_utils.get_event_channel(interaction.guild.id)
+        in_event_channel = bool(event_channel_id) and interaction.channel_id == event_channel_id
         rows = db_utils.get_leaderboard_query(type.value, interaction.guild.id)
         await interaction.response.send_message(
             embed=make_embed(interaction, type.value, rows),
-            ephemeral=not bool(rows), allowed_mentions=discord.AllowedMentions.none(),
+            ephemeral=not (rows and (in_admin_channel or in_event_channel)), allowed_mentions=discord.AllowedMentions.none(),
         )
 
 

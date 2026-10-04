@@ -62,7 +62,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game get settings` | Game moderator | Show pause state and stored trick rate; directs pricing changes to /shop manage. |
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
-| `/game get leaderboard <type>` | Game moderator | Show up to 10 results for one category. All errors; Evil/Sweet percentage formatting is incorrect. |
+| `/game get leaderboard <type>` | Game moderator | Show up to 10 results per category. All provides category navigation, private outside the admin channel. Single boards are visible in event/admin channels and private elsewhere. |
 | `/game cast spell` | Game moderator | Unavailable placeholder. No draw, candy payout, or pool reset occurs. |
 
 ## Arguments and choices

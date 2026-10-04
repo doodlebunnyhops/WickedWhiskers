@@ -1161,7 +1161,7 @@
                 },
                 "leaderboard": {
                     "name": "Show the leaderboard",
-                    "value": "`/game get leaderboard type:All` posts a leaderboard with category navigation. Pick a specific category to post just that ranking."
+                    "value": "`/game get leaderboard type:All` opens category navigation and is private unless used in the configured admin channel. Individual categories, including Candy Hoarders, are visible to the channel when used in the event or admin channel; elsewhere they are private."
                 },
                 "prices": {
                     "name": "Manage the shop",
