@@ -13,12 +13,13 @@ add_group = app_commands.Group(name="add", description="Add commands")
 )
 @checks.check_if_has_permission_or_role()
 async def add_player(interaction: discord.Interaction, user: discord.Member):
-    guild_id = interaction.guild.id
-    #check if player is already in the game
-    
-    #if false player is already in the game
-    if not add_player_to_game(user.id, guild_id):
-        await interaction.response.send_message(f"Player {user.display_name} is already in the game.", ephemeral=True)
+    import player_state as state
+    if user.bot:
+        await interaction.response.send_message(state.text('bots_cannot_join'), ephemeral=True)
         return
-    await interaction.response.send_message(f"Added player {user.display_name} to the game.", ephemeral=True)
-
+    try:
+        state.join(interaction.guild.id, user.id)
+    except state.StateError as error:
+        await interaction.response.send_message(str(error), ephemeral=True)
+        return
+    await interaction.response.send_message(state.text('admin_joined', player=user.mention), ephemeral=True)

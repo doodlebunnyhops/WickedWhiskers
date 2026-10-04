@@ -57,12 +57,6 @@ class Player(commands.Cog):
         amount="The amount of candy to spend on smashing the pumpkin"
     )
     async def smash_pumpkin(self, interaction: discord.Interaction, amount: int):
-        guild_id = interaction.guild.id
-        game_disabled, _,_ = get_game_settings(guild_id)
-        if game_disabled:
-            print(f"Game is disabled for guild {guild_id}")
-            await interaction.response.send_message("The game is currently paused.", ephemeral=True)
-            return
         await helper.smash_pumpkin(interaction, amount)
 
 async def setup(bot):

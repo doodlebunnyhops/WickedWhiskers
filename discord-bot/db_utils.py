@@ -166,6 +166,8 @@ def initialize_database():
 
     from potions import initialize_schema
     initialize_schema(conn)
+    from player_state import initialize_schema as initialize_player_state
+    initialize_player_state(conn)
     commit_changes()
 
 # Close connection on shutdown
@@ -713,6 +715,8 @@ def delete_player_data(player_id, guild_id):
     cursor = conn.cursor()
     from potions import clear_player
     clear_player(conn, guild_id, player_id)
+    from player_state import clear_for_reset
+    clear_for_reset(conn, guild_id, player_id)
     cursor.execute('DELETE FROM players WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
     commit_changes()
 
@@ -722,6 +726,8 @@ def reset_player_data(player_id, guild_id):
     cursor = conn.cursor()
     from potions import clear_player
     clear_player(conn, guild_id, player_id)
+    from player_state import clear_for_reset
+    clear_for_reset(conn, guild_id, player_id)
     cursor.execute('''
         UPDATE players
         SET candy_in_bucket = 50,
@@ -844,16 +850,8 @@ def is_player_active(player_id: int, guild_id: int) -> bool:
 
 # Boolean is player frozen playing
 def is_player_frozen(player_id: int, guild_id: int) -> bool:
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # Query to check the player's active status in the specified guild
-    cursor.execute('SELECT frozen FROM players WHERE player_id = ? AND guild_id = ?', (player_id, guild_id))
-    is_frozen = cursor.fetchone()
-
-    # Return True if the player is found and active, otherwise return False
-    if is_frozen and is_frozen[0] == 1:
-        return True
-    return False
+    from player_state import freeze_info
+    return bool(freeze_info(guild_id, player_id))
 
 #I need a function get get all players in guild where active = 1, return playerID, candy_in_bucket,potions_purchased
 def get_active_players_by_guild(guild_id: int):
@@ -874,7 +872,8 @@ def get_active_players_by_guild(guild_id: int):
         WHERE guild_id = ? AND active = 1
     ''', (guild_id,))
     players = cursor.fetchall()
-    return players
+    from player_state import visible
+    return [row for row in players if visible(guild_id, row[0])]
 
 # Function to set event channel for a guild
 def set_event_channel(guild_id: int, channel_id: int):

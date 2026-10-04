@@ -85,6 +85,7 @@ class MyBot(commands.Bot):
             await self.load_extension("cogs.player")
             await self.load_extension("cogs.shop")
             await self.load_extension("cogs.help")
+            await self.load_extension("cogs.participation")
         else:
             self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
             self.tree.add_command(Game.game_group,guild=self.guild_id,override=True)
@@ -95,6 +96,7 @@ class MyBot(commands.Bot):
             await self.load_extension("cogs.player")
             await self.load_extension("cogs.shop")
             await self.load_extension("cogs.help")
+            await self.load_extension("cogs.participation")
         
         print("Syncing tree...")
         try:
@@ -199,26 +201,22 @@ async def on_raw_reaction_add(payload):
         game_invite_message_id = result[0]
 
         # Check if the reaction is on the correct message and with the right emoji
-        if payload.message_id == game_invite_message_id and str(payload.emoji) == join_emoji:
+        if payload.message_id == game_invite_message_id and payload.channel_id == result[1] and str(payload.emoji) == join_emoji:
             player_id = member.id
             guild_id = guild.id
 
+            import player_state as state
             try:
-                if is_player_active(player_id, guild_id):
-                    await channel.send(f"{member.mention}, you are already in the game! Use `/return` if you previously opted out.", delete_after=15)
-                else:
-                    # Create new player data
-                    try:
-                        create_player_data(player_id, guild_id)
-                        message = bot.message_loader.get_message(
-                            "join", "messages", user=member.mention
-                        )
-                        await channel.send(message, delete_after=30)
-                    except Exception as e:
-                        logger.error(f"Error creating player data for {member.id} in guild {guild_id}: {str(e)}")
-                        await channel.send(f"Error occurred while adding you to the game, {member.mention}. Please try again later.", delete_after=15)
-            except Exception as e:
-                logger.error(f"Error checking or adding player for {member.id} in guild {guild_id}: {str(e)}")
+                state.join(guild_id, player_id)
+            except state.StateError as error:
+                # Reaction events cannot have ephemeral replies; use a private DM.
+                try:
+                    await member.send(str(error))
+                except discord.HTTPException:
+                    pass  # Never leak freeze reasons to a public channel.
+                return
+            message = bot.message_loader.get_message('join', 'messages', user=member.mention)
+            await channel.send(message, delete_after=30)
     except Exception as e:
         logger.error(f"Unexpected error in on_raw_reaction_add: {str(e)}")
 

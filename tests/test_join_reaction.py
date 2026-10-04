@@ -29,7 +29,7 @@ def test_seed_and_permission_error(fail):
 
 
 @pytest.mark.parametrize('uid,is_bot,expected',[(99,True,False),(88,True,False),(10,False,True)])
-def test_raw_reaction_ignores_bots_but_enrolls_humans(uid,is_bot,expected):
+def test_raw_reaction_ignores_bots_but_enrolls_humans(uid,is_bot,expected,monkeypatch):
     # Load just the actual event handler without running production bot startup.
     tree=ast.parse((ROOT/'discord-bot/bot.py').read_text())
     node=next(n for n in tree.body if isinstance(n,ast.AsyncFunctionDef) and n.name=='on_raw_reaction_add')
@@ -38,7 +38,9 @@ def test_raw_reaction_ignores_bots_but_enrolls_humans(uid,is_bot,expected):
     channel=NS(send=AsyncMock())
     guild=NS(id=1,get_member=lambda _:member)
     client=NS(user=NS(id=99),get_guild=lambda _:guild,get_channel=lambda _:channel,message_loader=loader())
+    import player_state
     create=Mock()
+    monkeypatch.setattr(player_state,"join",create)
     settings=Mock(return_value=(123,2))
     env=dict(bot=client,logger=logging.getLogger('test'),get_join_game_msg_settings=settings,is_player_active=lambda *args:False,create_player_data=create)
     exec(compile(ast.Module(body=[node],type_ignores=[]),'<handler>','exec'),env)

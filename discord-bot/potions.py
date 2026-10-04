@@ -68,19 +68,21 @@ def offer(guild_id, potion_id):
 
 
 def eligible(guild_id, player_id):
+    from player_state import require
+    require(guild_id, player_id, "shop")
     if db.get_game_settings(guild_id)[0]:
         raise PotionError("The game is paused.")
     row = db.get_db_connection().execute("SELECT candy_in_bucket, active, frozen FROM players WHERE guild_id=? AND player_id=?", (guild_id, player_id)).fetchone()
     if not row or not row[1]:
         raise PotionError("Join the game before using the shop.")
-    if row[2]:
-        raise PotionError("Your gameplay is frozen.")
     return row[0]
 
 
 def inventory(guild_id, player_id):
     conn = db.get_db_connection()
     bottles = dict(conn.execute("SELECT potion_id, quantity FROM potion_inventory WHERE guild_id=? AND player_id=?", (guild_id, player_id)))
+    for key, count in conn.execute("SELECT potion_id,COUNT(*) FROM returned_potions WHERE guild_id=? AND player_id=? GROUP BY potion_id", (guild_id,player_id)):
+        bottles[key] = bottles.get(key,0) + count
     effects = dict(conn.execute("SELECT potion_id, charges FROM potion_effects WHERE guild_id=? AND player_id=? AND charges>0", (guild_id, player_id)))
     return bottles, effects
 
@@ -141,6 +143,8 @@ def use(guild_id, player_id, potion_id, action_id, member_ids=None, now=None, rn
         if previous is not None:
             return dict(previous, replayed=True)
         eligible(guild_id, player_id)
+        from player_state import require, visible
+        require(guild_id, player_id, "use", now)
         bottles, effects = inventory(guild_id, player_id)
         if bottles.get(potion_id, 0) < 1:
             raise PotionError("You don't own that potion.")
@@ -149,14 +153,16 @@ def use(guild_id, player_id, potion_id, action_id, member_ids=None, now=None, rn
         opposing = {"ward": "mirror", "mirror": "ward"}.get(potion_id)
         if opposing and effects.get(opposing, 0):
             raise PotionError("Ward and Mirror cannot be active together. Your bottle was not consumed.")
-        result = {"potion": potion_id, "name": potion.name, "charges": potion.charges, "recipients": []}
+        returned = conn.execute("SELECT id,charges FROM returned_potions WHERE guild_id=? AND player_id=? AND potion_id=? ORDER BY charges,id LIMIT 1",(guild_id,player_id,potion_id)).fetchone()
+        charges = returned[1] if returned else potion.charges
+        result = {"potion": potion_id, "name": potion.name, "charges": charges, "recipients": []}
         if potion_id == "luna":
             cooldown = conn.execute("SELECT available_at FROM potion_cooldowns WHERE guild_id=? AND effect='luna'", (guild_id,)).fetchone()
             if cooldown and cooldown[0] > now:
                 raise PotionError(f"Luna is resting. Try again in {max(1, int(cooldown[0]-now+0.999))} seconds; your potion is safe.")
             if member_ids is None:
                 raise PotionError("Couldn't verify server members. Your potion is safe; please try again.")
-            candidates = [row[0] for row in conn.execute("SELECT player_id FROM players WHERE guild_id=? AND active=1 AND frozen=0 AND player_id<>?", (guild_id, player_id)) if row[0] in member_ids]
+            candidates = [row[0] for row in conn.execute("SELECT player_id FROM players WHERE guild_id=? AND active=1 AND player_id<>?", (guild_id, player_id)) if row[0] in member_ids and visible(guild_id,row[0],now)]
             if not candidates:
                 raise PotionError("No other eligible players are available. Your potion was not consumed.")
             recipients = rng.sample(candidates, min(3, len(candidates)))
@@ -165,12 +171,18 @@ def use(guild_id, player_id, potion_id, action_id, member_ids=None, now=None, rn
             conn.execute("INSERT INTO potion_stats(guild_id,player_id,luna_summons) VALUES(?,?,1) ON CONFLICT(guild_id,player_id) DO UPDATE SET luna_summons=luna_summons+1", (guild_id, player_id))
             result["recipients"] = recipients
         else:
-            conn.execute("INSERT INTO potion_effects VALUES(?,?,?,?) ON CONFLICT(guild_id,player_id,potion_id) DO UPDATE SET charges=excluded.charges", (guild_id, player_id, potion_id, potion.charges))
-        conn.execute("UPDATE potion_inventory SET quantity=quantity-1 WHERE guild_id=? AND player_id=? AND potion_id=?", (guild_id, player_id, potion_id))
+            conn.execute("INSERT INTO potion_effects VALUES(?,?,?,?) ON CONFLICT(guild_id,player_id,potion_id) DO UPDATE SET charges=excluded.charges", (guild_id, player_id, potion_id, charges))
+        if returned:
+            conn.execute("DELETE FROM returned_potions WHERE id=?",(returned[0],))
+        else:
+            conn.execute("UPDATE potion_inventory SET quantity=quantity-1 WHERE guild_id=? AND player_id=? AND potion_id=?", (guild_id, player_id, potion_id))
         return record_action(conn, guild_id, action_id, player_id, "use", result)
 
 
 def consume_charge(conn, guild_id, player_id, potion_id):
+    from player_state import visible
+    if not visible(guild_id, player_id):
+        return False
     return conn.execute("UPDATE potion_effects SET charges=charges-1 WHERE guild_id=? AND player_id=? AND potion_id=? AND charges>0", (guild_id, player_id, potion_id)).rowcount == 1
 
 
@@ -226,10 +238,10 @@ def reset_prices(guild_id, actor_id, potion_id=None):
 
 
 def clear_player(conn, guild_id, player_id):
-    for table in ("potion_inventory", "potion_effects", "potion_stats", "potion_actions"):
+    for table in ("potion_inventory", "potion_effects", "potion_stats", "potion_actions", "returned_potions", "protection_credits"):
         conn.execute(f"DELETE FROM {table} WHERE guild_id=? AND player_id=?", (guild_id, player_id))
 
 
 def clear_season(conn, guild_id):
-    for table in ("potion_inventory", "potion_effects", "potion_stats", "potion_actions", "potion_cooldowns", "potion_audit"):
+    for table in ("potion_inventory", "potion_effects", "potion_stats", "potion_actions", "potion_cooldowns", "potion_audit", "player_freezes", "player_rejoins", "returned_potions", "protection_credits", "player_protection", "protection_cooldowns"):
         conn.execute(f"DELETE FROM {table} WHERE guild_id=?", (guild_id,))

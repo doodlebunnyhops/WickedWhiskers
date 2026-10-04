@@ -51,6 +51,7 @@ def smash(guild_id, player_id, wager, action_id, rng=random):
         if contribution:
             db.update_cauldron_pool(guild_id, contribution)
             db.update_cauldron_contribution(player_id, guild_id, contribution)
-        result = dict(outcome=outcome, message_key=message_key, wager=wager, delta=delta, balance=after, magic=magic, contribution=contribution)
+        from player_state import protection_info
+        result = dict(protected=bool(protection_info(guild_id, player_id)), outcome=outcome, message_key=message_key, wager=wager, delta=delta, balance=after, magic=magic, contribution=contribution)
         potions.record_action(conn, guild_id, action_id, player_id, 'pumpkin', result)
         return result, False

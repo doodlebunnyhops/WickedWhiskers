@@ -56,6 +56,9 @@ class ShopModal(OwnedModal):
             price, enabled = potions.offer(guild_id, key)
             if enabled:
                 options.append(discord.SelectOption(label=f"{potion.name} — {price} candy", value=key, description=potion.description[:100]))
+        import player_state as state
+        if state.settings(guild_id)['enabled']:
+            options.append(discord.SelectOption(label=state.text('protection_name'),value='veil',description=state.text('protection_option')))
         if not options:
             raise potions.PotionError("The shop has no potions for sale right now.")
         self.potion = discord.ui.Select(options=options)
@@ -73,6 +76,14 @@ class ShopModal(OwnedModal):
             return
         try:
             key = self.potion.values[0]
+            if key == 'veil':
+                import player_state as state
+                from modals.protection import open_protection
+                if quantity != 1:
+                    await tell(interaction,state.text('one_protection'))
+                    return
+                await open_protection(interaction)
+                return
             price, enabled = potions.offer(self.guild_id, key)
             if not enabled:
                 raise potions.PotionError("That potion is no longer for sale.")
@@ -128,6 +139,16 @@ class InventoryLink(OwnedView):
 
 
 class InventoryView(OwnedView):
+    def __init__(self,owner_id,guild_id):
+        super().__init__(owner_id,guild_id)
+        import player_state as state
+        self.protection.label=state.text('protection_name')
+
+    @discord.ui.button(style=discord.ButtonStyle.secondary)
+    async def protection(self,interaction,button):
+        from modals.protection import open_protection
+        await open_protection(interaction)
+
     @discord.ui.button(label="Use Potion", style=discord.ButtonStyle.primary)
     async def activate(self, interaction, button):
         try:
@@ -144,6 +165,12 @@ async def show_inventory(interaction):
     lines = [f"{p.name}: {bottles.get(key, 0)} bottle(s)" for key, p in potions.CATALOG.items()]
     active = [f"{potions.item(key).name}: {charges} charge(s)" for key, charges in effects.items()]
     content = "**Your potions**\n" + "\n".join(lines) + "\n\n**Active effects**\n" + ("\n".join(active) or "None")
+    import player_state as state
+    from modals.protection import status_text
+    content += '\n\n' + status_text(interaction.guild_id,interaction.user.id)
+    returned = db.get_db_connection().execute('SELECT potion_id,charges FROM returned_potions WHERE guild_id=? AND player_id=? ORDER BY id',(interaction.guild_id,interaction.user.id)).fetchall()
+    if returned:
+        content += '\n' + state.text('returned_heading') + '\n' + '\n'.join(state.text('returned_bottle',name=potions.item(key).name,charges=charges) for key,charges in returned)
     view = InventoryView(interaction.user.id, interaction.guild_id)
     await interaction.response.send_message(content, view=view, ephemeral=True)
 
@@ -151,6 +178,8 @@ async def show_inventory(interaction):
 class UsePotionModal(OwnedModal):
     def __init__(self, owner_id, guild_id):
         potions.eligible(guild_id, owner_id)
+        import player_state as state
+        state.require(guild_id, owner_id, "use")
         super().__init__(owner_id, guild_id, title="Use a Potion")
         bottles, effects = potions.inventory(guild_id, owner_id)
         options = [discord.SelectOption(label=f"{potions.item(key).name} ({count})", value=key, description=potions.item(key).description[:100]) for key, count in bottles.items() if count > 0 and not effects.get(key)]
@@ -225,6 +254,8 @@ class ManageView(OwnedView):
     def __init__(self, owner_id, guild_id):
         super().__init__(owner_id, guild_id)
         self.selected = None
+        import player_state as state
+        self.protection_settings.label=state.text('settings_button')
         self.selector.options = [discord.SelectOption(label=p.name, value=key, description=p.description[:100]) for key, p in potions.CATALOG.items()]
 
     async def interaction_check(self, interaction):
@@ -234,6 +265,11 @@ class ManageView(OwnedView):
             await tell(interaction, "Shop management permission is required.")
             return False
         return True
+
+    @discord.ui.button(style=discord.ButtonStyle.primary)
+    async def protection_settings(self,interaction,button):
+        from modals.protection import ProtectionSettings
+        await interaction.response.send_modal(ProtectionSettings(self.owner_id,self.guild_id))
 
     @discord.ui.select(placeholder="Select a potion to edit")
     async def selector(self, interaction, select):

@@ -20,3 +20,7 @@ Only the requester can operate the menu. Moderator access is rechecked when sele
 All page text, topic labels, descriptions, footer, and interaction replies are defined under `help` in `discord-bot/utils/messages.json` and read using `messages.py`. The command is loaded before synchronization for both global and configured-guild operation.
 
 The bot seeds 🎃 (`:jack_o_lantern:`) on new or relocated join invitations. Running `/bot send join_game_msg` again restores it on the existing invitation. Give the bot Add Reactions and Read Message History even when @everyone cannot add new reactions. Reactions from bots, including the bot's own seed reaction, never enroll them.
+
+## Freeze, protection, and leaving
+
+Playing now explains `/leave` and the one-hour fresh-start delay. Potions explains Witch’s Veil, its purchase modes, restrictions, and returned potions on freezing. Management includes `/game freeze`, `/game unfreeze`, and the Witch’s Veil shop settings. Cauldron help explains frozen/protected exclusions. See [full rules](freeze-and-protection.md).

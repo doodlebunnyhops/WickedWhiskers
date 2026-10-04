@@ -26,32 +26,19 @@ raven_pumpkin = "https://cdn.discordapp.com/attachments/1293052178742644889/1392
 raven_pumpkin_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1392015038071443539/raven_pumpkin_cauldrin.png?ex=686dfe87&is=686cad07&hm=15756b604e74e651f6dc3ffa067f050fa6faa13b6d62e7bd3d3b4284f997c380&"
 
 
-async def player_join(interaction: discord.Interaction,member: discord.Member):
-    guild_id = interaction.guild.id
-    game_disabled, _,_ = get_game_settings(guild_id)
-    if game_disabled:
-        print(f"Game is disabled for guild {guild_id}")
-        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
+async def player_join(interaction: discord.Interaction, member: discord.Member):
+    import player_state as state
+    if member and member.id != interaction.user.id:
+        await interaction.response.send_message(state.text('join_self'), ephemeral=True)
         return
-    user = interaction.user
-    target_user = member
-    
-    if target_user:
-        if interaction.user.id != target_user.id:
-            print(f"After Check:\tCaller: {user}, Target: {target_user}")
-            await interaction.response.send_message("You must target yourself for this command!", ephemeral=True)
-            return
-
-    if is_player_active(user.id, guild_id):
-        await interaction.response.send_message(f"{user.mention}, you are already in the game! Use `/return` if you previously opted out.", ephemeral=True)
+    if interaction.user.bot:
         return
-    else:
-        try:
-            create_player_data(user.id, guild_id)
-            greeting_message = interaction.client.message_loader.get_message("join", "messages", user=user.mention)
-            await interaction.response.send_message(greeting_message.format(user=user.mention), ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"An error occurred: {str(e)}", ephemeral=True)
+    try:
+        state.join(interaction.guild.id, interaction.user.id)
+    except state.StateError as error:
+        await interaction.response.send_message(str(error), ephemeral=True)
+        return
+    await interaction.response.send_message(interaction.client.message_loader.get_message('join', 'messages', user=interaction.user.mention), ephemeral=True)
 
 
 class _TrickResponses:
@@ -74,6 +61,12 @@ class _TrickResponses:
 
 
 async def player_trick(interaction: discord.Interaction, member: discord.Member):
+    import player_state as state
+    try:
+        state.require(interaction.guild.id, interaction.user.id)
+    except state.StateError as error:
+        await interaction.response.send_message(str(error), ephemeral=True)
+        return
     responses = _TrickResponses()
     if member and potions.inventory(interaction.guild.id, member.id)[1].get('mirror', 0) and not getattr(interaction.guild, 'chunked', True):
         await interaction.response.defer(ephemeral=True)
@@ -104,6 +97,15 @@ async def player_trick(interaction: discord.Interaction, member: discord.Member)
 
 def _resolve_trick(interaction: discord.Interaction,member: discord.Member, responses):
     guild_id = interaction.guild.id
+    import player_state as state
+    try:
+        state.require(guild_id, interaction.user.id)
+    except state.StateError as error:
+        responses.append_personal(str(error))
+        return
+    if member and not state.visible(guild_id, member.id):
+        responses.append_personal(state.text('target_unavailable'))
+        return
     game_disabled, _,_ = get_game_settings(guild_id)
     if game_disabled:
         print(f"Game is disabled for guild {guild_id}")
@@ -356,6 +358,12 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
 
 
 async def player_treat(interaction: discord.Interaction,member: discord.Member, amount: 0):
+    import player_state as state
+    try:
+        state.require(interaction.guild.id, interaction.user.id)
+    except state.StateError as error:
+        await interaction.response.send_message(str(error), ephemeral=True)
+        return
     guild_id = interaction.guild.id
     game_disabled, _,_ = get_game_settings(guild_id)
     if game_disabled:
@@ -381,9 +389,6 @@ async def player_treat(interaction: discord.Interaction,member: discord.Member, 
 
 async def player_bucket(interaction: discord.Interaction):
     guild_id = interaction.guild.id
-    if game_paused( guild_id):
-        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
-        return
     user = interaction.user
     if not is_player_active(user.id, guild_id):
         await interaction.response.send_message(f"{user.mention}, you must join the game to participate! /join", ephemeral=True)
@@ -408,6 +413,12 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
 
     message = interaction.client.message_loader.get_message
     await interaction.response.defer(ephemeral=True)
+    import player_state as state
+    try:
+        state.require(interaction.guild.id, interaction.user.id, 'pumpkin')
+    except state.StateError as error:
+        await interaction.followup.send(str(error), ephemeral=True)
+        return
     try:
         result, repeated = smash(interaction.guild.id, interaction.user.id, amount, interaction.id)
     except PumpkinError as error:
@@ -422,12 +433,12 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
         return
     values = dict(user=interaction.user.mention, candy_amount=abs(result['delta']),
                   wager=result['wager'], balance=result['balance'], delta=result['delta'])
-    event = message("smash_pumpkin", "event_messages", result['message_key'], **values)
-    personal = message("smash_pumpkin", "personal_message", result['message_key'], **values)
+    event = message("smash_pumpkin", "event_messages", ("hidden_" if result.get("protected") else "") + result['message_key'], **values)
+    personal = message("smash_pumpkin", "personal_message", ("hidden_" if result.get("protected") else "") + result['message_key'], **values)
     # Append magical contributions rather than replacing the actual outcome (especially a wiped bucket).
     if result['magic']:
-        event += "\n\n" + message("smash_pumpkin", "event_messages", result['magic'], **values)
-        personal += "\n\n" + message("smash_pumpkin", "personal_message", result['magic'], **values)
+        event += "\n\n" + message("smash_pumpkin", "event_messages", ("hidden_" if result.get("protected") else "") + result['magic'], **values)
+        personal += "\n\n" + message("smash_pumpkin", "personal_message", ("hidden_" if result.get("protected") else "") + result['magic'], **values)
     summary = message("smash_pumpkin", "summary", **values)
     event += "\n\n" + summary
     personal += "\n\n" + summary
@@ -435,6 +446,8 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
     image = (luna_pumpkin_cauldron if result['magic'] == 'luna' else luna_pumpkin) if is_win else (raven_pumpkin_cauldron if result['magic'] == 'raven' else raven_pumpkin)
     embed = create_embed(message("smash_pumpkin", "title", user=interaction.user.display_name),
                          event, discord.Color.orange(), image, "Luna" if is_win else "Raven", None)
+    if result.get('protected'):
+        embed = discord.Embed(title=message('smash_pumpkin', 'title', user=interaction.user.display_name), description=event, color=discord.Color.orange())
     await interaction.followup.send(personal, ephemeral=True)
     try:
         await post_to_target_channel(interaction, embed, channel_type="event")
@@ -553,6 +566,14 @@ def _resolve_treat(interaction: discord.Interaction, user: discord.Member, amoun
     game_disabled, _,_ = get_game_settings(guild_id)
     if game_disabled:
         return None, "The game is currently paused."
+
+    import player_state as state
+    try:
+        state.require(guild_id, giver.id)
+    except state.StateError as error:
+        return None, str(error)
+    if not recipient or not state.visible(guild_id, recipient.id):
+        return None, state.text('target_unavailable')
 
     giver_data = get_player_data(giver.id, guild_id)
     recipient_data = get_player_data(recipient.id, guild_id)

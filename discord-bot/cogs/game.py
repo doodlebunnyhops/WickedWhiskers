@@ -5,6 +5,7 @@ from cogs.game_commands.set import set_group
 from cogs.game_commands.add import add_group
 from cogs.game_commands.get import get_group
 from cogs.game_commands.cast import cast_group
+from cogs.participation import freeze_command, unfreeze_command
 
 class Game(commands.Cog):
     def __init__(self, bot):
@@ -17,6 +18,8 @@ class Game(commands.Cog):
     game_group.add_command(add_group)
     game_group.add_command(get_group)
     game_group.add_command(cast_group)
+    game_group.add_command(freeze_command)
+    game_group.add_command(unfreeze_command)
     
 
 

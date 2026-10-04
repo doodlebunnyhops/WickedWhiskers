@@ -14,6 +14,11 @@ class Shop(commands.GroupCog, group_name="shop", group_description="Luna & Raven
     async def browse(self, interaction: discord.Interaction):
         await open_shop(interaction)
 
+    @app_commands.command(name="protection", description="Buy timed protection, check its timer, or end it early")
+    async def protection(self,interaction:discord.Interaction):
+        from modals.protection import open_protection
+        await open_protection(interaction)
+
     @app_commands.command(name="manage", description="Manage this server's potion prices and availability")
     async def manage(self, interaction: discord.Interaction):
         if not potions.can_manage(interaction.user, interaction.guild_id):

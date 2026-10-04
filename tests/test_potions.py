@@ -262,7 +262,7 @@ def test_cog_registration(database):
         async with bot:
             await setup(bot)
             assert {c.name for c in bot.tree.get_commands()}=={'shop','inventory','use'}
-            assert {c.name for c in bot.tree.get_command('shop').commands}=={'browse','manage','manager_role','post'}
+            assert {c.name for c in bot.tree.get_command('shop').commands}=={'browse','manage','manager_role','post','protection'}
             assert bot.persistent_views
     asyncio.run(run())
 

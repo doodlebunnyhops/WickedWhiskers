@@ -742,6 +742,30 @@
             "raven": [
                 "🔥 Raven reaches for {user}'s lost **{candy_amount} candy**, but the cauldron gulps it down first! “That was supposed to be MINE!”",
                 "🦇 “Greedy pot!” Raven hisses as **{candy_amount} candy from {user}'s loss** tumbles into the cauldron."
+            ],
+            "hidden_win": [
+                "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
+            ],
+            "hidden_win_extra": [
+                "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
+            ],
+            "hidden_lose": [
+                "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
+            ],
+            "hidden_lose_double": [
+                "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
+            ],
+            "hidden_lose_all": [
+                "🎃 The witches cannot see {user}, but a hungry pumpkin can! It swallows **all {candy_amount} candy**, emptying the bucket."
+            ],
+            "hidden_break_even": [
+                "🌫️ {user} smashes a pumpkin beneath the Veil. Just seeds and cobwebs—no candy gained or lost."
+            ],
+            "hidden_luna": [
+                "✨ The pumpkin’s own magic copies **{candy_amount} candy** into the cauldron. {user} stays hidden and keeps the winnings. The pot never refuses a snack!"
+            ],
+            "hidden_raven": [
+                "🫧 The cauldron sniffs out **{candy_amount} lost candy** and gulps it down. It cannot see {user}, but it can certainly smell sweets. No additional candy is taken."
             ]
         },
         "personal_message": {
@@ -790,6 +814,30 @@
             ],
             "lose_all": [
                 "💀 “An empty bucket? How deliciously dreadful!” Raven cackles. The pumpkin took **all {candy_amount} of your candy**. Your bucket now holds **0 candy**."
+            ],
+            "hidden_win": [
+                "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
+            ],
+            "hidden_win_extra": [
+                "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
+            ],
+            "hidden_lose": [
+                "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
+            ],
+            "hidden_lose_double": [
+                "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
+            ],
+            "hidden_lose_all": [
+                "🎃 The witches cannot see {user}, but a hungry pumpkin can! It swallows **all {candy_amount} candy**, emptying the bucket."
+            ],
+            "hidden_break_even": [
+                "🌫️ {user} smashes a pumpkin beneath the Veil. Just seeds and cobwebs—no candy gained or lost."
+            ],
+            "hidden_luna": [
+                "✨ The pumpkin’s own magic copies **{candy_amount} candy** into the cauldron. {user} stays hidden and keeps the winnings. The pot never refuses a snack!"
+            ],
+            "hidden_raven": [
+                "🫧 The cauldron sniffs out **{candy_amount} lost candy** and gulps it down. It cannot see {user}, but it can certainly smell sweets. No additional candy is taken."
             ]
         },
         "title": "🎃 {user} smashed a pumpkin!",
@@ -1001,7 +1049,7 @@
             "fields": {
                 "join": {
                     "name": "Join the fun",
-                    "value": "Use `/join`, or click the 🎃 reaction on the server's join message."
+                    "value": "Use `/join`, or click 🎃 on the join message. `/leave` asks for confirmation: all progress is forfeited and returning has a one-hour delay. Leaving the server does the same. Removing 🎃 does not leave the game. Freezes survive leaving."
                 },
                 "trick": {
                     "name": "🦇 Trick someone",
@@ -1013,7 +1061,7 @@
                 },
                 "shop": {
                     "name": "🧪 Shop and potions",
-                    "value": "`/shop browse` opens your private shop, or use **Open Shop** on the shop message. Buying a bottle puts it in your inventory; use `/use` to activate it."
+                    "value": "`/shop browse` opens your private shop, or use **Open Shop** on the shop message. Buying a bottle puts it in your inventory; use `/use` to activate it. `/shop protection` opens Witch’s Veil: timed concealment with no tricks, treats, other potion use, or witch/cauldron rewards. Shopping and pumpkins remain available."
                 },
                 "inventory": {
                     "name": "🎒 Check your supplies",
@@ -1050,6 +1098,14 @@
                 "rules": {
                     "name": "Before you sip",
                     "value": "Buying does not activate a potion. Active effects apply to eligible trick/treat actions; they do not protect against pumpkin losses. Potion purchases are perks, not cauldron entries."
+                },
+                "veil": {
+                    "name": "🌫️ Witch’s Veil",
+                    "value": "Buy a duration or reserve a candy budget through `/shop protection` (also listed in the shop). Activates immediately. No incoming/outgoing tricks or treats, other potion activation, Luna gifts, or cauldron winnings. You may still shop and smash pumpkins. Existing potion charges wait. Ending early consumes the potion and starts its cooldown. Budget mode refunds only unspent time candy; fixed-duration mode forfeits unused time."
+                },
+                "frozen": {
+                    "name": "🧊 If a moderator freezes you",
+                    "value": "Gameplay and shopping stop, but bucket, inventory, and help stay readable. Active potions return with their remaining charges. Active Veil returns as a fee credit plus unspent time candy; its cooldown starts. Reusing it requires new time funding. Blocked actions privately show the reason and expiry. Leaving never clears a freeze."
                 }
             }
         },
@@ -1109,11 +1165,15 @@
                 },
                 "prices": {
                     "name": "Manage the shop",
-                    "value": "`/shop manage` changes this server's potion prices and availability. Requires Manage Server or the shop-manager role, which is separate from game-moderator access."
+                    "value": "`/shop manage` changes this server's potion prices and availability. Requires Manage Server or the shop-manager role, which is separate from game-moderator access. Use **Witch’s Veil settings** for fee, rate, min/max duration, cooldown, modes, and availability. Changes affect new purchases only."
                 },
                 "state": {
                     "name": "Pause or resume",
                     "value": "`/game set state state:Disable` or `state:Enable`. Moderator candy adjustments remain available while gameplay is paused."
+                },
+                "freeze": {
+                    "name": "Freeze / unfreeze",
+                    "value": "`/game freeze player:@Player minutes:60 reason:...` (omit minutes for indefinite). Use `update:True` to replace a current freeze. `/game unfreeze player:@Player` removes it. Public witch announcements show only the player/status. Active potions are returned once with remaining charges. Freeze persists across restarts and departures. `/bot reset player` explicitly clears it and resets progress."
                 }
             }
         },
@@ -1125,7 +1185,7 @@
             "fields": {
                 "check": {
                     "name": "1 · Check the pool and players",
-                    "value": "`/game get cauldron` shows the pool.\n`/game get cauldron_eligibility` shows eligible players and weights for each outcome. Active database players have a baseline chance; Luna favors treating and Raven favors successful tricks."
+                    "value": "`/game get cauldron` shows the pool.\n`/game get cauldron_eligibility` shows eligible players and weights for each outcome. Active database players have a baseline chance; Luna favors treating and Raven favors successful tricks. Frozen, protected, and opted-out players are excluded. Protected pumpkin contributions still enter the pool."
                 },
                 "pool": {
                     "name": "2 · Set the pool if needed",
@@ -1144,5 +1204,99 @@
     },
     "join_reaction": {
         "failed": "🌙 The join invitation is saved, but I could not add 🎃 (`:jack_o_lantern:`). Give me Add Reactions and Read Message History in that channel, then run `/bot send join_game_msg` again, or add the reaction yourself: {message_url}"
+    },
+    "participation": {
+        "reset_missing": "That player has no saved game record in this server.",
+        "reset_saved": "🌙 {player} has been reset to a fresh active game with 50 candy. Their freeze and rejoin delay were cleared; existing potion cooldowns remain.",
+        "reset_pool": "🌙 Cauldron event records have been reset.",
+        "protection_name": "Witch's Veil",
+        "protection_option": "Timed concealment; buy a duration or reserve a candy budget.",
+        "indefinite": "Until a moderator unfreezes you",
+        "no_reason": "No reason was supplied.",
+        "frozen_private": "🧊 You are frozen.\n**Ends:** {expiry}\n**Reason:** {reason}\nYou cannot trick, treat, smash pumpkins, shop, activate potions, or receive game rewards. Other players cannot target you. Your progress is preserved, and active potions were returned with their remaining charges. You can still check `/bucket`, `/inventory`, and `/help`. Leaving forfeits your progress but does not remove this freeze.",
+        "protected_private": "🌫️ Your Witch’s Veil lasts until <t:{expiry}:F> (<t:{expiry}:R>). You cannot trick, treat, or activate other potions while hidden. You can smash pumpkins, shop, and check inventory. You cannot receive treats, Luna gifts, or cauldron winnings. Use `/shop protection` to manage your spell.",
+        "not_joined": "🌙 You are not currently playing. Use `/join` when you are ready.",
+        "join_self": "🌙 You can only join yourself.",
+        "bots_cannot_join": "🦇 Bots cannot join the candy game.",
+        "admin_joined": "🌙 {player} has joined the game.",
+        "already_joined": "🌙 You are already playing! Your candy and potions are safe.",
+        "rejoin_wait": "🌙 Your fresh start is available <t:{expiry}:F> (<t:{expiry}:R>). Leaving starts a one-hour rejoin delay; an existing moderator freeze must also expire or be removed.",
+        "paused": "🌙 Gameplay is paused. Please wait for a moderator to reopen the game.",
+        "bad_settings": "Enter positive whole numbers. Fee/rate: 1–1,000,000; minimum/maximum/cooldown: 1–10,080 minutes. Minimum must not exceed maximum. Choose a listed purchase mode.",
+        "sales_disabled": "🌫️ New Witch’s Veil purchases are disabled in this server.",
+        "mode_disabled": "🌫️ That purchase mode is unavailable in this server.",
+        "bad_duration": "Enter a positive whole-number duration or budget.",
+        "budget_multiple": "Choose a time budget divisible by {rate} candy (the price of one minute). The potion fee is additional.",
+        "duration_range": "Choose between {minimum} and {maximum} minutes of protection.",
+        "quote_changed": "🌙 The price, settings, or returned-bottle credit changed. Open `/shop protection` again to review a fresh quote. No candy was charged.",
+        "protection_cooldown": "🌫️ Your protection cooldown ends <t:{expiry}:F> (<t:{expiry}:R>). No candy was charged.",
+        "not_enough": "🍬 You need {amount} candy for this purchase. Nothing was charged.",
+        "no_protection": "🌙 You have no active Witch’s Veil to end.",
+        "reason_length": "Keep the freeze reason to 500 characters or fewer.",
+        "already_frozen": "🧊 This player is already frozen. Use `update:True` to explicitly replace the duration and reason. Potions will not be returned twice.",
+        "denied": "🦇 You need Manage Server or a configured game-moderator role.",
+        "invalid_target": "Choose a human member of this server.",
+        "target_unavailable": "🌫️ That player is currently unavailable for tricks or treats.",
+        "event_missing": "Set an event channel with `/bot set channel` before changing freeze status.",
+        "event_denied": "I need View Channel, Send Messages, and Embed Links in the event channel. Freeze status was not changed.",
+        "event_failed": "The freeze change is saved, but I could not post its event announcement. Please check the event-channel permissions.",
+        "already_processed": "🌙 That action has already been handled. Nothing was applied twice.",
+        "freeze_title": "🧊 A frosty spell has been cast!",
+        "freeze_public": [
+            "🧊 Raven flicks her wand at {player}. “Do chill out, little troublemaker.” They have been frozen!",
+            "❄️ Luna wraps {player} in a glittering frost spell. “A little time on ice, sweetling.” They are frozen!",
+            "🦇 “Hold that thought. And everything else.” Raven encases {player} in enchanted ice. Frozen!",
+            "⛄ {player} has been frozen! Luna adds a tiny scarf. “There. Much more fashionable.”",
+            "🧊 Raven taps her wand twice. {player} becomes the newest frozen decoration. “Finally, someone who stays put.”",
+            "❄️ A flurry of sugar-white snow swirls around {player}. Luna announces, “Frozen! And no, Raven, they are not an ice lolly.”"
+        ],
+        "thaw_title": "✨ The frost has lifted!",
+        "thaw_public": [
+            "🌙 Luna brushes the frost from {player}. “There you are, sweetling!” They have been unfrozen.",
+            "🦇 Raven releases {player} from the ice. “Try not to melt into mischief immediately.” They are unfrozen."
+        ],
+        "freeze_saved": "🧊 Freeze saved for {player}. The event announcement contains only their identity and frozen status. Active potions were returned once; reasons remain private.",
+        "thaw_saved": "✨ The freeze on {player} is removed. Existing leave/rejoin restrictions still apply.",
+        "leave_confirm_button": "Leave and erase my progress",
+        "cancel_button": "Cancel",
+        "leave_warning": "⚠️ **Leave the game?**\nThis permanently forfeits your candy, stats, bottles, active effects, and protection reserve with no refund. You cannot rejoin for one hour. Moderator freezes and existing cooldowns survive. Removing your 🎃 reaction does NOT leave the game. Confirm only if you want a fresh start later.",
+        "left": "🌙 You have left the game and forfeited your progress. You can join again <t:{expiry}:F> (<t:{expiry}:R>), provided you are not still frozen. Any freeze and cooldowns remain in place.",
+        "cancelled": "🌙 Cancelled. Nothing changed.",
+        "protection_active": "🌫️ **Witch’s Veil active** · {mode}\nEnds <t:{expiry}:F> (<t:{expiry}:R>).",
+        "protection_inactive": "🌙 Witch’s Veil is not active.",
+        "protection_credit": "🧪 Returned Witch’s Veil bottles: **{count}**. Each covers the potion fee once; a new time allowance must still be funded.",
+        "cooldown_status": "Next protection purchase available <t:{expiry}:F> (<t:{expiry}:R>).",
+        "mode_fixed": "Exact duration",
+        "mode_budget": "Candy budget",
+        "protection_intro": "🌫️ **Witch’s Veil**\nPotion fee: **{fee} candy** · Time: **{rate} candy/minute**\nDuration: {minimum}–{maximum} minutes · Cooldown: {cooldown} minutes after ending.\nPurchase activates immediately. No outgoing/incoming tricks or treats, other potion use, Luna gifts, or cauldron winnings while hidden. You may still shop and smash pumpkins—including special contributions to the hungry cauldron. Existing potion charges wait until protection ends.",
+        "protection_buy_button": "Choose protection",
+        "protection_end_button": "End protection",
+        "protection_modal_title": "Buy Witch’s Veil",
+        "mode_label": "How would you like to pay?",
+        "units_label": "Minutes OR candy for time",
+        "units_hint": "Exact duration: enter minutes. Candy budget: enter time candy only; the potion fee is extra.",
+        "confirm_protection_button": "Pay and activate",
+        "protection_quote": "🌫️ **{mode} · {minutes} minutes**\nPotion fee: {fee} candy\nTime allowance: {reserve} candy at {rate}/minute\n**Total charged now: {total} candy**\nCooldown after ending: {cooldown} minutes.\nActivates immediately. No tricking, treating, other potion activation, or witch/cauldron rewards. Pumpkins and shopping remain available. No stacking or extending. Ending consumes the potion.",
+        "refund_fixed": "Exact duration: unused time is forfeited if you end early.",
+        "refund_budget": "Budget: time candy is reserved upfront. Each started minute costs one full minute. Ending early returns unspent time candy only; the potion fee is consumed.",
+        "protection_started": "🌫️ Witch’s Veil activated for {amount} candy! You are hidden until <t:{expiry}:F> (<t:{expiry}:R>).",
+        "end_warning": "End protection now? The potion is consumed and your full cooldown starts immediately. Budget mode returns unspent reserved time candy; exact-duration mode gives no early-stop refund. You cannot resume this spell.",
+        "protection_ended": "🌙 Protection ended and the potion was consumed. Returned unspent time candy: **{amount}**. Your cooldown has started.",
+        "settings_title": "Witch’s Veil settings",
+        "settings_fee": "Potion fee (candy)",
+        "settings_rate": "Candy per minute",
+        "settings_duration": "Minimum,maximum minutes (e.g. 5,30)",
+        "settings_cooldown": "Cooldown after ending (minutes)",
+        "settings_modes": "Purchase modes / availability",
+        "settings_mode_both": "Allow both modes",
+        "settings_mode_fixed": "Exact duration only",
+        "settings_mode_budget": "Candy budget only",
+        "settings_mode_disabled": "Disable new purchases",
+        "shop_denied": "You need Manage Server or the designated shop-manager role.",
+        "settings_saved": "🌙 Protection settings saved for this server. Existing spells keep their agreed rate, duration, refund rules, and cooldown.",
+        "settings_button": "Witch’s Veil settings",
+        "one_protection": "Choose quantity 1 for Witch’s Veil; you choose its time allowance next.",
+        "returned_heading": "**Returned bottles (included in inventory counts)**",
+        "returned_bottle": "{name}: {charges} remaining charge(s). Used before fresh bottles."
     }
 }
