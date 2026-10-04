@@ -176,12 +176,12 @@ async def get_settings(interaction: discord.Interaction):
     settings = db_utils.get_guild_settings(guild_id)
     roles = db_utils.fetch_roles_by_guild(guild_id)
 
-    if settings is None and roles is None:
+    if settings is None and not roles:
         await interaction.response.send_message("No settings have been configured for this guild.", ephemeral=True)
         return
 
     # Unpack the settings
-    event_channel_id, admin_channel_id, game_invite_message_id, game_invite_channel_id, *_ = settings
+    event_channel_id, admin_channel_id, game_invite_channel_id, game_invite_message_id = settings or (None, None, None, None)
 
     print(f'event_channel_id: {event_channel_id}, admin_channel_id: {admin_channel_id}, game_invite_message_id: {game_invite_message_id}, game_invite_channel_id: {game_invite_channel_id}')
     # Fetch the channel objects
@@ -199,7 +199,7 @@ async def get_settings(interaction: discord.Interaction):
         invite_message_text = "Not Set"
 
     #Fetch the role objects
-    roles = [interaction.guild.get_role(role_id) for role_id in roles]
+    roles = [interaction.guild.get_role(role_id) for role_id in (roles or [])]
 
     # Prepare the response message
     response_message = (

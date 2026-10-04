@@ -1005,7 +1005,7 @@ def get_guild_settings(guild_id):
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM guild_settings WHERE guild_id = ?', (guild_id,))
+    cursor.execute('SELECT event_channel_id, admin_channel_id, game_invite_channel_id, game_invite_message_id FROM guild_settings WHERE guild_id = ?', (guild_id,))
     result = cursor.fetchone()
     if result:  # Check if player exists
         return result #return as tuple
