@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 import db_utils
 import utils.checks as checks
+from utils.join_message import seed_join_reaction
 from utils.utils import post_to_target_channel,create_invite_embed
 
 # Subcommand group for updates (used within the server group)
@@ -26,7 +27,7 @@ async def update_join_game_msg(interaction: discord.Interaction, channel: discor
         )
         await interaction.response.send_message(no_previous_msg, ephemeral=True)
     
-    old_message_id, old_channel_id = result
+    old_message_id, old_channel_id = result or (None, None)
 
     # Fetch the old channel
     old_channel = interaction.guild.get_channel(old_channel_id)
@@ -80,6 +81,7 @@ async def update_join_game_msg(interaction: discord.Interaction, channel: discor
 
     # Update the database with the new message and channel ID
     db_utils.set_join_game_msg_settings(guild_id, new_message_id, new_channel_id)
+    await seed_join_reaction(interaction, new_invite_message)
 
     #MessagingLoader
     personal_message = interaction.client.message_loader.get_message(

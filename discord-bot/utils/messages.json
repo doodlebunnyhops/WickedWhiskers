@@ -1065,7 +1065,7 @@
                 },
                 "join": {
                     "name": "2 · Post the join message",
-                    "value": "`/bot send join_game_msg channel:#join` makes the bot post the join invitation. Add a 🎃 (`:jack_o_lantern:`) reaction to that message once as a moderator so players can click the existing reaction to join."
+                    "value": "`/bot send join_game_msg channel:#join` makes the bot post the join invitation. The bot automatically adds 🎃 (`:jack_o_lantern:`); players click that existing reaction to join. Bot reactions are ignored. Run this command again to restore the reaction on an existing invitation."
                 },
                 "shop": {
                     "name": "3 · Post the shop entrance",
@@ -1141,5 +1141,8 @@
                 }
             }
         }
+    },
+    "join_reaction": {
+        "failed": "🌙 The join invitation is saved, but I could not add 🎃 (`:jack_o_lantern:`). Give me Add Reactions and Read Message History in that channel, then run `/bot send join_game_msg` again, or add the reaction yourself: {message_url}"
     }
 }

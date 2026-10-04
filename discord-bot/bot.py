@@ -174,9 +174,15 @@ async def on_raw_reaction_add(payload):
         if payload.guild_id is None:
             return
 
+        if bot.user and payload.user_id == bot.user.id:
+            return
         guild = bot.get_guild(payload.guild_id)
+        if guild is None:
+            return
         channel = bot.get_channel(payload.channel_id)
-        member = guild.get_member(payload.user_id)
+        member = payload.member or guild.get_member(payload.user_id)
+        if member is None or member.bot or channel is None:
+            return
 
         join_emoji = '🎃'
 

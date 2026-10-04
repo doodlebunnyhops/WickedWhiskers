@@ -4,6 +4,7 @@ import db_utils
 import utils.checks as checks
 from utils.utils import post_to_target_channel,create_invite_embed
 from modals.settings import Bot
+from utils.join_message import seed_join_reaction
 
 send_group = app_commands.Group(name="send", description="Send commands")
 
@@ -31,8 +32,10 @@ async def set_join_game_msg(interaction: discord.Interaction, channel: discord.T
         # Check if the message still exists in the channel
         try:
             existing_message = await existing_channel.fetch_message(existing_message_id)
+            await seed_join_reaction(interaction, existing_message)
             # If the message exists, notify the moderator
-            await interaction.response.send_message(
+            respond = interaction.followup.send if interaction.response.is_done() else interaction.response.send_message
+            await respond(
                 f"An invite message already exists! Players can react to it to join. Here is the message: {existing_message.jump_url}",
                 ephemeral=True
             )
@@ -57,6 +60,7 @@ async def set_join_game_msg(interaction: discord.Interaction, channel: discord.T
     game_invite_message_id = invite_message.id  # Get the new message ID
 
     db_utils.set_join_game_msg_settings(guild_id,game_invite_message_id,channel.id)
+    await seed_join_reaction(interaction, invite_message)
     #MessagingLoader
     personal_message = interaction.client.message_loader.get_message(
         "set_join_game_msg", "personal_message", channel=channel.name, jump_url=invite_message.jump_url
