@@ -1,83 +1,36 @@
+# Player commands
 
+Current for `feature/potion-shop`, reviewed 2026-10-04. See the [complete reference](all_current_commands.md) for exact arguments and [known limitations](command-audit.md).
 
-## Player Commands
+## Playing
 
-<!-- TOC -->
+1. Use `/join` to enter with 50 candy, or react 🎃 to the server’s game invitation.
+2. Use `/bucket` to check your candy and unactivated potion count.
+3. Use `/trick member:<player>` to attempt a theft, or `/treat member:<player> amount:<number>` to give candy. Both players must be active and must be different people. Special Luna/Raven scenarios can change rewards and costs.
+4. Use `/whois character:Luna` or `character:Raven` for character information.
 
-- [Player Commands](#player-commands)
-- [Suggestions](#suggestions)
-- [Status of command implementation](#status-of-command-implementation)
-    - [Player Interactions](#player-interactions)
-    - [Joining and Leaving the Game](#joining-and-leaving-the-game)
-    - [Checking Stats and Candy](#checking-stats-and-candy)
-    - [Smashing Pumpkins for Risk](#smashing-pumpkins-for-risk)
-    - [Potion CMDs for Cauldron Event](#potion-cmds-for-cauldron-event)
+`/smash_pumpkin amount:<number>` is available, but its balance calculations still need repair. Do not assume “break even” means a zero net cost; see the audit before using it in a live season.
 
-<!-- /TOC -->
+There are no registered `/escape`, `/return`, `/stats`, or `/view potions` commands. Leaderboards currently require a game moderator through `/game get leaderboard`.
 
-## Suggestions
+## Potion shop and modals
 
-:eyes: you may be tempted to just leave the game to pause your progress but moderators can reinstate you ;)...or freeze your game permanently and you'll lose your bought potions if the spell is cast while you are away.
+Use `/shop browse`, a posted **Open Shop** button, or the **Potion Shop** member context menu. Select a potion and quantity (1–100) in the private modal, submit, then review the price, effect and resulting balance before **Confirm Purchase**. Cancel does not spend candy. If a price changes, the revised order needs confirmation.
 
-## Status of command implementation
+Purchases always use your own candy and inventory—even when you opened the shop by selecting another member. Buying a bottle does not activate it. Use `/inventory` to view bottles and active effects, then **Use Potion**, or open `/use` directly to select and activate a bottle.
 
-- ✅  Completed Command! (But unit testing is still  needed overall!)
-- ❌  In Progress, may not work as expected
-- No Icon means not started or not in a state worth using.
+| Potion | Default candy price | Effect |
+| --- | --- | --- |
+| Witch’s Ward | 5 | Block the next incoming player trick. |
+| Raven’s Cunning | 5 | Add 15 percentage points to the next 3 eligible initial trick rolls, capped at 95% without lowering a higher base rate. |
+| Luna’s Calling | 10 | Give 5 candy each to up to 3 distinct other eligible members. Shared 60-second server cooldown. |
 
-### 1. Player Interactions
+Your server may change prices or disable sales. Disabled sales do not invalidate bottles already owned. Ward and Cunning can coexist; activating an already-active copy is rejected without consuming the spare bottle. Effects survive restart and have no time expiry. A Ward-blocked attempt or an empty unprotected bucket does not spend a Cunning charge.
 
-- ✅ **/trick [target_player]**
-  - **Action:** Attempts to trick another player out of their candy.
-  - **Example:** `/trick @Player`
-  - ✅**VARIANT** Player can right click on another member -> select app -> bot -> trick to initate a trick attempt agaisnt that member.
+Luna excludes the summoner, bots, departed, frozen and inactive players. No recipients, failed member verification, or an active cooldown preserves the bottle. Purchase/use is blocked while paused or for frozen/inactive players. `/inventory` remains a read-only way to inspect your state.
 
-- ✅ **/treat [target_player] [amount]**
-  - **Action:** Gives candy to another player.
-  - **Example:** `/treat @Player 10`
-  - ✅ **VARIANT**: Players can also join by clicking on themselves to open the context menu.
+Potions grant perks; purchases do not fund the cauldron or enter a prize draw. Cauldron draws remain unavailable.
 
----
+## Member menus
 
-### 2. Joining and Leaving the Game
-
-- ✅ **/join**
-  - **Action:** Joins the game and sets the player’s status to active.
-  - ✅ **VARIANT**: Players can also join by clicking on themselves to open the context menu.
-
-- **/escape**
-  - **Action:** Leaves the game but saves player data, setting the player’s status to inactive. While escaped you can still lose your potions purchased if the spell is casted - but you will not receive winnings for being inactive.
-
-- **/return**
-  - **Action:** Reinstates a player’s status to active, allowing them to participate again.
-
----
-
-### 3. Checking Stats and Candy
-
-- **/stats**
-  - **Action:** Displays the player’s personal stats (like candy count, tricks, treats, etc.).
-
-- ✅ **/bucket**
-  - **Action:** Shows how much candy the player currently has.
-  - ✅ **VARIANT**: Players can also join by clicking on themselves to open the context menu.
-
----
-
-### 4. Smashing Pumpkins for Risk
-
-- **/smash_pumpkin [amount]**
-  - **Action:** Risks a certain amount of candy for a chance to win or lose candy.
-  - **Example:** `/smash_pumpkin 10`
-
----
-
-### 5. Potion CMDs for Cauldron Event
-
-- **/buy potion [amount]**
-  - **Action:** Players purchase a potion (ticket) to participate in the cauldron event. One potion costs 10 candy by default.
-  - **Example:** `/buy_potion`
-
-- **/view potions**
-  - **Action:** Displays the total number of potions a player currently owns.
-  - **Example:** `/view potions`
+Right-click/long-press a member → **Apps**. **Trick Player** targets that member; **Treat Player** opens an amount modal for them. **Join Game** must target yourself. **Check Bucket** and **Potion Shop** always use your own account.

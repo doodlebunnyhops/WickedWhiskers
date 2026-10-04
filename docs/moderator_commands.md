@@ -1,171 +1,48 @@
-# Moderator-Only Commands
+# Moderator and server setup guide
 
-<!-- TOC -->
+Current for `feature/potion-shop`, reviewed 2026-10-04. The [complete command reference](all_current_commands.md) lists all 36 slash commands and exact argument choices. Read the [audit](command-audit.md) before a live season.
 
-- [Moderator-Only Commands](#moderator-only-commands)
-    - [Suggestions of use:](#suggestions-of-use)
-        - [Player and Candy Management](#player-and-candy-management)
-        - [Server Management](#server-management)
-        - [Cauldron Event Management](#cauldron-event-management)
-        - [Potion Management for Cauldron Event](#potion-management-for-cauldron-event)
-        - [Reset and Game Management](#reset-and-game-management)
-        - [Moderator-Only Stat Commands](#moderator-only-stat-commands)
+## Access
 
-<!-- /TOC -->
+Game-moderator commands require **Manage Server** or a role registered with `/bot set role`. This is independent of the dedicated shop-manager role. `/shop manage` and `/shop post` require Manage Server or that shop role; `/shop manager_role` itself requires Manage Server. `/bot get join_game_msg` currently has no moderator check.
 
-## Suggestions of use:
+## Initial setup
 
-have _fun_ messing with the players ;) 
+1. `/bot set channel channel_type:Event channel:#game-events`
+2. `/bot set channel channel_type:Admin channel:#game-admin`
+3. Optionally `/bot set role role:@Game-Moderator`.
+4. `/bot get settings` to verify channel/role mappings.
+5. `/bot send join_game_msg channel:#join-the-game` to create the reaction invitation.
+6. Optionally `/shop manager_role role:@Shop-Manager`, then `/shop manage` to set this server’s prices and sale availability.
+7. `/shop post channel:#potion-shop` for the persistent entrance button.
+8. `/game set state state:Enable` to enable gameplay.
 
-## Status of command implementation
+Use Discord’s named option pickers; channel/role names above are examples. Ensure the bot can view/send in the selected channels and access invite-message history. Prefer the individual channel/role commands: the legacy `/bot set settings` modal mishandles blank optional fields.
 
-**Currently I've set moderator commands prefexed with `zmod` to denote them as for moderator type roles and easier split of commands between player and moderators since at this time slash commands can't be ordered in a specifed way.**
+## Channel and invitation maintenance
 
-- ✅  Completed Command! (But unit testing is still  needed overall!)
-- ❌  In Progress, may not work as expected
-- No Icon means not started or not in a state worth using.
+Use `/bot update channel channel_type:Event|Admin channel:<channel>` for an existing setting and `/bot remove channel channel_type:Event|Admin` to clear it. `/bot get channel` offers Event, Admin, or Both; Both has a missing-channel display limitation.
 
-## Commands
+`/bot get join_game_msg` retrieves the invitation. `/bot update join_game_msg channel:<channel>` requires deletion of the old invite first; use `/bot send join_game_msg` for initial setup. `/bot remove join_game_msg` only gives manual-deletion instructions; it does not remove the message or clear saved IDs.
 
-### Player and Candy Management
-- **/add player**
-  - **Action:** Adds a new player.
+`/bot get roles` lists game-moderator roles. **`/bot remove role` is broken and can announce success without removing access.** Until repaired, remove the Discord role from affected members or adjust Discord command access; do not rely on its success message.
 
-- **/add player candy [amount]**
-  - **Action:** Adds a specific amount of candy to a player.
-  - **Example:** `/add player candy 20`
+## Game controls and reports
 
-- ✅ **/reset player [player]**
-  - **Action:** Resets a player to 50 candy on start as active status, this action will cause an admin message to post showing players last stats before reset.
-  - **Example:** `/reset player @Player`
+- `/game set state state:Disable|Enable`: pause/resume gameplay. The reaction join handler currently bypasses pausing; pause is not a universal stop on every action.
+- `/game get settings`: inspect settings. `/game set settings trick_success_rate:<0–100> [game_enabled:<boolean>]` stores values, but the configured rate does not drive actual trick odds. Omitting game_enabled pauses the game. Prefer the explicit state command for pause/resume.
+- `/game add player user:<member>`: enroll a player. Inactive existing records need a reactivation fix.
+- `/game get player user:<member> get:Stats|Hidden Values|All`: inspect a player. Hidden trick rate is the base calculation, without active Cunning.
+- `/game set player_stat user:<member> stat:<choice> number:<integer>`: overwrite Candy, Successful Tricks, Failed Tricks, or Treats Given. This is an absolute value, not an increment; avoid negative values (currently unvalidated).
+- `/bot reset player user:<member>`: immediately reset an existing player to 50 candy, active/unfrozen status, cleared counters, bottles and effects. There is no confirmation step and unregistered players cause an error.
+- `/game get leaderboard type:<category>`: list up to ten ranked players. The All option is broken; Evil/Sweet formatting incorrectly treats raw scores as percentages.
+- `/game get cauldron`: inspect the pool. `/game set cauldron amount:<nonnegative integer>` replaces its balance.
+- `/game cast spell`: deliberately unavailable pending separate eligibility, distinct-winner and payout implementation.
 
-- **/reset player [player] [option:tricks_done|treats_given|candy_count|etc.]**
-  - **Action:** Resets specific stats for a player.
-  - **Example:** `/reset player @Player candy_count`
+There is no registered full-season reset, freeze/unfreeze, or remove-player command. Seasonal database deletion is an operational reset, not a slash command, and also clears server configuration and shop price overrides.
 
-- **/remove player**
-  - **Action:** Removes a player from the game.
+## Shop administration
 
-- **/remove player candy [amount]**
-  - **Action:** Removes a specific amount of candy from a player.
-  - **Example:** `/remove player candy 10`
+`/shop manage` provides a potion selector and edit modal. Prices are integers from 1 to 1,000,000 candy, isolated per server. Default-price resets preserve availability. Turning off sales preserves owned bottles. Editing effect strength/duration is not exposed through this UI.
 
-- **/view player stats**
-  - **Action:** Displays a player’s stats.
-  - **Example:** `/view player stats @Player`
-
-- **/view top_players**
-  - **Action:** Shows the leaderboard of players with the most candy.
-
-- **/update player status [active|inactive|freeze|unfreeze]**
-  - **Action:** Updates the player’s status.
-  - **Example:** `/update player status active`
-
-- **/update player candy [amount]**
-  - **Action:** Updates the player’s candy count.
-  - **Example:** `/update player candy 50`
-
----
-
-### Server Management
-
-
-- ✅ **/set channel type:[event|admin] [channel name]**
-  - **Action:** Sets the event or admin channel where the bot will respond to player interactions in events type channel and log moderator actions in the specified admin channel.
-  - **Example:** `/set channel type:event #event_channel`
-
-- ✅ **/get channel type:[event|admin|both]**
-  - **Action:** Get the name of the channel bot uses for either events or admin/mod responses.
-  - **Example:** `/get channel type:event`
-
-- ✅ **/update channel type:[event|admin]**
-  - **Action:** Update the name of the channel bot uses for either events or admin/mod responses.
-  - **Example:** `/update channel type:event`
-
-- ✅ **/remove channel type:[event|admin]**
-  - **Action:** Bot will default to responding in whatever channel it was interacted with for moderator and event type responses. This does not remove the channel itself, just removes it from bots list of channels to use for response types. 
-  - **Example:** `/remove channel type:event`
-
-- ✅ **/get join_game_msg**
-  - **Action:** Get the link and name of channel where message to react to join game is posted.
-  - **Example:** `/get join_game_msg`
-
-- ✅ **/set join_game_msg**
-  - **Action:** Creates an embeded message inviting players to join the game via react to a :jack-o-lantern:.
-  - **Example:** `/set join_game_msg`
-
-- ❌ **/update join_game_msg**
-  - **Action:** As of right now to update the message doesn't mean editing it's contents, rather someone need to delete the old one in server, and making a new one by running this command.
-  - **Example:** `/set join_game_msg`
-
-- ❌ **/remove join_game_msg**
-  - **Action:** This does not directly delete the message*. For now the bot will forget the invite message was created and stop listening to it for reacts.
-  - **Example:** `/remove join_game_msg`
-
-- ✅ **/get roles**
-  - **Action:** Show what roles have been assigned to use this bots moderator commands
-  - **Example:** `/get roles`
-
-- ✅ **/set role [role]**
-  - **Action:** Assigns a role that has access to this bots moderator commands.
-  - **Example:** `/set role_access @Admin`
-
-- ✅ **/remove role [role]**
-  - **Action:** Removes the server management access from a role. It does not remove roles from the server, only from the bots DB to know which roles to allow.
-  - **Example:** `/remove role @Moderator`
-
----
-
-### Cauldron Event
-
-- **/view cauldron**
-  - **Action:** Displays the amount of candy in the cauldron.
-
-- **/cast_spell [witch] [winners]**
-  - **Action:** Starts the cauldron event, selecting either **Luna** (kind and fair) or **Raven** (evil and greedy) to cast the spell, with a specified number of winners.
-  - **Example:** `/cast_spell Luna 2` → Luna picks 2 winners from the cauldron event.
----
-
-### Potion Management for Cauldron Event
-
-- **/set potion_cost [amount]**
-  - **Action:** Allows moderators to set or update the cost of potions for the cauldron event.
-  - **Example:** `/set potion_cost 15`
-
-- **/view potion_stats**
-  - **Action:** Displays the number of players who have purchased potions and the total number of potions bought.
-  - **Example:** `/view potion_stats`
-
-- **/dump cauldron**
-  - **Action:** Empties the cauldron, resetting it to 0 candy.
-
----
-
-### Game Management
-
-- **/reset game**
-  - **Action:** Wipes everything, resetting the entire game and clearing all player data.
-
----
-
-### Stats Commands
-
-- **/view stats tricks [type:action|candy count] [count by:successful|failed|total]**
-  - **Action:** Displays statistics related to tricks, either by action count or candy count, and broken down by successful, failed, or total.
-  - **Options:**
-    - `type: action` → Displays the number of trick actions performed.
-    - `type: candy count` → Displays the total candy involved in tricks.
-    - `count by: successful` → Shows only successful tricks.
-    - `count by: failed` → Shows only failed tricks.
-    - `count by: total` → Shows the total of all trick actions.
-  - **Example:** `/view stats tricks type:action count by:successful`
-
-- **/view player count [active|inactive|frozen|total]**
-  - **Action:** Displays the total number of players based on their status: active, inactive, or frozen.
-  - **Options:**
-    - `active` → Shows the count of active players.
-    - `inactive` → Shows the count of inactive players.
-    - `frozen` → Shows the count of frozen players.
-    - `total` → Shows the total count of players.
-  - **Example:** `/view player count active`
-
+`/shop manager_role role:<role>` appoints one regular role; omit role to clear it. Manage Server retains access. Permissions are rechecked when controls are used. See [potion-shop details](potion-shop.md) for transaction and effect rules.

@@ -12,14 +12,15 @@ This is a discord bot that enabls players in your server to interact in a hallow
 
 Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. Cauldron payout rules are still unfinished; its old ticket-based draw is unavailable while the shared pool is preserved.
 
-Not paitent enough to wait on a cauldron event, no worries try your hand at pumpkin smashing! See if candy spills out or you got a dud with no candy :sad: _not implemented yet_
+Pumpkin smashing is registered as `/smash_pumpkin amount:<number>`, but its accounting still needs repair before a live season. See the [command audit](docs/command-audit.md).
 
 
 ## Commands
 
-- [Moderator](/docs/moderator_commands.md): Locked commands to a specific role set by server admin.
+- [Moderator](docs/moderator_commands.md): Setup, permissions, game controls, and shop management.
 - [Player](/docs/player_commands.md)
-- [Active Commands](/docs/all_current_commands.md): 
+- [All current commands](docs/all_current_commands.md): 36 slash commands, five member-menu actions, arguments, and limitations.
+- [Command audit](docs/command-audit.md): Confirmed bugs, incomplete behavior, and suggested repairs.
 
 
 ## Development
