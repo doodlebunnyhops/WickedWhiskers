@@ -262,6 +262,10 @@ class ShopEntrance(discord.ui.View):
     async def open_shop(self, interaction, button):
         await open_shop(interaction)
 
+    @discord.ui.button(label="Inventory", style=discord.ButtonStyle.secondary, custom_id="wickedwhiskers:shop:inventory:v1")
+    async def open_inventory(self, interaction, button):
+        await show_inventory(interaction)
+
 
 async def open_shop(interaction):
     if not interaction.guild_id:
