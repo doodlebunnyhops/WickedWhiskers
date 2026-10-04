@@ -157,7 +157,7 @@ class UsePotionModal(OwnedModal):
         if not options:
             raise potions.PotionError("You have no available potions to activate. Active effects cannot be stacked.")
         self.potion = discord.ui.Select(options=options)
-        self.add_item(discord.ui.Label(text="Activate one bottle", description="Ward and Cunning retain their charges until used. Luna acts immediately.", component=self.potion))
+        self.add_item(discord.ui.Label(text="Activate one bottle", description="Bottled effects keep their charges until triggered. Luna’s Calling acts immediately.", component=self.potion))
 
     async def on_submit(self, interaction):
         # Member lookup may await, but no database transaction is held while doing so.
@@ -189,7 +189,7 @@ class UsePotionModal(OwnedModal):
                     logger.exception("Luna reward saved but public announcement failed")
                     await tell(interaction, "Rewards were saved, but I couldn't post the event announcement.")
         else:
-            await tell(interaction, f"{result['name']} is active with {result['charges']} charge(s).")
+            await tell(interaction, interaction.client.message_loader.get_message("potion_events", "activated", potion=result["name"], charges=result["charges"]))
 
 
 class ManageModal(OwnedModal):

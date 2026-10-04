@@ -3,6 +3,7 @@ import discord
 import settings
 import db_utils as db
 import potions
+from utils import potion_gameplay as perks
 
 from discord import InteractionType, AppCommandType
 from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_cauldron_pool,get_active_players_by_guild,update_many_players_fields, update_cauldron_contribution
@@ -56,16 +57,33 @@ async def player_join(interaction: discord.Interaction,member: discord.Member):
 class _TrickResponses:
     def __init__(self):
         self.messages = []
+        self.potion_notes = []
 
     def append_personal(self, message, **kwargs):
         self.messages.append(("personal", message))
 
     def append_event(self, message=None, **kwargs):
+        if self.potion_notes:
+            notes = "\n\n".join(self.potion_notes)
+            if isinstance(message, discord.Embed):
+                message.description = (message.description or "") + "\n\n" + notes
+            else:
+                message = (message or "") + "\n\n" + notes
+            self.potion_notes.clear()
         self.messages.append(("event", message))
 
 
 async def player_trick(interaction: discord.Interaction, member: discord.Member):
     responses = _TrickResponses()
+    if member and potions.inventory(interaction.guild.id, member.id)[1].get('mirror', 0) and not getattr(interaction.guild, 'chunked', True):
+        await interaction.response.defer(ephemeral=True)
+        try:
+            await interaction.guild.chunk(cache=True)
+            if not interaction.guild.chunked:
+                raise RuntimeError('Member verification incomplete')
+        except (discord.DiscordException, RuntimeError):
+            await interaction.followup.send(interaction.client.message_loader.get_message('potion_events', 'mirror_members_unavailable'), ephemeral=True)
+            return
     # No Discord I/O until balances, effects and stats have all committed.
     with db.transaction() as conn:
         previous = potions.prior_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "trick")
@@ -76,7 +94,10 @@ async def player_trick(interaction: discord.Interaction, member: discord.Member)
             potions.record_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "trick", {"target": member.id})
     for kind, message in responses.messages:
         if kind == "personal":
-            await interaction.response.send_message(message, ephemeral=True)
+            if interaction.response.is_done():
+                await interaction.followup.send(message, ephemeral=True)
+            else:
+                await interaction.response.send_message(message, ephemeral=True)
         else:
             await post_to_target_channel(interaction, message, channel_type="event")
 
@@ -107,9 +128,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
     if db.is_player_frozen(user.id, guild_id) or db.is_player_frozen(target.id, guild_id):
         responses.append_personal("Frozen players cannot participate in tricks.", ephemeral=True)
         return
-    if potions.block_trick(guild_id, user.id, target.id):
-        responses.append_personal(f"{target.display_name}'s Witch's Ward thwarted your trick!", ephemeral=True)
-        responses.append_event(message=f"🛡️ {target.mention}'s Witch's Ward blocked {user.mention}'s trick and faded away.")
+    if perks.resolve_protection(interaction, target, responses):
         return
 
     #renaming for easier reference
@@ -179,12 +198,12 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
 
 
     # Determine the success rate of the steal
-    success_rate = potions.trick_rate(guild_id, thief_id, calculate_thief_success_rate(thief_data["candy_in_bucket"]))
+    success_rate = perks.prepare_rate(interaction, responses, calculate_thief_success_rate(thief_data["candy_in_bucket"]))
 
     # If target doesn't have enough candy, reduce the amount to the maximum
     stolen_amount = min(random.randint(1, 10), target_data["candy_in_bucket"])
 
-    if random.random() < success_rate:
+    if perks.roll_trick(interaction, responses, success_rate):
         # Successful steal
 
         # Extra probability checks for successful now possibly failed steal
@@ -232,6 +251,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
 
         else:
             # Regular success
+            stolen_amount = perks.sticky_amount(interaction, responses, target, stolen_amount, target_data["candy_in_bucket"])
             update_player_field(thief_id, guild_id, 'candy_in_bucket', thief_data["candy_in_bucket"] + stolen_amount)
             update_player_field(target_id, guild_id, 'candy_in_bucket', target_data["candy_in_bucket"] - stolen_amount)
             update_player_field(thief_id, guild_id, 'successful_tricks', thief_data["successful_tricks"] + 1)
@@ -602,6 +622,16 @@ def game_paused(guild_id: int) -> bool:
     return False
 
 def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0):
+    with db.transaction() as conn:
+        previous = potions.prior_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "treat")
+        if previous is not None:
+            return None, interaction.client.message_loader.get_message("potion_events", "treat_replayed")
+        result = _resolve_treat(interaction, user, amount)
+        potions.record_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "treat", {"target": user.id, "amount": amount})
+        return result
+
+
+def _resolve_treat(interaction: discord.Interaction, user: discord.Member, amount: 0):
     """
     Give candy to another player, handled by the /treat command or context menu Treat Player.
     
@@ -826,5 +856,9 @@ def generous_response(interaction: discord.Interaction, guild_id: int, giver: di
     update_player_field(giver.id, guild_id, 'total_candy_given', giver_data["total_candy_given"] + amount)
 
     update_player_field(recipient.id, guild_id, 'candy_in_bucket', recipient_data["candy_in_bucket"] + amount)
+    bonus_note = perks.favor_bonus(interaction, recipient, amount)
+    if bonus_note:
+        embeded.description = (embeded.description or '') + '\n\n' + bonus_note
+        personal_message = (personal_message or '') + '\n' + bonus_note
 
     return embeded,personal_message

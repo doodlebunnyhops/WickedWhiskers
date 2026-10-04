@@ -18,6 +18,10 @@ class Potion:
 CATALOG = {
     "ward": Potion("Witch's Ward", "Blocks one incoming player trick. Does not protect against pumpkins or cauldron events.", 5, 1),
     "cunning": Potion("Raven's Cunning", "+15 percentage points on the next 3 eligible initial trick rolls. Special events still apply.", 5, 3),
+    "mirror": Potion("Mirror Brew", "Redirects the next incoming trick attempt, possibly back to its caster. Cannot coexist with Ward.", 10, 1),
+    "sticky": Potion("Sticky Fingers", "+25% candy (rounded up) on your next ordinary successful theft, capped by the target's balance.", 8, 1),
+    "second_chance": Potion("Second Chance", "Rerolls your next failed initial trick roll once. Cannot bypass protection.", 8, 1),
+    "favor": Potion("Luna's Favor", "On your next ordinary treat of 2+ candy, Luna adds half the gift (rounded down), up to 5 candy.", 5, 1),
     "luna": Potion("Luna's Calling", "Gives 5 candy each to up to 3 random other active, unfrozen players. 60-second server cooldown.", 10),
 }
 MAX_QUANTITY = 100
@@ -142,6 +146,9 @@ def use(guild_id, player_id, potion_id, action_id, member_ids=None, now=None, rn
             raise PotionError("You don't own that potion.")
         if effects.get(potion_id, 0):
             raise PotionError("That potion is already active. Your bottle was not consumed.")
+        opposing = {"ward": "mirror", "mirror": "ward"}.get(potion_id)
+        if opposing and effects.get(opposing, 0):
+            raise PotionError("Ward and Mirror cannot be active together. Your bottle was not consumed.")
         result = {"potion": potion_id, "name": potion.name, "charges": potion.charges, "recipients": []}
         if potion_id == "luna":
             cooldown = conn.execute("SELECT available_at FROM potion_cooldowns WHERE guild_id=? AND effect='luna'", (guild_id,)).fetchone()

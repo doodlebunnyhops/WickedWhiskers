@@ -851,5 +851,45 @@
             "pool_value": "**{amount} candy** awarded to **{winner_count}** distinct winner(s).\nRemaining in the cauldron: **{remaining} candy**.",
             "awards_attached": "The full list of winners and their candy awards is on the attached scroll."
         }
+    },
+    "potion_events": {
+        "activated": "🧪 {potion} is ready with {charges} charge(s). Its magic will wake when the right moment comes.",
+        "treat_replayed": "That treat was already delivered. No extra candy or potion charge was used.",
+        "ward": [
+            "🛡️ “Not this bucket, darling.” Witch’s Ward flashes around {target}, blocking {user}’s trick before fading away."
+        ],
+        "cunning": [
+            "🖤 Raven’s Cunning whispers a clever little secret to {user}. The trick’s initial chance is {chance}%. One charge fades."
+        ],
+        "second_success": [
+            "⏳ “Oh, we can do better than that.” Second Chance catches {user}’s failed roll and turns the reroll into a success. The bottle’s magic is spent."
+        ],
+        "second_failure": [
+            "⏳ Second Chance gives {user} one more try... and the trick still slips away. “Don’t look at me like that,” Raven mutters. “I said a chance.”"
+        ],
+        "sticky": [
+            "🍯 Sticky Fingers helps {user} pinch an extra {amount} candy from {target}, bringing the theft to {total}. “Mind the fingerprints, darling.”"
+        ],
+        "favor": [
+            "🌙 Luna’s Favor glows over {user}’s gift. “A little extra sweetness, dear!” Luna adds {amount} bonus candy to {target}’s bucket at no extra cost to the giver."
+        ],
+        "mirror_title": "🪞 Mirror Brew turns the trick!",
+        "mirror_redirect": [
+            "🪞 {original}’s Mirror Brew catches {user}’s trick and sends the attempt toward {target}! “Careful where you point that mischief,” Raven purrs."
+        ],
+        "mirror_stop": [
+            "🪞 {target}’s own Mirror shatters the returning spell. Both used Mirrors fade; the trick stops here. “One bounce is quite enough.”"
+        ],
+        "mirror_blocked": "The redirected attempt hits {target}’s protection and fizzles. No candy moves; {original}’s bucket stays safe.",
+        "mirror_empty": "The redirected spell finds {target}’s bucket empty. No candy moves; {original}’s Mirror is spent, but the attacker’s roll potions remain ready.",
+        "mirror_failed": "The redirected trick misses {target}! No candy moves, and {original}’s bucket stays safe.",
+        "mirror_self": [
+            "😈 The trick flies straight back at {user}! {amount} candy tumbles from the caster’s own bucket into the cauldron. {original} keeps every piece. “Oh, that reflection suits you.”"
+        ],
+        "mirror_success": [
+            "🕸️ The redirected trick succeeds! {user} takes {amount} candy from {target}. {original}’s bucket stays untouched as the Mirror fades."
+        ],
+        "mirror_no_target": "The mirror cannot find an eligible target. {target} keeps the Mirror charge, and no candy moves.",
+        "mirror_members_unavailable": "The mirror could not verify the server’s players. No candy or potion charge was used. Please try again."
     }
 }

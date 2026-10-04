@@ -25,6 +25,8 @@ Purchases always use your own candy and inventory—even when you opened the sho
 | Raven’s Cunning | 5 | Add 15 percentage points to the next 3 eligible initial trick rolls, capped at 95% without lowering a higher base rate. |
 | Luna’s Calling | 10 | Give 5 candy each to up to 3 distinct other eligible members. Shared 60-second server cooldown. |
 
+Four additional potions are available: **Mirror Brew (10)** redirects an attempt, **Sticky Fingers (8)** boosts an ordinary theft, **Second Chance (8)** rerolls a failed initial trick roll, and **Luna’s Favor (5)** adds a capped bonus to an ordinary treat. See [all potion interactions and message keys](potion-interactions.md) for targeting, stacking, rounding and charge rules.
+
 Your server may change prices or disable sales. Disabled sales do not invalidate bottles already owned. Ward and Cunning can coexist; activating an already-active copy is rejected without consuming the spare bottle. Effects survive restart and have no time expiry. A Ward-blocked attempt or an empty unprotected bucket does not spend a Cunning charge.
 
 Luna excludes the summoner, bots, departed, frozen and inactive players. No recipients, failed member verification, or an active cooldown preserves the bottle. Purchase/use is blocked while paused or for frozen/inactive players. `/inventory` remains a read-only way to inspect your state.
