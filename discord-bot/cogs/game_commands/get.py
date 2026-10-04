@@ -10,6 +10,46 @@ from utils.player import calculate_thief_success_rate
 get_group = app_commands.Group(name="get", description="get commands")
 
 
+@get_group.command(name="cauldron_eligibility", description="Inspect eligibility for each restored cauldron outcome")
+@checks.check_if_has_permission_or_role()
+async def get_cauldron_eligibility(interaction: discord.Interaction):
+    from utils.cauldron import eligibility_report
+
+    players = db_utils.get_active_players_by_guild(interaction.guild.id)
+    report = eligibility_report(players)
+    embed = discord.Embed(
+        title="Cauldron eligibility",
+        description=(
+            f"Active database players: **{len(players)}**\n"
+            f"Cauldron candy: **{db_utils.get_cauldron_pool(interaction.guild.id)}**\n"
+            "Eligibility depends on the randomly selected outcome, not the pool balance. "
+            "Counts below are distinct players; weights are their entries in the legacy draw."
+        ),
+        color=discord.Color.orange(),
+    )
+    for label, details in report.items():
+        candidates = details["players"]
+        preview = ", ".join(f"<@{uid}> (weight {weight:g})" for uid, weight in candidates[:5]) or "None"
+        if len(candidates) > 5:
+            preview += f" — plus {len(candidates) - 5} more"
+        embed.add_field(
+            name=f"{label}: {len(candidates)} eligible",
+            value=f'{details["rule"]}\n{preview}',
+            inline=False,
+        )
+    embed.add_field(
+        name="Why active players may not qualify",
+        value=(
+            "New shop purchases do not update legacy potions_purchased. "
+            "Luna's normal/fumble paths use that old count; Raven's normal/explosion paths require successful tricks. "
+            "The special paths compare legacy sweetness/evilness scores after clamping them to at least 1; "
+            "equal scores exclude everyone. These counts use active database records, including departed members."
+        ),
+        inline=False,
+    )
+    await interaction.response.send_message(embed=embed, ephemeral=True, allowed_mentions=discord.AllowedMentions.none())
+
+
 @get_group.command(name="settings", description="View the game settings.")
 @checks.check_if_has_permission_or_role()
 async def get_game_settings(interaction: discord.Interaction):

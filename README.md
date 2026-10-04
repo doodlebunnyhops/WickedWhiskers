@@ -19,7 +19,7 @@ Pumpkin smashing is registered as `/smash_pumpkin amount:<number>`, but its acco
 
 - [Moderator](docs/moderator_commands.md): Setup, permissions, game controls, and shop management.
 - [Player](/docs/player_commands.md)
-- [All current commands](docs/all_current_commands.md): 36 slash commands, five member-menu actions, arguments, and limitations.
+- [All current commands](docs/all_current_commands.md): 37 slash commands, five member-menu actions, arguments, and limitations.
 - [Command audit](docs/command-audit.md): Confirmed bugs, incomplete behavior, and suggested repairs.
 
 

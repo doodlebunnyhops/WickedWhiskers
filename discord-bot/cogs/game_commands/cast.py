@@ -67,6 +67,16 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
                 if successful_tricks > 0:
                     weighted_players.extend([player_id] * successful_tricks)
 
+    if not weighted_players:
+        await interaction.response.send_message(
+            f"No eligible players were found for {witch.title()}'s selected cauldron outcome. "
+            "The cauldron pool has not changed. Use /game get cauldron_eligibility to inspect eligibility. "
+            "The restored rules use legacy potion-purchase counts for most Luna outcomes "
+            "and trick statistics for Raven; new shop purchases do not update the legacy count.",
+            ephemeral=True,
+        )
+        return
+
     # Determine winners
     if winners == "many":
         num_winners = random.randint(1, len(weighted_players))
@@ -77,4 +87,3 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
 
     winners = ", ".join([interaction.guild.get_member(winner).display_name for winner in selected_winners])
     await interaction.response.send_message(f"{witch} has cast a spell with {winners} winners!")
-

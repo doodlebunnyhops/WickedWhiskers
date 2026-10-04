@@ -1,6 +1,6 @@
 # Command audit — 2026-10-04
 
-Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The live application command objects were inspected with login/sync mocked: 36 slash leaves, five member context menus, default `!help`. Handler and database source was reviewed; these findings are not a claim of live Discord testing. This documentation change does not fix the issues below.
+Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The live application command objects were inspected with login/sync mocked: 37 slash leaves, five member context menus, default `!help`. Handler and database source was reviewed; these findings are not a claim of live Discord testing. This documentation change does not fix the issues below.
 
 ## Confirmed defects
 
@@ -19,7 +19,7 @@ Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The 
 ## Incomplete behavior and decisions to make
 
 - `/bot remove join_game_msg` is a registered instruction-only placeholder. Decide whether it should delete the message, clear its mapping, or both.
-- `/game cast spell` has been restored unchanged from `pumpkin` at the owner's request. It announces names without payouts, retains legacy weighting, can error on an empty weighted list, and can repeat player names in Many. A future redesign needs independent eligibility, distinct winners and payouts.
+- `/game cast spell` has been restored unchanged from `pumpkin` at the owner's request. It announces names without payouts, retains legacy weighting, now responds clearly on an empty weighted list, and can repeat player names in Many. A future redesign needs independent eligibility, distinct winners and payouts.
 - `/game set settings` defaults optional `game_enabled` to false. This is current behavior, but surprising: changing a rate alone pauses play. Prefer an optional “leave unchanged” state.
 - `/bot get join_game_msg` has no moderator permission check. The group name does not enforce one. Decide whether public access is intended.
 - `/bot get channel` with Both returns early when a setting is absent. Show each configured/missing channel independently.
@@ -41,3 +41,9 @@ Luna/Raven special scenarios may create candy, cover treat costs, copy pumpkin r
 5. Implement the separate cauldron draw and payout flow; consider a public leaderboard command if players should inspect rankings themselves.
 
 The command reference now separates actual registration from incomplete behavior, documents all arguments/choices and permission boundaries, and removes ticket-shop and unregistered-command instructions. The Event/Admin settings-display mapping reported earlier was already fixed in `d35f8a3`; no database rewrite is required for that fix.
+
+## Cauldron eligibility diagnostics
+
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+
+Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.

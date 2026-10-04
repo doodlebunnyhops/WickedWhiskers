@@ -68,7 +68,7 @@ Deleting the seasonal database clears all state, including server overrides. The
 
 ## Cauldron and other limits
 
-The original `pumpkin` cauldron command has been restored unchanged: `/game cast spell witch:Luna|Raven winners:One|Many`. It selects and announces names; it does not pay candy or reset the pool. Its legacy weighting (including `potions_purchased` for Luna), empty-pool errors, and possible repeated names in Many remain as in the original. New perk purchases do not populate the legacy purchase counter.
+The original `pumpkin` cauldron command has been restored unchanged: `/game cast spell witch:Luna|Raven winners:One|Many`. It selects and announces names; it does not pay candy or reset the pool. Its legacy weighting (including `potions_purchased` for Luna), a clear response when no players qualify, and possible repeated names in Many remain as in the original. New perk purchases do not populate the legacy purchase counter.
 
 This work does not rebalance pumpkins, change the underlying trick-success curve, implement general trick cooldowns, or finish the unrelated return/freeze command set. These remain separate from the potion implementation.
 
@@ -83,3 +83,9 @@ python -m pytest -q
 27 tests cover isolated in-memory databases, rollback, duplicate actions, overspending, permissions, changed prices, server boundaries, modal serialization, effect persistence, special trick scenarios, candy rain, named gifts and actual bot command registration with login/sync mocked.
 
 Before opening a season, use a test Discord server with a fresh database to verify mobile/desktop modal appearance, ephemeral messages, real permissions, member chunking, event-channel posting, and persistent buttons after restart. No live Discord login was performed during implementation.
+
+## Cauldron eligibility diagnostics
+
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+
+Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.

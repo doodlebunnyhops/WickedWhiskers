@@ -1,6 +1,6 @@
 # Moderator and server setup guide
 
-Current for `feature/potion-shop`, reviewed 2026-10-04. The [complete command reference](all_current_commands.md) lists all 36 slash commands and exact argument choices. Read the [audit](command-audit.md) before a live season.
+Current for `feature/potion-shop`, reviewed 2026-10-04. The [complete command reference](all_current_commands.md) lists all 37 slash commands and exact argument choices. Read the [audit](command-audit.md) before a live season.
 
 ## Access
 
@@ -46,3 +46,9 @@ There is no registered full-season reset, freeze/unfreeze, or remove-player comm
 `/shop manage` provides a potion selector and edit modal. Prices are integers from 1 to 1,000,000 candy, isolated per server. Default-price resets preserve availability. Turning off sales preserves owned bottles. Editing effect strength/duration is not exposed through this UI.
 
 `/shop manager_role role:<role>` appoints one regular role; omit role to clear it. Manage Server retains access. Permissions are rechecked when controls are used. See [potion-shop details](potion-shop.md) for transaction and effect rules.
+
+## Cauldron eligibility diagnostics
+
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+
+Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.

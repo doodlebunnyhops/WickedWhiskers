@@ -1,7 +1,7 @@
 # Current command reference
 
 Audited on 2026-10-04 against `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`.
-The actual bot setup was loaded offline with Discord login and sync mocked: **36 slash-command leaves, 5 user context menus, and the default `!help` prefix command**. Registration does not mean every handler is complete. This is a source/registration review, not a live Discord acceptance test.
+The actual bot setup was loaded offline with Discord login and sync mocked: **37 slash-command leaves, 5 user context menus, and the default `!help` prefix command**. Registration does not mean every handler is complete. This is a source/registration review, not a live Discord acceptance test.
 
 `<argument>` is required; `[argument]` is optional. In Discord, choose the named argument and its offered value; do not type angle brackets. Group names such as `/bot`, `/game`, and `/shop` alone are not executable commands. Use these commands in a server.
 
@@ -60,6 +60,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game set state <state>` | Game moderator | Enable or pause gameplay. Reaction-based joining currently bypasses the pause. |
 | `/game add player <user>` | Game moderator | Enroll a player; existing inactive records are not reliably reactivated. |
 | `/game get settings` | Game moderator | Show pause state and stored trick rate; directs pricing changes to /shop manage. |
+| `/game get cauldron_eligibility` | Game moderator | Privately show active-player count, six outcome-specific eligibility counts, rules and up to five candidate IDs/weights per outcome. No draw or writes. |
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
 | `/game get leaderboard <type>` | Game moderator | Show up to 10 results for one category. All errors; Evil/Sweet percentage formatting is incorrect. |
@@ -117,3 +118,9 @@ The posted **Open Shop** button opens the same private shop and survives bot res
 The restored cast path is `/game cast spell witch:Luna|Raven winners:One|Many`. Both arguments are required. It retains original legacy weighting and announces names without payouts; see the cauldron limitations in [potion-shop details](potion-shop.md#cauldron-and-other-limits). Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
 
 See [player guide](player_commands.md), [moderator guide](moderator_commands.md), [command audit](command-audit.md), and [potion design and behavior](potion-shop.md).
+
+## Cauldron eligibility diagnostics
+
+Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, as in the restored draw.
+
+Normal outcomes have a 76.5% overall chance, the first special outcome 15%, and the second 8.5%: the second 10% roll runs only after the first 15% roll fails. New potion purchases do not update legacy purchase counts. Legacy scores are clamped to at least 1, often making the strict-comparison special outcomes empty. `/game cast spell` now responds clearly instead of crashing when its selected outcome has no candidates; no eligibility rules or payouts are changed.
