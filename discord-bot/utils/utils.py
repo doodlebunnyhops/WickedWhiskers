@@ -12,6 +12,7 @@ import logging
 import discord
 import db_utils
 from utils.messages import MessageLoader
+from utils.artwork import image_url
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -123,6 +124,7 @@ def create_invite_embed(message_loader, message_choice=None):
         inline=False
     )
 
+    embed.set_image(url=image_url("welcome_luna_and_raven"))
     return embed
 
 

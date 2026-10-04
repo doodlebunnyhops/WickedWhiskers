@@ -21,7 +21,9 @@ def test_two_purchased_bottles_survive_cooldown_modal(database,monkeypatch,prior
         modal.potion._values=['luna']
         interaction=NS(id=999,guild_id=1,user=NS(id=10),guild=NS(chunked=True,members=[NS(id=uid,bot=False) for uid in (10,20,30,40,50)]),response=NS(defer=AsyncMock(),is_done=lambda:True),followup=NS(send=AsyncMock()))
         await modal.on_submit(interaction)
-        message=interaction.followup.send.call_args.args[0]
+        message=interaction.followup.send.call_args.kwargs["embed"].description
+        assert interaction.followup.send.call_args.kwargs["ephemeral"]
+        assert interaction.followup.send.call_args.kwargs["embed"].thumbnail.url.endswith("/cooldown.png")
         assert 'Luna is resting' in message and 'potion is safe' in message
         # A second rejected submission also must not change inventory or counters.
         interaction.id=1000

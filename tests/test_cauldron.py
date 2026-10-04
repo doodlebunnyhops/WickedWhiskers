@@ -227,7 +227,8 @@ def test_embed_image_title_payout_and_failed_post_retry(database,witch):
     embed=event.send.call_args.kwargs['embed']
     assert 'A spell has been cast!' in embed.title
     assert witch.title() in embed.title
-    assert embed.image.url==interaction.client.message_loader.messages[f'who_is_{witch}']['image_url']
+    assert embed.image.url==interaction.client.message_loader.get_message('artwork', f'{witch}_cauldron')
+    assert embed.author.icon_url==interaction.client.message_loader.get_message('artwork', f'{witch}_portrait')
     assert len(embed.fields) == 1
     assert '10016' in embed.fields[0].value
     assert db.get_cauldron_pool(1)==0

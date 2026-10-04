@@ -72,15 +72,15 @@
     "who_is_luna":{
         "description":"Luna is the kind and whimsical witch of the cauldron, full of sweet intentions and an ever-optimistic spirit. She loves to see players share candy and spread joy, always cheering for generosity and good deeds. Though she can be a bit clumsy, her heart is always in the right place, and she’s never too far from a playful giggle. Luna thrives on kindness and believes in the magic of giving, making her the perfect embodiment of everything sweet and fun in the game. If you’re treating others well, Luna is always watching with a smile!",
         "message" : "Hello there, dear! 🌙✨ I'm Luna, the kind-hearted and ever-so-sweet witch of the Cauldron! Oh, I just love seeing everyone spread joy and candy! 🍬🧙‍♀️ Whether you're treating others with sweetness or collecting goodies in your bucket, I'm here to cheer you on! 🎉✨\n\nBut don't forget—good deeds always come back to you in the best way possible. So go on, spread some smiles, and I'll be watching over you with a bit of magic and a whole lot of love! 💖🎃",
-        "image_banner_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296215769687785524/luna_banner.png?ex=67117a82&is=67102902&hm=ee8a10c2244398c351bc5a224e673dbe847a06cafad0e9a05193ad719b00687d&",
-        "image_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541670019133/DALLE_2024-10-16_15.07.46_-_A_cartoon_image_of_Luna_a_kind_and_ethereal_witch._She_has_soft_glowing_features_with_bright_twinkling_eyes_and_long_flowing_silvery_hair_resemblin.webp?ex=67116b64&is=671019e4&hm=ecaecab071be31abcbff4a9af69fa4863a17e09ab2711d2b8208d76e7baec8ff&"
+        "image_banner_url": "asset:luna_banner",
+        "image_url": "asset:luna_portrait"
     },
     "who_is_raven":{
         "description":"Raven is the mischievous and cunning trickster of the game, always stirring up chaos and looking for ways to cause a little mayhem. She’s the master of tricks and will do whatever it takes to keep the game interesting. But be careful—crossing paths with Raven might lead to losing some of your hard-earned candy!",
         "description2": "Raven is the mischievous and cunning witch of the cauldron, thriving in chaos and trickery. She revels in the darker side of Halloween, encouraging players to steal, deceive, and cause mayhem. With a sharp wit and a wicked grin, Raven delights in the power struggles and clever tricks of the game, always watching from the shadows. While her methods may be ruthless, she respects a good trickster and loves seeing players embrace their inner chaos. Raven’s world is one where the bold thrive, and she’s always ready to stir up some delightful trouble!",
         "message": "Well, well, well... Look who stumbled into my domain. 💀🖤 I’m Raven, the chaos-loving, trick-playing witch of the Cauldron. You’ll find me lurking in the shadows, watching for those who are bold enough to stir up a little mischief. 🦇✨\n\nIf you’re here to cause some trouble—stealing candy, tricking your fellow players—oh, I’m all for it. 😈 Just remember, in my world, the line between fortune and failure is razor-thin... and I do love to tip the scales. 🕸️\n\nSo, are you brave enough to dance with chaos? 🖤🎃 Let’s see what tricks you’ve got!",
-        "image_banner_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296199542307422288/DALLE_2024-10-16_15.11.24_-_A_dark_and_ominous_cartoon-style_banner_that_complements_Ravens_chaotic_theme._The_banner_features_swirling_dark_clouds_ravens_flying_across_the_sky.webp?ex=67116b65&is=671019e5&hm=c6090570417a102d9985551330e15b29053022a6c4f80e36c755c955ca83f8ea&",
-        "image_url": "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541158182912/DALLE_2024-10-16_15.07.44_-_A_cartoon_image_of_Raven_the_mischievous_and_dark-hearted_witch._Raven_has_sharp_angular_features_with_glowing_red_eyes_and_long_wild_black_hair_st.webp?ex=67116b64&is=671019e4&hm=d73877b572138632c5cdeb572f0784ba6423ad1d6a1f980587d9eb1a3eeb3eef&"
+        "image_banner_url": "asset:raven_banner",
+        "image_url": "asset:raven_portrait"
     },
     "react_join_msg": {
         "1":{
@@ -1298,5 +1298,40 @@
         "one_protection": "Choose quantity 1 for Witch’s Veil; you choose its time allowance next.",
         "returned_heading": "**Returned bottles (included in inventory counts)**",
         "returned_bottle": "{name}: {charges} remaining charge(s). Used before fresh bottles."
+    },
+    "artwork": {
+        "luna_portrait": "https://cdn.discordapp.com/attachments/1293052178742644889/1556415507635110030/luna_portrait.png",
+        "raven_portrait": "https://cdn.discordapp.com/attachments/1293052178742644889/1556415509203918898/raven_portrait.png",
+        "welcome_luna_and_raven": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416092946047038/welcome_luna_and_raven.png",
+        "luna_banner": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416087774593075/luna_banner.png",
+        "raven_banner": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416091025178664/raven_banner.png",
+        "luna_candy_shower": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416089137750036/luna_candy_shower.png",
+        "luna_cauldron": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416090056433716/luna_cauldron.png",
+        "raven_cauldron": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416092094734517/raven_cauldron.png",
+        "luna_pumpkin": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416749723721808/luna_pumpkin.png",
+        "raven_pumpkin": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416752508862465/raven_pumpkin.png",
+        "luna_pumpkin_cauldron": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416750990532628/luna_pumpkin_cauldron.png",
+        "raven_pumpkin_cauldron": "https://cdn.discordapp.com/attachments/1293052178742644889/1556416753658236978/raven_pumpkin_cauldron.png",
+        "candy_bucket": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417221927112896/candy_bucket.png",
+        "potion_shop": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417231192326205/potion_shop.png",
+        "inventory": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417226138198047/inventory.png",
+        "frozen_player": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417224900608000/frozen_player.png",
+        "leaderboard": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417227274723388/leaderboard.png",
+        "cooldown": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417223860555897/cooldown.png",
+        "witchs_ward": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417966013161524/witchs_ward.png",
+        "witchs_veil": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417965308514405/witchs_veil.png",
+        "mirror_brew": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417230265389186/mirror_brew.png",
+        "ravens_cunning": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417232035250227/ravens_cunning.png",
+        "sticky_fingers": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417964490883192/sticky_fingers.png",
+        "second_chance": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417963320549547/second_chance.png",
+        "lunas_favor": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417229346701433/lunas_favor.png",
+        "lunas_calling": "https://cdn.discordapp.com/attachments/1293052178742644889/1556417228336013434/lunas_calling.png"
+    },
+    "artwork_messages": {
+        "shop_title": "Luna & Raven's Potion Shop",
+        "shop_description": "Open your private shop to browse perks, purchase bottles, and prepare for mischief.",
+        "luna_calling_private": "Luna gave 5 candy each to {recipients}. Your potion was consumed.",
+        "luna_calling_public": "🌙 {user} summoned Luna! She gifted 5 candy each to {recipients}.",
+        "luna_calling_title": "Luna answers the call!"
     }
 }

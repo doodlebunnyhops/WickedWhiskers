@@ -1,5 +1,6 @@
 """Leaderboard presentation. Each page stays within Discord's embed limits."""
 import discord
+from utils.artwork import image_url
 
 CATEGORIES = (
     'top_tricksters', 'top_treaters', 'top_thieves', 'most_generous',
@@ -23,7 +24,7 @@ def make_embed(interaction, key, rows, page=None):
     )
     if page is not None:
         embed.set_footer(text=message('leaderboard', 'page', current=page+1, total=len(CATEGORIES)))
-    embed.set_image(url=message('who_is_luna', 'image_banner_url'))
+    embed.set_thumbnail(url=image_url('leaderboard'))
     return embed
 
 

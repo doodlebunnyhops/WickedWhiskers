@@ -4,6 +4,7 @@ from discord import app_commands
 from discord.ext import commands
 import db_utils as db
 import player_state as state
+from utils.artwork import image_url
 from utils.utils import has_role_or_permission
 from modals.shop import OwnedView, tell
 
@@ -39,6 +40,8 @@ async def moderator_change(interaction, player, minutes=None, reason='', update=
         await tell(interaction,state.text('already_processed'))
         return
     embed=discord.Embed(title=state.text('thaw_title' if thaw else 'freeze_title'),description=state.text('thaw_public' if thaw else 'freeze_public',player=player.mention),color=discord.Color.blue())
+    if not thaw:
+        embed.set_thumbnail(url=image_url('frozen_player'))
     try:
         await channel.send(embed=embed,allowed_mentions=discord.AllowedMentions.none())
     except discord.HTTPException:

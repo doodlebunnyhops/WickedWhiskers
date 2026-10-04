@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import potions
+from utils.artwork import icon_embed
 from modals.shop import open_shop, show_inventory, UsePotionModal, ManageView, ShopEntrance, tell
 
 
@@ -42,7 +43,8 @@ class Shop(commands.GroupCog, group_name="shop", group_description="Luna & Raven
             await tell(interaction, "Shop management permission is required.")
             return
         await interaction.response.defer(ephemeral=True)
-        await channel.send("🧪 **Luna & Raven's Potion Shop**\nOpen your private shop to browse perks, purchase bottles, and prepare for mischief.", view=ShopEntrance())
+        message = interaction.client.message_loader.get_message
+        await channel.send(embed=icon_embed(message('artwork_messages', 'shop_description'), 'potion_shop', title=message('artwork_messages', 'shop_title')), view=ShopEntrance())
         await tell(interaction, f"Shop entrance posted in {channel.mention}.")
 
 

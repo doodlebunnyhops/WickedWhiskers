@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 import db_utils as db
 import potions
-from utils.messages import MessageLoader
+from utils.messages import default_messages
 
 REJOIN_SECONDS = 3600
 DEFAULTS = dict(fee=50, rate=5, minimum=5, maximum=30, cooldown=60, modes='both', enabled=True)
@@ -16,7 +16,7 @@ DEFAULTS = dict(fee=50, rate=5, minimum=5, maximum=30, cooldown=60, modes='both'
 
 @lru_cache(maxsize=1)
 def loader():
-    return MessageLoader(str(Path(__file__).parent / 'utils/messages.json'))
+    return default_messages()
 
 
 def text(key, **values):

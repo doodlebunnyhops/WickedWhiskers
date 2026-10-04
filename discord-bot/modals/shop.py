@@ -4,15 +4,17 @@ import discord
 import db_utils as db
 import potions
 from utils.utils import post_to_target_channel
+from utils.artwork import icon_embed, image_url, POTION_ART
 
 logger = logging.getLogger("bot")
 
 
-async def tell(interaction, message):
-    if interaction.response.is_done():
-        await interaction.followup.send(message, ephemeral=True)
+async def tell(interaction, message, artwork=None):
+    sender = interaction.followup.send if interaction.response.is_done() else interaction.response.send_message
+    if artwork:
+        await sender(embed=icon_embed(message, artwork), ephemeral=True)
     else:
-        await interaction.response.send_message(message, ephemeral=True)
+        await sender(message, ephemeral=True)
 
 
 class OwnedModal(discord.ui.Modal):
@@ -88,7 +90,7 @@ class ShopModal(OwnedModal):
             if not enabled:
                 raise potions.PotionError("That potion is no longer for sale.")
             view = Checkout(self.owner_id, self.guild_id, key, quantity, price, str(interaction.id))
-            await interaction.response.send_message(view.summary(), view=view, ephemeral=True)
+            await interaction.response.send_message(embed=icon_embed(view.summary(), POTION_ART[key]), view=view, ephemeral=True)
         except potions.PotionError as error:
             await tell(interaction, str(error))
 
@@ -116,20 +118,20 @@ class Checkout(OwnedView):
             result = potions.purchase(self.guild_id, interaction.user.id, self.key, self.quantity, self.price, self.order_id)
         except potions.PriceChanged as error:
             self.price = error.price
-            await interaction.response.edit_message(content=f"{error}\n\n{self.summary()}", view=self)
+            await interaction.response.edit_message(content=None, embed=icon_embed(f"{error}\n\n{self.summary()}", POTION_ART[self.key]), view=self)
             return
         except potions.PotionError as error:
             await tell(interaction, str(error))
             return
         self.finished = True
         self.stop()
-        await interaction.response.edit_message(content=f"Purchased {result['quantity']} × {result['name']} for {result['cost']} candy.\nRemaining balance: {result['balance']} candy.", view=InventoryLink(self.owner_id, self.guild_id))
+        await interaction.response.edit_message(content=None, embed=icon_embed(f"Purchased {result['quantity']} × {result['name']} for {result['cost']} candy.\nRemaining balance: {result['balance']} candy.", POTION_ART[self.key]), view=InventoryLink(self.owner_id, self.guild_id))
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary)
     async def cancel(self, interaction, button):
         self.finished = True
         self.stop()
-        await interaction.response.edit_message(content="Purchase cancelled. No candy charged.", view=None)
+        await interaction.response.edit_message(content="Purchase cancelled. No candy charged.", embed=None, view=None)
 
 
 class InventoryLink(OwnedView):
@@ -172,7 +174,7 @@ async def show_inventory(interaction):
     if returned:
         content += '\n' + state.text('returned_heading') + '\n' + '\n'.join(state.text('returned_bottle',name=potions.item(key).name,charges=charges) for key,charges in returned)
     view = InventoryView(interaction.user.id, interaction.guild_id)
-    await interaction.response.send_message(content, view=view, ephemeral=True)
+    await interaction.response.send_message(embed=icon_embed(content, "inventory"), view=view, ephemeral=True)
 
 
 class UsePotionModal(OwnedModal):
@@ -206,19 +208,22 @@ class UsePotionModal(OwnedModal):
         try:
             result = potions.use(self.guild_id, interaction.user.id, key, interaction.id, members)
         except potions.PotionError as error:
-            await tell(interaction, str(error))
+            await tell(interaction, str(error), artwork='cooldown' if isinstance(error, potions.PotionCooldownError) else None)
             return
+        message = interaction.client.message_loader.get_message
         if result['recipients']:
             names = ", ".join(f"<@{uid}>" for uid in result['recipients'])
-            await tell(interaction, f"Luna gave 5 candy each to {names}. Your potion was consumed.")
+            await tell(interaction, message('artwork_messages', 'luna_calling_private', recipients=names), artwork=POTION_ART[key])
             if not result.get('replayed'):
                 try:
-                    await post_to_target_channel(interaction, f"🌙 <@{self.owner_id}> summoned Luna! She gifted 5 candy each to {names}.")
+                    embed = icon_embed(message('artwork_messages', 'luna_calling_public', user=f'<@{self.owner_id}>', recipients=names), POTION_ART[key], title=message('artwork_messages', 'luna_calling_title'))
+                    embed.set_image(url=image_url('luna_candy_shower'))
+                    await post_to_target_channel(interaction, embed)
                 except discord.DiscordException:
                     logger.exception("Luna reward saved but public announcement failed")
                     await tell(interaction, "Rewards were saved, but I couldn't post the event announcement.")
         else:
-            await tell(interaction, interaction.client.message_loader.get_message("potion_events", "activated", potion=result["name"], charges=result["charges"]))
+            await tell(interaction, message("potion_events", "activated", potion=result["name"], charges=result["charges"]), artwork=POTION_ART[key])
 
 
 class ManageModal(OwnedModal):

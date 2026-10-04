@@ -5,6 +5,7 @@ from discord import app_commands
 from utils.checks import check_if_has_permission_or_role
 from db_utils import get_active_players_by_guild, get_event_channel
 from utils.cauldron import award_pool, CauldronError
+from utils.artwork import image_url
 
 cast_group = app_commands.Group(name='cast', description='Cast commands')
 
@@ -68,8 +69,8 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
         description=announcement,
         color=discord.Color.magenta() if witch == 'luna' else discord.Color.dark_purple(),
     )
-    embed.set_image(url=message(f'who_is_{witch}', 'image_url'))
-    embed.set_author(name=values['witch'])
+    embed.set_image(url=image_url(f'{witch}_cauldron'))
+    embed.set_author(name=values['witch'], icon_url=image_url(f'{witch}_portrait'))
     embed.add_field(name=message('cauldron', 'embed', 'pool_title')[:256], value=message('cauldron', 'embed', 'pool_value', **values)[:1024], inline=False)
     try:
         kwargs = {'embed': embed, 'allowed_mentions': discord.AllowedMentions.none()}

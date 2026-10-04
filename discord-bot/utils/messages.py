@@ -2,6 +2,8 @@ import json
 import os
 import random
 import settings
+from functools import lru_cache
+from pathlib import Path
 
 logger = settings.logging.getLogger("bot")
 
@@ -31,6 +33,10 @@ class MessageLoader:
             # If the message is a list, randomly pick one
             if isinstance(message, list):
                 message = random.choice(message)
+
+            # Artwork aliases keep each CDN URL in one place.
+            if isinstance(message, str) and message.startswith("asset:"):
+                message = self.messages["artwork"][message[6:]]
 
             # Format the message with any provided kwargs
             logger.debug(f"Message: {message}")
@@ -64,3 +70,9 @@ class MessageLoader:
         except Exception as e:
             logger.error(f"Unexpected error accessing message block: {str(e)}")
             return default
+
+
+@lru_cache(maxsize=1)
+def default_messages():
+    """One in-memory catalog, independent of the process working directory."""
+    return MessageLoader(str(Path(__file__).with_name('messages.json')))

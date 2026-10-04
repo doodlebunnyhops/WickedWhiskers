@@ -2,6 +2,7 @@
 import discord
 import potions
 import player_state as state
+from utils.artwork import icon_embed
 from modals.shop import OwnedView, OwnedModal, tell
 
 
@@ -20,7 +21,7 @@ def status_text(guild_id,player_id):
 
 async def open_protection(interaction):
     config=state.settings(interaction.guild_id)
-    await interaction.response.send_message(state.text('protection_intro',**config)+'\n\n'+status_text(interaction.guild_id,interaction.user.id),view=ProtectionView(interaction.user.id,interaction.guild_id),ephemeral=True)
+    await interaction.response.send_message(embed=icon_embed(state.text('protection_intro',**config)+'\n\n'+status_text(interaction.guild_id,interaction.user.id), 'witchs_veil'),view=ProtectionView(interaction.user.id,interaction.guild_id),ephemeral=True)
 
 
 class ProtectionView(OwnedView):
@@ -58,7 +59,7 @@ class ProtectionModal(OwnedModal):
         try:
             quoted=state.quote(self.guild_id,self.owner_id,self.mode.values[0],int(self.units.value))
             view=ProtectionCheckout(self.owner_id,self.guild_id,quoted,str(interaction.id))
-            await interaction.response.send_message(view.summary(),view=view,ephemeral=True)
+            await interaction.response.send_message(embed=icon_embed(view.summary(), "witchs_veil"),view=view,ephemeral=True)
         except (ValueError,potions.PotionError) as error:
             await tell(interaction,str(error) if isinstance(error,potions.PotionError) else state.text('bad_duration'))
 
@@ -86,13 +87,13 @@ class ProtectionCheckout(OwnedView):
             return
         self.finished=True
         self.stop()
-        await interaction.response.edit_message(content=state.text('protection_started',expiry=result['end'],amount=result['total']),view=ProtectionView(self.owner_id,self.guild_id))
+        await interaction.response.edit_message(content=None,embed=icon_embed(state.text('protection_started',expiry=result['end'],amount=result['total']), 'witchs_veil'),view=ProtectionView(self.owner_id,self.guild_id))
 
     @discord.ui.button(style=discord.ButtonStyle.secondary)
     async def cancel(self,interaction,button):
         self.finished=True
         self.stop()
-        await interaction.response.edit_message(content=state.text('cancelled'),view=None)
+        await interaction.response.edit_message(content=state.text('cancelled'),embed=None,view=None)
 
 
 class EndConfirm(OwnedView):
@@ -115,7 +116,7 @@ class EndConfirm(OwnedView):
     @discord.ui.button(style=discord.ButtonStyle.secondary)
     async def cancel(self,interaction,button):
         self.stop()
-        await interaction.response.edit_message(content=state.text('cancelled'),view=None)
+        await interaction.response.edit_message(content=state.text('cancelled'),embed=None,view=None)
 
 
 class ProtectionSettings(OwnedModal):

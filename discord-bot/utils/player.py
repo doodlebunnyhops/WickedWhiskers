@@ -4,6 +4,7 @@ import settings
 import db_utils as db
 import potions
 from utils import potion_gameplay as perks
+from utils.artwork import image_url, icon_embed
 
 from discord import InteractionType, AppCommandType
 from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_cauldron_pool,get_active_players_by_guild,update_many_players_fields, update_cauldron_contribution
@@ -12,18 +13,18 @@ from utils.checks import get_game_settings
 
 
 logger = settings.logging.getLogger("bot")
-luna_url = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541670019133/DALLE_2024-10-16_15.07.46_-_A_cartoon_image_of_Luna_a_kind_and_ethereal_witch._She_has_soft_glowing_features_with_bright_twinkling_eyes_and_long_flowing_silvery_hair_resemblin.webp?ex=67116b64&is=671019e4&hm=ecaecab071be31abcbff4a9af69fa4863a17e09ab2711d2b8208d76e7baec8ff&"
-luna_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1296601448154533911/file-uqGIQM0PDYNuHxXyMpAY6G4L.webp?ex=6712e1b2&is=67119032&hm=ab1691f2b7f0b34bf38ad67f0198a3ea90279722231a39ba26c4e33a3f3cdf27&"
-luna_banner = "https://cdn.discordapp.com/attachments/1293052178742644889/1296215769687785524/luna_banner.png?ex=6712cc02&is=67117a82&hm=ef0c794acb0a20732ff871fb5569dce4b4e6715d2b3bdef26b2a1590df9e55b8&"
-luna_candy_rain = "https://cdn.discordapp.com/attachments/1293052178742644889/1296632348305260655/DALLE_2024-10-17_20.30.10_-_A_magical_ethereal_banner_featuring_Luna_a_kind-hearted_witch_joyfully_throwing_candy_everywhere._The_scene_should_be_whimsical_with_candy_flying_.webp?ex=6712fe7a&is=6711acfa&hm=a992cd2de84d3caf47c4fa5cc62d6cace613988877a03843cdc2c3c94fc75a05&"
-luna_pumpkin = "https://cdn.discordapp.com/attachments/1293052178742644889/1392004481377505420/luna_pumpkin.png?ex=686df4b2&is=686ca332&hm=21641a4513bea85db3455dfcf6b156ce5ecb700bdacab3c121ff69e19f5f4062&"
-luna_pumpkin_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1392015037341630464/luna_pumpkin_cauldrin.png?ex=686dfe87&is=686cad07&hm=14206e1fa690e777a9ba4ab32e6830b7f3c435875370df5a8e519f8d10d23bbc&"
+luna_url = image_url("luna_portrait")
+luna_cauldron = image_url("luna_cauldron")
+luna_banner = image_url("luna_banner")
+luna_candy_rain = image_url("luna_candy_shower")
+luna_pumpkin = image_url("luna_pumpkin")
+luna_pumpkin_cauldron = image_url("luna_pumpkin_cauldron")
 
-raven_url = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199541158182912/DALLE_2024-10-16_15.07.44_-_A_cartoon_image_of_Raven_the_mischievous_and_dark-hearted_witch._Raven_has_sharp_angular_features_with_glowing_red_eyes_and_long_wild_black_hair_st.webp?ex=67116b64&is=671019e4&hm=d73877b572138632c5cdeb572f0784ba6423ad1d6a1f980587d9eb1a3eeb3eef&"
-raven_banner = "https://cdn.discordapp.com/attachments/1293052178742644889/1296199542307422288/DALLE_2024-10-16_15.11.24_-_A_dark_and_ominous_cartoon-style_banner_that_complements_Ravens_chaotic_theme._The_banner_features_swirling_dark_clouds_ravens_flying_across_the_sky.webp?ex=67116b65&is=671019e5&hm=c6090570417a102d9985551330e15b29053022a6c4f80e36c755c955ca83f8ea&"
-raven_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1296600976509239347/file-0FWSjqbaPehhRtWe2Vcknp28.webp?ex=6712e142&is=67118fc2&hm=1ccf92cca812d1c9326d8fbd2d85a2a0d9d9fbacee0537f49eb7beeeaeb65c4d&"
-raven_pumpkin = "https://cdn.discordapp.com/attachments/1293052178742644889/1392004481012469870/raven_pumpkin.png?ex=686df4b2&is=686ca332&hm=88841f6abf54e0c8948519b407c236384e2813ea4659da45b87b938fbb152125&"
-raven_pumpkin_cauldron = "https://cdn.discordapp.com/attachments/1293052178742644889/1392015038071443539/raven_pumpkin_cauldrin.png?ex=686dfe87&is=686cad07&hm=15756b604e74e651f6dc3ffa067f050fa6faa13b6d62e7bd3d3b4284f997c380&"
+raven_url = image_url("raven_portrait")
+raven_banner = image_url("raven_banner")
+raven_cauldron = image_url("raven_cauldron")
+raven_pumpkin = image_url("raven_pumpkin")
+raven_pumpkin_cauldron = image_url("raven_pumpkin_cauldron")
 
 
 async def player_join(interaction: discord.Interaction, member: discord.Member):
@@ -405,7 +406,7 @@ async def player_bucket(interaction: discord.Interaction):
     witch_name = random.choice(["luna", "raven"])
 
     personal_message = interaction.client.message_loader.get_message(f"{witch_name}_bucket", user=user.mention, candy_amount=candy_in_bucket,potion_amount=potions_purchased)
-    await interaction.response.send_message(personal_message, ephemeral=True)
+    await interaction.response.send_message(embed=icon_embed(personal_message, "candy_bucket"), ephemeral=True)
 
 async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
     from utils.pumpkins import smash, PumpkinError

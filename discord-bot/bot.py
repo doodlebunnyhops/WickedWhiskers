@@ -17,7 +17,7 @@ import context_menu.player as player
 from db_utils import initialize_database, get_join_game_msg_settings,is_player_active,create_player_data
 from cogs.mod import Mod
 from cogs.game import Game
-from utils.messages import MessageLoader
+from utils.messages import default_messages
 import settings
 # import context_menu
 from modals.player import Treat
@@ -49,7 +49,7 @@ class MyBot(commands.Bot):
 
         
         print("Loading spooky messages...")
-        self.message_loader = MessageLoader('utils/messages.json')
+        self.message_loader = default_messages()
 
         #Set Context Menus callback REMINDER, discord limits to 5 context menus per bot!
         join_cm = app_commands.ContextMenu(name="Join Game", callback=player.join)
