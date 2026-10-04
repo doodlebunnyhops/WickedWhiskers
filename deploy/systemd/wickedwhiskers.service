@@ -1,0 +1,30 @@
+# Template rendered by scripts/install-service.sh. Do not install without replacing tokens.
+[Unit]
+Description=WickedWhiskers Discord bot
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+WorkingDirectory=@BOT_DIRECTORY@
+ExecStart=@PYTHON@ -u bot.py
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+RestartSec=10
+KillSignal=SIGINT
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wickedwhiskers
+
+[Install]
+WantedBy=multi-user.target

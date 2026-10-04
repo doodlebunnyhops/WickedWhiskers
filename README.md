@@ -42,3 +42,7 @@ If you plan to reuse, modify, or distribute any part of this code, please follow
    - "Original creator: doodlebunnyhops"
 
 For more detailed attribution guidelines, see the `ATTRIBUTION.md` file.
+
+## Linux service
+
+Use the [systemd setup guide](docs/systemd.md) to install the bot as a boot-started service with crash recovery and journal logs. From this checkout, run `bash scripts/install-service.sh` as your normal bot account.
