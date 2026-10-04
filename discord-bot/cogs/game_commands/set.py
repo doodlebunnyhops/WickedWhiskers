@@ -31,13 +31,13 @@ async def set_cauldron_pool_amount(interaction: discord.Interaction, amount: int
 
     # Validate the input value
     if amount < 0:
-        await interaction.response.send_message("Invalid value provided. Please ensure the amount is a positive integer.", ephemeral=True)
+        await interaction.response.send_message(interaction.client.message_loader.get_message("cauldron", "pool", "invalid"), ephemeral=True)
         return
 
     # Update the cauldron pool in the database
     set_cauldron_pool(guild_id, amount)
 
-    await interaction.response.send_message(f"The cauldron pool has been updated to {amount} candy.", ephemeral=True)
+    await interaction.response.send_message(interaction.client.message_loader.get_message("cauldron", "pool", "set", amount=amount), ephemeral=True)
 
 @set_group.command(name="player_stat", description="Set Player stat")
 @checks.check_if_has_permission_or_role()

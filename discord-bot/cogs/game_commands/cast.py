@@ -15,25 +15,33 @@ cast_group = app_commands.Group(name='cast', description='Cast commands')
 )
 @app_commands.describe(witch='The witch to cast the spell', winners='The number of distinct winners')
 async def cast_spell(interaction: discord.Interaction, witch: str, winners: str):
+    message = interaction.client.message_loader.get_message
     players = get_active_players_by_guild(interaction.guild.id)
     outcome = roll_outcome(witch)
     selected = select_winners(candidates(players, witch, outcome), winners)
     if not selected:
         await interaction.response.send_message(
-            'No active players are eligible in this server. Use /game get cauldron_eligibility to check. '
-            'The cauldron pool has not changed.', ephemeral=True,
+            message('cauldron', 'no_players'), ephemeral=True,
         )
         return
     # Raw active database records may outlive guild membership. Never crash on a cache miss.
     names = []
     for uid in selected:
         member = interaction.guild.get_member(uid)
-        names.append(discord.utils.escape_markdown(member.display_name) if member else f'Player {uid}')
-    announcement = f"{witch.title()} has cast a {outcome} spell! Winners: " + ', '.join(names)
+        names.append(discord.utils.escape_markdown(member.display_name) if member else message('cauldron', 'missing_member', player_id=uid))
+    values = dict(
+        witch=message('cauldron', 'witches', witch),
+        outcome=message('cauldron', 'outcomes', outcome),
+        winners=', '.join(names), winner_count=len(selected),
+        user=interaction.user.mention,
+    )
+    announcement = message('cauldron', 'draw', witch, outcome, **values)
     if len(announcement) > 1900:
-        announcement = announcement[:1800] + f'… ({len(selected)} distinct winners total; full list attached)'
         import io
-        file = discord.File(io.BytesIO('\n'.join(f'{uid}: {name}' for uid, name in zip(selected, names)).encode()), filename='cauldron-winners.txt')
-        await interaction.response.send_message(announcement, file=file, allowed_mentions=discord.AllowedMentions.none())
+        # Preserve the full customized announcement when it exceeds Discord's content limit.
+        attachment = announcement + '\n\n' + '\n'.join(f'{uid}: {name}' for uid, name in zip(selected, names))
+        file = discord.File(io.BytesIO(attachment.encode()), filename='cauldron-winners.txt')
+        summary = message('cauldron', 'long_announcement', **values)
+        await interaction.response.send_message(summary[:1900], file=file, allowed_mentions=discord.AllowedMentions.none())
     else:
         await interaction.response.send_message(announcement, allowed_mentions=discord.AllowedMentions.none())

@@ -48,13 +48,9 @@ def select_winners(weighted_players, mode):
 def eligibility_report(players):
     report = {}
     for witch, outcomes in OUTCOMES.items():
-        preferred, other = ('treats given', 'successful tricks') if witch == 'luna' else ('successful tricks', 'treats given')
         for outcome, chance in outcomes:
-            rule = f'Weight: 1 + {preferred}.'
-            if outcome in ('special', 'rage'):
-                rule = f'Weight: 1 + max(0, {preferred} minus {other}). Equal weight 1 when nobody has a positive difference.'
             report[f'{witch.title()} {outcome} ({chance:g}%)'] = {
-                'rule': rule,
+                'witch': witch, 'outcome': outcome, 'chance': chance,
                 'players': candidates(players, witch, outcome),
             }
     return report

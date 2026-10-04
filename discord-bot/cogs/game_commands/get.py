@@ -15,39 +15,26 @@ get_group = app_commands.Group(name="get", description="get commands")
 async def get_cauldron_eligibility(interaction: discord.Interaction):
     from utils.cauldron import eligibility_report
 
+    message = interaction.client.message_loader.get_message
     players = db_utils.get_active_players_by_guild(interaction.guild.id)
     report = eligibility_report(players)
     embed = discord.Embed(
-        title="Cauldron eligibility",
-        description=(
-            f"Active database players: **{len(players)}**\n"
-            f"Cauldron candy: **{db_utils.get_cauldron_pool(interaction.guild.id)}**\n"
-            "All active database players qualify for every outcome. "
-            "Counts below are distinct players; weights set their relative selection chances."
-        ),
+        title=message('cauldron', 'eligibility', 'title'),
+        description=message('cauldron', 'eligibility', 'description', player_count=len(players), amount=db_utils.get_cauldron_pool(interaction.guild.id)),
         color=discord.Color.orange(),
     )
-    for label, details in report.items():
-        candidates = details["players"]
-        preview = ", ".join(f"<@{uid}> (weight {weight:g})" for uid, weight in candidates[:5]) or "None"
+    for details in report.values():
+        candidates = details['players']
+        preview = ', '.join(message('cauldron', 'eligibility', 'candidate', player_id=uid, weight=weight) for uid, weight in candidates[:5]) or message('cauldron', 'eligibility', 'none')
         if len(candidates) > 5:
-            preview += f" — plus {len(candidates) - 5} more"
+            preview += message('cauldron', 'eligibility', 'more', count=len(candidates)-5)
+        rule = message('cauldron', 'eligibility', 'rules', details['witch'], details['outcome'])
         embed.add_field(
-            name=f"{label}: {len(candidates)} eligible",
-            value=f'{details["rule"]}\n{preview}',
+            name=message('cauldron', 'eligibility', 'outcome_title', witch=message('cauldron', 'witches', details['witch']), outcome=message('cauldron', 'outcomes', details['outcome']), chance=details['chance'], count=len(candidates)),
+            value=message('cauldron', 'eligibility', 'field', rule=rule, candidates=preview),
             inline=False,
         )
-    embed.add_field(
-        name="Eligibility and selection",
-        value=(
-            "Every active player starts at weight 1. Luna favors treats given; Raven favors successful tricks. "
-            "Special outcomes add only positive differences between those stats. "
-            "If nobody has a positive difference, everyone has equal weight. Potions do not affect eligibility. "
-            "Many draws 1 to the active-player count, with no duplicate winners. "
-            "Active database records may include departed members. Selection does not pay out candy yet."
-        ),
-        inline=False,
-    )
+    embed.add_field(name=message('cauldron', 'eligibility', 'notes_title'), value=message('cauldron', 'eligibility', 'notes'), inline=False)
     await interaction.response.send_message(embed=embed, ephemeral=True, allowed_mentions=discord.AllowedMentions.none())
 
 
@@ -73,7 +60,7 @@ async def get_cauldron_pool(interaction: discord.Interaction):
     guild_id = interaction.guild.id
     # Fetch the cauldron pool from the database
     cauldron_pool = db_utils.get_cauldron_pool(guild_id)
-    response_message = f"The cauldron currently has {cauldron_pool} candy."
+    response_message = interaction.client.message_loader.get_message("cauldron", "pool", "get", amount=cauldron_pool)
     await interaction.response.send_message(response_message, ephemeral=True)
 
 

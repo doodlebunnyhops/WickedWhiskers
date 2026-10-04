@@ -756,5 +756,73 @@
                 "🕯️ {user}, Raven snarled as {candy_amount} candy slipped from her grasp into the greedy cauldron..."
             ]
         }
+    },
+    "cauldron": {
+        "witches": {
+            "luna": "Luna",
+            "raven": "Raven"
+        },
+        "outcomes": {
+            "normal": "normal",
+            "fumble": "fumble",
+            "special": "special",
+            "explosion": "explosion",
+            "rage": "rage"
+        },
+        "draw": {
+            "luna": {
+                "normal": [
+                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                ],
+                "fumble": [
+                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                ],
+                "special": [
+                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                ]
+            },
+            "raven": {
+                "normal": [
+                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                ],
+                "explosion": [
+                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                ],
+                "rage": [
+                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                ]
+            }
+        },
+        "no_players": "No active players are eligible in this server. Use /game get cauldron_eligibility to check. The cauldron pool has not changed.",
+        "missing_member": "Player {player_id}",
+        "long_announcement": "{witch} has cast a {outcome} spell! {winner_count} distinct winners were selected. See the attached announcement and winner list.",
+        "pool": {
+            "get": "The cauldron currently has {amount} candy.",
+            "set": "The cauldron pool has been updated to {amount} candy.",
+            "invalid": "Please provide a nonnegative whole number of candy."
+        },
+        "eligibility": {
+            "title": "Cauldron eligibility",
+            "description": "Active database players: **{player_count}**\nCauldron candy: **{amount}**\nAll active database players qualify for every outcome. Counts below are distinct players; weights set their relative selection chances.",
+            "outcome_title": "{witch} {outcome} ({chance:g}%): {count} eligible",
+            "candidate": "<@{player_id}> (weight {weight:g})",
+            "none": "None",
+            "more": " — plus {count} more",
+            "field": "{rule}\n{candidates}",
+            "rules": {
+                "luna": {
+                    "normal": "Weight: 1 + treats given.",
+                    "fumble": "Weight: 1 + treats given.",
+                    "special": "Weight: 1 + max(0, treats given minus successful tricks). Equal weight 1 when nobody has a positive difference."
+                },
+                "raven": {
+                    "normal": "Weight: 1 + successful tricks.",
+                    "explosion": "Weight: 1 + successful tricks.",
+                    "rage": "Weight: 1 + max(0, successful tricks minus treats given). Equal weight 1 when nobody has a positive difference."
+                }
+            },
+            "notes_title": "Eligibility and selection",
+            "notes": "Every active player starts at weight 1. Luna favors treats given; Raven favors successful tricks. Special outcomes add only positive differences between those stats. If nobody has a positive difference, everyone has equal weight. Potions do not affect eligibility. Many draws 1 to the active-player count, with no duplicate winners. Active database records may include departed members. Selection does not pay out candy yet."
+        }
     }
 }

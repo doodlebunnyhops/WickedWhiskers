@@ -2,6 +2,14 @@ import asyncio
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 import pytest
+from pathlib import Path
+from utils.messages import MessageLoader
+
+MESSAGES = Path(__file__).resolve().parents[1] / "discord-bot/utils/messages.json"
+
+def client():
+    return SimpleNamespace(message_loader=MessageLoader(str(MESSAGES)))
+
 from cogs.game_commands import cast
 from utils import cauldron
 
@@ -48,7 +56,7 @@ def test_moderator_report_private_read_only(database):
     from cogs.game_commands.get import get_cauldron_eligibility
     db.set_cauldron_pool(1,75)
     before=database.total_changes
-    interaction=SimpleNamespace(guild=SimpleNamespace(id=1),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1),response=SimpleNamespace(send_message=AsyncMock()))
     asyncio.run(get_cauldron_eligibility.callback(interaction))
     call=interaction.response.send_message.call_args
     assert call.kwargs['ephemeral'] is True
@@ -61,7 +69,7 @@ def test_moderator_report_private_read_only(database):
 @pytest.mark.parametrize('mode',['One','many'])
 def test_no_active_players_message(database,monkeypatch,witch,mode):
     monkeypatch.setattr(cast,'get_active_players_by_guild',lambda guild:[])
-    interaction=SimpleNamespace(guild=SimpleNamespace(id=1),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1),response=SimpleNamespace(send_message=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,mode))
     assert 'No active players' in interaction.response.send_message.call_args.args[0]
 
@@ -72,9 +80,36 @@ def test_new_player_draw_succeeds_without_member_cache_or_purchases(database,wit
     import db_utils as db
     db.set_cauldron_pool(1,10016)
     before=database.total_changes
-    interaction=SimpleNamespace(guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,mode))
     assert 'Winners: Player' in interaction.response.send_message.call_args.args[0]
     assert cast.cast_spell.checks
     assert db.get_cauldron_pool(1)==10016
     assert database.total_changes==before
+
+
+@pytest.mark.parametrize('witch,outcome', [(w,o) for w,items in cauldron.OUTCOMES.items() for o,_ in items])
+def test_draw_uses_custom_json_variant_and_placeholders(database,monkeypatch,tmp_path,witch,outcome):
+    import json
+    data=json.loads(MESSAGES.read_text())
+    data['cauldron']['draw'][witch][outcome]=['Custom {witch}/{outcome}: {winner_count} winner(s): {winners}; moderator {user}']
+    path=tmp_path/'messages.json'
+    path.write_text(json.dumps(data))
+    monkeypatch.setattr(cast,'roll_outcome',lambda _:outcome)
+    interaction=SimpleNamespace(client=SimpleNamespace(message_loader=MessageLoader(str(path))),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
+    asyncio.run(cast.cast_spell.callback(interaction,witch,'One'))
+    text=interaction.response.send_message.call_args.args[0]
+    assert text.startswith(f'Custom {witch.title()}/{outcome}: 1 winner(s): Player ')
+    assert text.endswith('moderator <@99>')
+    assert 'Message not found' not in text
+
+
+def test_long_custom_announcement_is_preserved_in_attachment(database,monkeypatch):
+    bot_client=client()
+    bot_client.message_loader.messages['cauldron']['draw']['luna']['normal']=['x'*2100+' {winners}']
+    monkeypatch.setattr(cast,'roll_outcome',lambda _: 'normal')
+    interaction=SimpleNamespace(client=bot_client,user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
+    asyncio.run(cast.cast_spell.callback(interaction,'luna','One'))
+    call=interaction.response.send_message.call_args
+    assert len(call.args[0])<=1900
+    assert call.kwargs['file'].fp.getvalue().startswith(b'x'*2100)
