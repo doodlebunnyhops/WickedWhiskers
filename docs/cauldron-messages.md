@@ -56,3 +56,17 @@ Messages longer than 1,900 characters are preserved in an attachment along with 
 The eligibility report and draw share selection logic; JSON only supplies wording. Keep rule descriptions accurate when customizing. Discord embed limits still apply: title 256 characters, description 4,096, field names 256, field values 1,024 and 6,000 characters across the embed.
 
 Use valid JSON: double quotes, commas between entries, no trailing commas, and `\n` for line breaks. Preserve placeholders exactly; escape literal braces as `{{` and `}}`. Other bot/shop responses have not been globally migrated in this change.
+
+## Event-channel delivery and themed variants
+
+Each draw outcome now has three themed variants (18 total). Luna’s normal draw is gentle and encouraging; her fumble is a clumsy magical accident; her special draw celebrates kindness. Raven’s normal draw is sly and teasing; her explosion is theatrical chaos; her rage is a temper tantrum favoring mischief. Every variant names the selected winners without claiming candy was paid.
+
+Successful `/game cast spell` announcements and any long-message attachments are posted to the configured Event channel. The invoking moderator receives a private confirmation with a link. Configure it with `/bot set channel channel_type:Event channel:<channel>`; use `/bot update channel` to replace a setting. No configured/resolvable channel or missing View Channel/Send Messages permissions stops the draw before selection. Discord delivery errors are reported privately, without automatic retries or public fallback to the command channel. Attach Files is needed for long announcements.
+
+Additional editable response keys under `cauldron`:
+
+| Key | Placeholders |
+| --- | --- |
+| `event_channel_missing`, `event_channel_denied` | None |
+| `event_post_failed` | `{channel}` |
+| `event_posted` | `{channel}`, `{message_url}` |

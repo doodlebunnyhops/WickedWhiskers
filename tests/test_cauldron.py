@@ -5,6 +5,13 @@ import pytest
 from pathlib import Path
 from utils.messages import MessageLoader
 
+@pytest.fixture(autouse=True)
+def event_setup(monkeypatch):
+    global event
+    event = SimpleNamespace(mention='<#999>', permissions_for=lambda member:SimpleNamespace(view_channel=True,send_messages=True),send=AsyncMock(return_value=SimpleNamespace(jump_url='https://discord.com/channels/1/999/123')))
+    monkeypatch.setattr(cast,'get_event_channel',lambda guild:999)
+
+
 MESSAGES = Path(__file__).resolve().parents[1] / "discord-bot/utils/messages.json"
 
 def client():
@@ -56,7 +63,7 @@ def test_moderator_report_private_read_only(database):
     from cogs.game_commands.get import get_cauldron_eligibility
     db.set_cauldron_pool(1,75)
     before=database.total_changes
-    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(get_cauldron_eligibility.callback(interaction))
     call=interaction.response.send_message.call_args
     assert call.kwargs['ephemeral'] is True
@@ -69,7 +76,7 @@ def test_moderator_report_private_read_only(database):
 @pytest.mark.parametrize('mode',['One','many'])
 def test_no_active_players_message(database,monkeypatch,witch,mode):
     monkeypatch.setattr(cast,'get_active_players_by_guild',lambda guild:[])
-    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,mode))
     assert 'No active players' in interaction.response.send_message.call_args.args[0]
 
@@ -80,9 +87,12 @@ def test_new_player_draw_succeeds_without_member_cache_or_purchases(database,wit
     import db_utils as db
     db.set_cauldron_pool(1,10016)
     before=database.total_changes
-    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:None),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,mode))
-    assert 'Winners: Player' in interaction.response.send_message.call_args.args[0]
+    assert 'Player ' in event.send.call_args.args[0]
+    interaction.response.defer.assert_awaited_once_with(ephemeral=True)
+    assert interaction.followup.send.call_args.kwargs['ephemeral'] is True
+    interaction.response.send_message.assert_not_awaited()
     assert cast.cast_spell.checks
     assert db.get_cauldron_pool(1)==10016
     assert database.total_changes==before
@@ -96,9 +106,9 @@ def test_draw_uses_custom_json_variant_and_placeholders(database,monkeypatch,tmp
     path=tmp_path/'messages.json'
     path.write_text(json.dumps(data))
     monkeypatch.setattr(cast,'roll_outcome',lambda _:outcome)
-    interaction=SimpleNamespace(client=SimpleNamespace(message_loader=MessageLoader(str(path))),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=SimpleNamespace(message_loader=MessageLoader(str(path))),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:None),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,'One'))
-    text=interaction.response.send_message.call_args.args[0]
+    text=event.send.call_args.args[0]
     assert text.startswith(f'Custom {witch.title()}/{outcome}: 1 winner(s): Player ')
     assert text.endswith('moderator <@99>')
     assert 'Message not found' not in text
@@ -108,8 +118,51 @@ def test_long_custom_announcement_is_preserved_in_attachment(database,monkeypatc
     bot_client=client()
     bot_client.message_loader.messages['cauldron']['draw']['luna']['normal']=['x'*2100+' {winners}']
     monkeypatch.setattr(cast,'roll_outcome',lambda _: 'normal')
-    interaction=SimpleNamespace(client=bot_client,user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,get_member=lambda uid:None),response=SimpleNamespace(send_message=AsyncMock()))
+    interaction=SimpleNamespace(client=bot_client,user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:None),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
+    captured=[]
+    async def capture(content,**kwargs):
+        captured.append(kwargs['file'].fp.getvalue())
+        return SimpleNamespace(jump_url='https://discord.com/channels/1/999/123')
+    event.send.side_effect=capture
     asyncio.run(cast.cast_spell.callback(interaction,'luna','One'))
-    call=interaction.response.send_message.call_args
+    call=event.send.call_args
     assert len(call.args[0])<=1900
-    assert call.kwargs['file'].fp.getvalue().startswith(b'x'*2100)
+    assert captured[0].startswith(b'x'*2100)
+
+
+@pytest.mark.parametrize('failure',['missing','denied','send'])
+def test_event_post_failures_are_private(database,monkeypatch,failure):
+    import discord
+    if failure=='missing':
+        monkeypatch.setattr(cast,'get_event_channel',lambda guild:None)
+    if failure=='denied':
+        event.permissions_for=lambda member:SimpleNamespace(view_channel=True,send_messages=False)
+    if failure=='send':
+        event.send.side_effect=discord.Forbidden(SimpleNamespace(status=403,reason='Forbidden'),'Denied')
+    draw=__import__('unittest.mock',fromlist=['Mock']).Mock(wraps=cast.roll_outcome)
+    monkeypatch.setattr(cast,'roll_outcome',draw)
+    interaction=SimpleNamespace(client=client(),user=SimpleNamespace(mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:None),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
+    asyncio.run(cast.cast_spell.callback(interaction,'luna','One'))
+    if failure=='send':
+        assert interaction.followup.send.call_args.kwargs['ephemeral']
+        assert 'could not be delivered' in interaction.followup.send.call_args.args[0]
+        assert draw.call_count==1
+    else:
+        draw.assert_not_called()
+        event.send.assert_not_awaited()
+        assert interaction.response.send_message.call_args.kwargs['ephemeral']
+
+
+def test_all_themed_variants_render_through_loader():
+    loader=client().message_loader
+    count=0
+    for witch,outcomes in loader.messages['cauldron']['draw'].items():
+        for outcome,variants in outcomes.items():
+            for variant in variants:
+                loader.messages['_variant_check']=variant
+                text=loader.get_message('_variant_check',witch=witch.title(),outcome=outcome,winners='BloominDaisy, Megatron',winner_count=2,user='<@99>')
+                assert 'BloominDaisy, Megatron' in text
+                assert f'~ {witch.title()}' in text
+                assert len(text)<1900
+                count+=1
+    assert count==18

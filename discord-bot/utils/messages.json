@@ -772,34 +772,46 @@
         "draw": {
             "luna": {
                 "normal": [
-                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                    "🌙 Luna traces a crescent over the cauldron. Silver bubbles gather into names.\n\n“Oh, how lovely! A little kindness has a way of finding its way home. Come closer, dears!”\n\n✨ **Chosen by Luna:** {winners}\n\n*~ Luna*",
+                    "🍬 Luna gives the brew a gentle stir. Tiny sugar stars bob to the surface.\n\n“One spoonful of sweetness, one hopeful wish... there we are! The cauldron has made its choice!”\n\n🌙 **The chosen names:** {winners}\n\n*~ Luna*",
+                    "✨ Warm moonlight spills over the rim as Luna peers into the cauldron.\n\n“Oh! It’s ready! Everyone has a little spark in the brew, and kindness makes it glow all the brighter.”\n\n🌙 **Tonight’s selection:** {winners}\n\n*~ Luna*"
                 ],
                 "fumble": [
-                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                    "🌙 Luna reaches for a pinch of stardust and drops the whole jar into the cauldron.\n\n“Oh, sugar! That was supposed to be a pinch... Nobody tell Raven, please.”\n\nThe bubbles sneeze out a cloud of glitter and settle into names.\n\n✨ **Chosen through the sparkle:** {winners}\n\n*~ Luna*",
+                    "🫧 Luna’s sleeve catches the stirring spoon. It plops into the brew, followed by a surprised squeak.\n\n“Whoops! Well... a little extra stirring never hurt anyone, did it?”\n\nA crooked ribbon of moonlight spells out the cauldron’s choices.\n\n🌙 **The cauldron picked:** {winners}\n\n*~ Luna*",
+                    "✨ “Clockwise, then a little wish, then... oh dear. Was that counterclockwise?”\n\nThe cauldron hiccups. Silver bubbles float past Luna’s hat, carrying names.\n\n“I meant to do that. Mostly.”\n\n🌙 **A happy little accident chose:** {winners}\n\n*~ Luna*"
                 ],
                 "special": [
-                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                    "💖 Luna pauses as a rosy glow blooms beneath the surface.\n\n“Oh, this is a tender little spell. It listens for sweetness where mischief might have been. But there’s always room for another kind heart.”\n\n🌙 **Luna’s special selection:** {winners}\n\n*~ Luna*",
+                    "🌸 Sugar blossoms open around the cauldron’s rim. Luna clasps her hands.\n\n“A kindness charm! A little more sharing, a little less sneaking... that’s the sort of magic this brew adores.”\n\n✨ **Names among the blossoms:** {winners}\n\n*~ Luna*",
+                    "🌙 A soft light rises through the steam.\n\n“Just a little room for sweetness to shine, dears. And if the brew can’t find a favorite, everyone gets the same hopeful little chance.”\n\n💖 **Chosen in the moonlight:** {winners}\n\n*~ Luna*"
                 ]
             },
             "raven": {
                 "normal": [
-                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                    "🕸️ Raven drags one black nail around the cauldron’s rim. Violet smoke coils into names.\n\n“Well, well. Whose mischief caught the brew’s attention? A successful trick does leave such a delicious impression.”\n\n💀 **Raven’s chosen troublemakers:** {winners}\n\n*~ Raven*",
+                    "🖤 “Quiet, you lot. The cauldron is thinking. A rare talent around here.”\n\nDark sparks arrange themselves into names. Raven smirks.\n\n“There. Try not to look quite so pleased with yourselves.”\n\n🕷️ **The chosen names:** {winners}\n\n*~ Raven*",
+                    "😈 Raven flicks her wrist. Purple mist rolls across the brew.\n\n“Everyone gets a chance, darlings. But a clever little trick? Oh, the cauldron remembers those.”\n\n🖤 **Chosen for tonight’s mischief:** {winners}\n\n*~ Raven*"
                 ],
                 "explosion": [
-                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                    "💥 The cauldron erupts in violet smoke. Raven emerges with one eyebrow singed.\n\n“That was deliberate. I will accept no further questions.”\n\nNames hang in the smoke while the lid rattles across the floor.\n\n😈 **Selected in the blast:** {winners}\n\n*~ Raven*",
+                    "🧨 “One last drop should make this interesting.”\n\n**POOF!** The lid shoots toward the rafters. Raven watches with a satisfied grin.\n\n“Much better. Now that I have everyone’s attention...”\n\n💀 **Names in the sparks:** {winners}\n\n*~ Raven*",
+                    "💥 Purple lightning splits the steam. Raven laughs far too happily.\n\n“Oh, don’t fuss. You still have your eyebrows, don’t you? Most of them?”\n\nThe sparks whirl into names.\n\n🕸️ **The explosive selection:** {winners}\n\n*~ Raven*"
                 ],
                 "rage": [
-                    "{witch} has cast a {outcome} spell! Winners: {winners}"
+                    "🌩️ Raven glares into the cauldron. It bubbles politely. She looks offended.\n\n“Politely? In MY cauldron? Show me a little more mischief than sweetness!”\n\nShe strikes the rim with her spoon. Dark sparks form names.\n\n😈 **Chosen in Raven’s fury:** {winners}\n\n*~ Raven*",
+                    "🖤 “Who put a kindness charm in my brewing cupboard?”\n\nRaven brushes pink glitter off her sleeve and stirs with theatrical fury.\n\n“This spell has a taste for tricks over treats. That ought to clear the sugar out.”\n\n💀 **The storm reveals:** {winners}\n\n*~ Raven*",
+                    "🌪️ The steam twists into a tiny storm. Raven taps her foot.\n\n“Tricks over treats, darlings. That’s what this spell prefers. No favorite? Fine. Equal chances. But I reserve the right to sulk.”\n\n🕷️ **Spared the suspense:** {winners}\n\n*~ Raven*"
                 ]
             }
         },
-        "no_players": "No active players are eligible in this server. Use /game get cauldron_eligibility to check. The cauldron pool has not changed.",
+        "no_players": "🫧 The cauldron bubbles, waits... and produces not a single name.\n\n“Oh, dears, we need someone to join first!” says Luna.\n“An audience would improve the occasion,” Raven mutters.\n\nNo active players were found. Check `/game get cauldron_eligibility`. The cauldron’s candy is unchanged.",
         "missing_member": "Player {player_id}",
-        "long_announcement": "{witch} has cast a {outcome} spell! {winner_count} distinct winners were selected. See the attached announcement and winner list.",
+        "long_announcement": "📜 The cauldron’s scroll is overflowing! {witch}’s {outcome} draw selected **{winner_count} distinct winners**. Open the attached scroll for the full announcement and names.",
         "pool": {
-            "get": "The cauldron currently has {amount} candy.",
-            "set": "The cauldron pool has been updated to {amount} candy.",
-            "invalid": "Please provide a nonnegative whole number of candy."
+            "get": "🍬 Beneath the curling steam, the cauldron holds **{amount} candy**.",
+            "set": "🫧 The brew settles. The cauldron now holds **{amount} candy**.",
+            "invalid": "🎃 Even this cauldron can’t hold a negative handful! Enter a whole number of candy, zero or greater."
         },
         "eligibility": {
             "title": "Cauldron eligibility",
@@ -823,6 +835,10 @@
             },
             "notes_title": "Eligibility and selection",
             "notes": "Every active player starts at weight 1. Luna favors treats given; Raven favors successful tricks. Special outcomes add only positive differences between those stats. If nobody has a positive difference, everyone has equal weight. Potions do not affect eligibility. Many draws 1 to the active-player count, with no duplicate winners. Active database records may include departed members. Selection does not pay out candy yet."
-        }
+        },
+        "event_channel_missing": "🕯️ The cauldron needs somewhere to make its entrance! Configure an event channel with `/bot set channel`, or replace a missing one with `/bot update channel`. No draw was made.",
+        "event_channel_denied": "🕯️ The event channel’s door is shut to me. Please grant View Channel and Send Messages there, then try again. No draw was made.",
+        "event_post_failed": "The cauldron’s announcement could not be delivered to {channel}. Check the bot’s channel permissions (including Attach Files for long announcements). The candy pool is unchanged.",
+        "event_posted": "✨ The cauldron has spoken in {channel}! {message_url}"
     }
 }
