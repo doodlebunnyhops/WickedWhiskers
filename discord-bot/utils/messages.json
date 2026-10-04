@@ -904,6 +904,7 @@
         },
         "no_players": "🫧 The cauldron bubbles, waits... and produces not a single name.\n\n“Oh, dears, we need someone to join first!” says Luna.\n“An audience would improve the occasion,” Raven mutters.\n\nNo active players were found. Check `/game get cauldron_eligibility`. The cauldron’s candy is unchanged.",
         "missing_member": "Player {player_id}",
+        "winner_mentions": "✨ The cauldron calls for {winners}!",
         "long_announcement": "📜 The cauldron’s scroll is overflowing! {witch}’s {outcome} draw selected **{winner_count} distinct winners**. Open the attached scroll for the full announcement and names.",
         "pool": {
             "get": "🍬 Beneath the curling steam, the cauldron holds **{amount} candy**.",

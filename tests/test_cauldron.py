@@ -91,7 +91,7 @@ def test_new_player_draw_succeeds_without_member_cache_or_purchases(database,wit
     before=database.total_changes
     interaction=SimpleNamespace(id=12345,client=client(),user=SimpleNamespace(id=99,mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:None),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,mode))
-    assert 'Player ' in event.send.call_args.kwargs['embed'].description
+    assert '<@' in event.send.call_args.kwargs['embed'].description
     interaction.response.defer.assert_awaited_once_with(ephemeral=True)
     assert interaction.followup.send.call_args.kwargs['ephemeral'] is True
     interaction.response.send_message.assert_not_awaited()
@@ -111,7 +111,7 @@ def test_draw_uses_custom_json_variant_and_placeholders(database,monkeypatch,tmp
     interaction=SimpleNamespace(id=12345,client=SimpleNamespace(message_loader=MessageLoader(str(path))),user=SimpleNamespace(id=99,mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:None),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,'One'))
     text=event.send.call_args.kwargs['embed'].description
-    assert text.startswith(f'Custom {witch.title()}/{outcome}: 1 winner(s): Player ')
+    assert text.startswith(f'Custom {witch.title()}/{outcome}: 1 winner(s): <@')
     assert text.endswith('moderator <@99>')
     assert 'Message not found' not in text
 
@@ -257,9 +257,14 @@ def test_two_player_draw_announces_exactly_the_paid_players(database,monkeypatch
     embed=event.send.call_args.kwargs['embed']
     paid={a['player_id']:a['amount'] for a in result['awards']}
     for uid,name in names.items():
-        assert (name in embed.description)==(uid in paid)
+        assert (f'<@{uid}>' in embed.description)==(uid in paid)
+        assert (f'<@{uid}>' in event.send.call_args.kwargs['content'])==(uid in paid)
         balance=database.execute('SELECT candy_in_bucket FROM players WHERE guild_id=1 AND player_id=?',(uid,)).fetchone()[0]
         assert balance==50+paid.get(uid,0)
+    mentions=event.send.call_args.kwargs['allowed_mentions'].to_dict()
+    assert set(mentions['users'])==set(paid)
+    assert mentions['parse']==[]
+    assert event.send.call_args.kwargs['allowed_mentions'].replied_user is False
     assert f'**{expected}**' in embed.fields[0].value
     assert db.get_cauldron_pool(1)==0
 
@@ -267,3 +272,24 @@ def test_two_player_draw_announces_exactly_the_paid_players(database,monkeypatch
 @pytest.mark.parametrize('players,cap', [([(10,1)],100), ([(10,1),(20,1)],1)])
 def test_many_with_only_one_possible_recipient(players,cap):
     assert len(cauldron.select_winners(players,'many',max_winners=cap))==1
+
+
+def test_large_draw_pings_every_winner_once_in_bounded_batches(database,monkeypatch):
+    ids=list(range(100000000000000000,100000000000000121))
+    result=dict(outcome='normal',awards=[dict(player_id=uid,amount=1) for uid in ids],amount=len(ids),remaining=0)
+    monkeypatch.setattr(cast,'award_pool',lambda *args:(result,False))
+    bot_client=client()
+    bot_client.message_loader.messages['cauldron']['winner_mentions']='Called: {winners}'
+    interaction=SimpleNamespace(id=555,client=bot_client,user=SimpleNamespace(id=99,mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
+    asyncio.run(cast.cast_spell.callback(interaction,'luna','many'))
+    notified=[]
+    for index,call in enumerate(event.send.call_args_list):
+        kwargs=call.kwargs
+        assert len(kwargs['content'])<=2000
+        assert kwargs['content'].startswith('Called: ')
+        mentions=kwargs['allowed_mentions'].to_dict()
+        assert mentions['parse']==[]
+        assert len(mentions['users'])<=50
+        notified.extend(mentions['users'])
+        assert ('embed' in kwargs)==(index==0)
+    assert notified==ids

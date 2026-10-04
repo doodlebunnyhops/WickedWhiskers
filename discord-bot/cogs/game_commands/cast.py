@@ -46,12 +46,20 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
         await interaction.followup.send(message('cauldron', 'already_paid', amount=result['amount']), ephemeral=True)
         return
     outcome = result['outcome']
-    names = []
-    for award in result['awards']:
-        uid = award['player_id']
-        member = interaction.guild.get_member(uid)
-        name = discord.utils.escape_markdown(member.display_name) if member else message('cauldron', 'missing_member', player_id=uid)
-        names.append(name)
+    winner_ids = list(dict.fromkeys(award['player_id'] for award in result['awards']))
+    names = [f'<@{uid}>' for uid in winner_ids]
+    # Keep each message below Discord's content and explicit-mention limits.
+    winner_batches = [winner_ids[start:start + 50] for start in range(0, len(winner_ids), 50)]
+
+    def winner_notification(ids):
+        return {
+            'content': message('cauldron', 'winner_mentions', winners=', '.join(f'<@{uid}>' for uid in ids)),
+            'allowed_mentions': discord.AllowedMentions(
+                everyone=False, roles=False, replied_user=False,
+                users=[discord.Object(id=uid) for uid in ids],
+            ),
+        }
+
     values = dict(
         witch=message('cauldron', 'witches', witch), outcome=message('cauldron', 'outcomes', outcome),
         winners=', '.join(names), winner_count=len(names), user=interaction.user.mention,
@@ -73,10 +81,12 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
     embed.set_author(name=values['witch'], icon_url=image_url(f'{witch}_portrait'))
     embed.add_field(name=message('cauldron', 'embed', 'pool_title')[:256], value=message('cauldron', 'embed', 'pool_value', **values)[:1024], inline=False)
     try:
-        kwargs = {'embed': embed, 'allowed_mentions': discord.AllowedMentions.none()}
+        kwargs = {'embed': embed, **winner_notification(winner_batches[0])}
         if file is not None:
             kwargs['file'] = file
         posted = await channel.send(**kwargs)
+        for batch in winner_batches[1:]:
+            await channel.send(**winner_notification(batch))
     except discord.HTTPException:
         await interaction.followup.send(message('cauldron', 'event_post_failed', channel=channel.mention, **values), ephemeral=True)
         return
