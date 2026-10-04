@@ -1,4 +1,50 @@
 {
+    "leaderboard": {
+        "title": "🏆 {category} Leaderboard",
+        "entry": "**{rank}. {player}**: {score} {unit}",
+        "empty": "No data found for **{category}**.",
+        "empty_all": "No leaderboard data is available for this server yet.",
+        "missing_member": "Player {player_id}",
+        "page": "Category {current} of {total} • Top 10 • Snapshot at command time",
+        "choose": "Choose a leaderboard",
+        "previous": "Previous",
+        "next": "Next",
+        "owner_only": "Only the moderator who opened this leaderboard can change its page.",
+        "categories": {
+            "top_tricksters": {
+                "name": "Top Tricksters",
+                "unit": "successful tricks"
+            },
+            "top_treaters": {
+                "name": "Top Treaters",
+                "unit": "treats given"
+            },
+            "top_thieves": {
+                "name": "Top Thieves",
+                "unit": "candy stolen"
+            },
+            "most_generous": {
+                "name": "Most Generous",
+                "unit": "candy given"
+            },
+            "most_evil": {
+                "name": "Most Evil",
+                "unit": "evilness"
+            },
+            "most_sweet": {
+                "name": "Most Sweet",
+                "unit": "sweetness"
+            },
+            "highest_risk_takers": {
+                "name": "Highest Risk Takers",
+                "unit": "risk score"
+            },
+            "candy_hoarders": {
+                "name": "Candy Hoarders",
+                "unit": "candy"
+            }
+        }
+    },
     "luna_bucket": [
         "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nOh my stars! Look at all that candy in your bucket! 🍬 You’ve been so kind, {user}. Keep spreading the sweetness! 🌟\n\n*~ Luna*",
         "You have:\n**{candy_amount}** candy.\n**{potion_amount}** potion(s)\n\nWow, {user}, your bucket is practically overflowing! 🎃 Sharing is caring, don't forget to treat others with some of your goodies! 🍭\n\n*~ Luna*",

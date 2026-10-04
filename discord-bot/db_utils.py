@@ -1126,8 +1126,8 @@ def get_leaderboard_query(leaderboard_type, guild_id, top_n=10):
         'top_treaters': "SELECT player_id, treats_given FROM players WHERE guild_id = ? ORDER BY treats_given DESC LIMIT ?",
         'top_thieves': "SELECT player_id, total_candy_stolen FROM players WHERE guild_id = ? ORDER BY total_candy_stolen DESC LIMIT ?",
         'most_generous': "SELECT player_id, total_candy_given FROM players WHERE guild_id = ? ORDER BY total_candy_given DESC LIMIT ?",
-        'most_evil': "SELECT player_id, (successful_tricks - failed_tricks) AS evilness FROM players WHERE guild_id = ? ORDER BY evilness DESC LIMIT ?",
-        'most_sweet': "SELECT player_id, treats_given FROM players WHERE guild_id = ? ORDER BY treats_given DESC LIMIT ?",
+        'most_evil': "SELECT player_id, CASE WHEN total_candy_given + total_candy_stolen = 0 THEN 0.0 ELSE 1.0 * total_candy_stolen / (total_candy_given + total_candy_stolen) END AS evilness FROM players WHERE guild_id = ? ORDER BY evilness DESC, player_id ASC LIMIT ?",
+        'most_sweet': "SELECT player_id, CASE WHEN total_candy_given + total_candy_stolen = 0 THEN 0.0 ELSE 1.0 * total_candy_given / (total_candy_given + total_candy_stolen) END AS sweetness FROM players WHERE guild_id = ? ORDER BY sweetness DESC, player_id ASC LIMIT ?",
         'highest_risk_takers': "SELECT player_id, (total_candy_lost + total_candy_won_from_pumpkins) AS risk_takers FROM players WHERE guild_id = ? ORDER BY risk_takers DESC LIMIT ?",
         'candy_hoarders': "SELECT player_id, candy_in_bucket FROM players WHERE guild_id = ? ORDER BY candy_in_bucket DESC LIMIT ?"
     }

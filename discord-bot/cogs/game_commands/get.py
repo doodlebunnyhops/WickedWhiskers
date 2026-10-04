@@ -158,71 +158,24 @@ async def get_player_stats(interaction: discord.Interaction, user: discord.Membe
     app_commands.Choice(name="All", value="all")
     ])
 async def get_leaderboard(interaction: discord.Interaction, type: app_commands.Choice[str]):
-    luna_banner = "https://cdn.discordapp.com/attachments/1293052178742644889/1296215769687785524/luna_banner.png?ex=6712cc02&is=67117a82&hm=ef0c794acb0a20732ff871fb5569dce4b4e6715d2b3bdef26b2a1590df9e55b8&"
-    # leader_banner = "https://cdn.discordapp.com/attachments/1293052178742644889/1297018273128386593/file-2eM6TRxhaqj8KWU84Otbu0Ao.webp?ex=671465e5&is=67131465&hm=e90f476eee52384771aa0a426c1b94da0a07d862cf3ac5c76c4b1c634151659e&"
-    leaderboard_type_descriptions = {
-        "top_tricksters": "Trick(s)",
-        "top_treaters": "Treat(s)",
-        "top_thieves": "Candy Stolen",
-        "most_generous": "Candy Given",
-        "most_evil": "Evil",
-        "most_sweet": "Sweet",
-        "highest_risk_takers": "Risk Taken",
-        "candy_hoarders": "Candy Hoarded",
-        "all": "Points"  # Default for the 'all' type
-        }
-    leaderboard_as_percentage = {
-        "most_sweet": True,
-        "most_evil": True,
-        "trick_success_rate": True
-    }
-    guild = interaction.guild
-     # Fetch the leaderboard from the database
-    leaderboard = db_utils.get_leaderboard_query(type.value, guild.id)
+    from utils.leaderboard import CATEGORIES, LeaderboardView, make_embed
 
-    if leaderboard:
-        # Unicode variables for formatting
-        zero_width_space = "\u200B"  # Invisible separator (zero-width space)
-        colon_unicode = "\u003A"  # Unicode for colon (:)
-
-        # Prepare the response message with a zero-width space at the beginning and the end
-        response_message = "## \u200B" #zero_width_space and discord format double hash for big text on first player
-
-        for i, (player_id, result) in enumerate(leaderboard):
-            member = guild.get_member(player_id)
-
-            # Get the description for this leaderboard type
-            result_description = leaderboard_type_descriptions.get(type.value, "Result")
-
-            # Determine if this leaderboard result should be displayed as a percentage
-            if leaderboard_as_percentage.get(type.value, False):
-                result_str = f"{result * 100:.2f}% {result_description}"
-            else:
-                result_str = f"{result} {result_description}"
-
-            # Add the player and their result to the response message
-            if member:
-                response_message += f"**{i + 1}. {member.display_name}**: {result_str}\n\n{zero_width_space}"
-            else:
-                response_message += f"**{i + 1}. Player with ID {player_id}**: {result_str}\n\n{zero_width_space}"
-
-        # Create the embed and set the description with the formatted response message
-        embed = discord.Embed(
-            title=f".:{type.name} Leaderboard:.",
-            description=response_message,
-            color=discord.Color.gold(),
-        )
-        embed.set_image(url=luna_banner)
-
-        # Send the embed as the response message
-        await interaction.response.send_message(embed=embed)
-
+    if type.value == 'all':
+        boards = {key: db_utils.get_leaderboard_query(key, interaction.guild.id) for key in CATEGORIES}
+        if not any(boards.values()):
+            await interaction.response.send_message(
+                interaction.client.message_loader.get_message('leaderboard', 'empty_all'), ephemeral=True,
+            )
+            return
+        view = LeaderboardView(interaction, boards)
+        await interaction.response.send_message(embed=view.embed(), view=view, allowed_mentions=discord.AllowedMentions.none())
     else:
-        # Send a response when no leaderboard data is found
+        rows = db_utils.get_leaderboard_query(type.value, interaction.guild.id)
         await interaction.response.send_message(
-            f"No data found for **{type.name}** leaderboard.",
-            ephemeral=True
+            embed=make_embed(interaction, type.value, rows),
+            ephemeral=not bool(rows), allowed_mentions=discord.AllowedMentions.none(),
         )
+
 
 def display_leaderboard(interaction, leaderboard, title):
     embed = discord.Embed(title=title, color=discord.Color.purple())

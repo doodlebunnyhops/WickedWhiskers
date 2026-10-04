@@ -8,7 +8,7 @@ Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The 
 | --- | --- | --- | --- |
 | High | `/bot remove role` calls missing `remove_role_by_guild` after announcing removal. Access remains. | `discord-bot/cogs/mod_commands/remove.py`, `db_utils.py` | Call existing `delete_role_by_guild` with its correct signature; confirm only after success. |
 | High | Pumpkin entry is deducted before resolution; “break even” does not refund it, ordinary losses deduct again and can make a balance negative. | `discord-bot/utils/player.py`, `smash_pumpkin` | Agree net wager outcomes, settle once atomically, bound losses, and make narration match net changes. This is separate from intentional magical rewards. |
-| Medium | `/game get leaderboard type:All` passes `all` to a query map with no such entry, raising ValueError. Evil/Sweet raw counts are also rendered as percentages. | `cogs/game_commands/get.py`, `db_utils.py:get_leaderboard_query` | Implement aggregate display or remove All; use correct units. |
+| Fixed | All now browses eight category pages instead of querying an unsupported `all` key. Evil/Sweet retain percentages, with queries corrected to match the existing candy-given/candy-stolen player-stat ratios. | `cogs/game_commands/get.py`, `utils/leaderboard.py`, `db_utils.py:get_leaderboard_query` | Covered by category, ratio, empty-guild and page-navigation tests. |
 | Medium | `/bot set settings` marks role/invite optional, but blank role fails validation and blank invite leaves an unbound variable. Successful submission also clears the invite message ID. | `modals/settings.py:Bot` | Use channel/role selectors; define empty-field semantics and preserve unrelated invite state. |
 | Medium | Configured `trick_success_rate` is stored/displayed, but actual thief-rate calculation uses its own formula. | `cogs/game_commands/set.py`, `utils/player.py` | Define how the server rate modifies the formula, or remove the ineffective setting. |
 | Medium | React-to-join does not check paused state; inactive existing players follow an insert path rather than reactivation. | `bot.py:on_raw_reaction_add`, join/add handlers, `db_utils.py` | Share one enrollment service with explicit pause/reactivation behavior. |
@@ -35,7 +35,7 @@ Luna/Raven special scenarios may create candy, cover treat costs, copy pumpkin r
 ## Recommended order
 
 1. Repair role removal and pumpkin accounting before relying on them in a live season.
-2. Repair leaderboard/settings/invite error paths and range validation.
+2. Repair settings/invite error paths and range validation.
 3. Unify enrollment and agree freeze/pause behavior; add destructive-action confirmation.
 4. Replace stale runtime guidance and add an in-bot slash-command help entry (default `!help` does not document these slash commands).
 5. Consider a public leaderboard command if players should inspect rankings themselves.

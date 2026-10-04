@@ -63,7 +63,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game get cauldron_eligibility` | Game moderator | Privately show active-player count, six outcome-specific eligibility counts, rules and up to five candidate IDs/weights per outcome. No draw or writes. |
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
-| `/game get leaderboard <type>` | Game moderator | Show up to 10 results for one category. All errors; Evil/Sweet percentage formatting is incorrect. |
+| `/game get leaderboard <type>` | Game moderator | Show top 10 for one category, or browse all eight using the category selector and Previous/Next. Evil/Sweet percentages match player stats. |
 | `/game cast spell <witch> <winners>` | Game moderator | Select distinct active players; Luna favors treating, Raven successful tricks. Awards the full pool and posts a witch-image embed to the Event channel. |
 
 ## Arguments and choices
