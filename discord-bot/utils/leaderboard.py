@@ -5,6 +5,8 @@ from utils.artwork import image_url
 CATEGORIES = (
     'top_tricksters', 'top_treaters', 'top_thieves', 'most_generous',
     'most_evil', 'most_sweet', 'highest_risk_takers', 'candy_hoarders',
+    'potion_collector', 'biggest_spender', 'master_of_potions', 'lunas_favorites',
+    'untouchable', 'cauldron_contributors', 'pumpkin_smashers',
 )
 
 

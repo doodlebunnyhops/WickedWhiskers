@@ -17,7 +17,7 @@
             },
             "top_treaters": {
                 "name": "Top Treaters",
-                "unit": "treats given"
+                "unit": "kindness actions"
             },
             "top_thieves": {
                 "name": "Top Thieves",
@@ -37,11 +37,39 @@
             },
             "highest_risk_takers": {
                 "name": "Highest Risk Takers",
-                "unit": "risk score"
+                "unit": "candy wagered on pumpkins"
             },
             "candy_hoarders": {
                 "name": "Candy Hoarders",
                 "unit": "candy"
+            },
+            "potion_collector": {
+                "name": "Potion Collector",
+                "unit": "potions purchased"
+            },
+            "biggest_spender": {
+                "name": "Biggest Spender",
+                "unit": "candy spent (after refunds)"
+            },
+            "master_of_potions": {
+                "name": "Master of Potions",
+                "unit": "effects triggered"
+            },
+            "lunas_favorites": {
+                "name": "Luna’s Favorites",
+                "unit": "potion candy gifted"
+            },
+            "untouchable": {
+                "name": "Untouchable",
+                "unit": "tricks blocked or redirected"
+            },
+            "cauldron_contributors": {
+                "name": "Cauldron Contributors",
+                "unit": "candy contributed"
+            },
+            "pumpkin_smashers": {
+                "name": "Pumpkin Smashers",
+                "unit": "pumpkins smashed"
             }
         }
     },
@@ -1162,7 +1190,7 @@
                 },
                 "leaderboard": {
                     "name": "Show the leaderboard",
-                    "value": "`/game get leaderboard type:All` opens category navigation and is private unless used in the configured admin channel. Individual categories, including Candy Hoarders, are visible to the channel when used in the event or admin channel; elsewhere they are private."
+                    "value": "`/game get leaderboard type:All` opens category navigation and is private unless used in the configured admin channel. Individual categories, including Candy Hoarders and the potion boards, are visible to the channel when used in the event or admin channel; elsewhere they are private. Boards exclude inactive and frozen players. Highest Risk Takers ranks pumpkin wagers. Potion Collector counts purchases; Master of Potions counts triggered effects; Untouchable counts blocks and redirects."
                 },
                 "prices": {
                     "name": "Manage the shop",
@@ -1334,5 +1362,33 @@
         "luna_calling_private": "Luna gave 5 candy each to {recipients}. Your potion was consumed.",
         "luna_calling_public": "🌙 {user} summoned Luna! She gifted 5 candy each to {recipients}.",
         "luna_calling_title": "Luna answers the call!"
+    },
+    "player_stats": {
+        "not_joined": "{user} has not joined the game yet.",
+        "title": "{user} • Player stats",
+        "active": "Active",
+        "inactive": "Not in the game",
+        "frozen": "Frozen",
+        "protected": "Under Witch’s Veil",
+        "veil": "Witch’s Veil",
+        "overview_title": "Bucket & participation",
+        "overview": "Candy: **{candy_in_bucket:,}** • Status: {status}\nInventory: {bottles} bottles • Active charges: {charges}",
+        "tricks_title": "Mischief",
+        "tricks": "Attempts tracked: {trick_attempts}\nSuccessful: {successful_tricks} • Failed: {failed_tricks} • Resolved: {resolved}\nAttempts blocked: {blocked_attempts} • Redirected: {redirected_attempts}\nCandy stolen: {total_candy_stolen:,} • Lost through tricks: {total_candy_lost:,}\nRedirected attempts can also resolve as a success, failure, or block.",
+        "treats_title": "Kindness",
+        "treats": "Kindness actions: {treats_given}\nCandy given, including credited potion bonuses: {total_candy_given:,}\nLuna summons: {summons} • Potion candy gifted: {gifted:,}",
+        "pumpkins_title": "Pumpkin smashing",
+        "pumpkins": "Smashed: {pumpkins_smashed} • Wagered: {total_candy_spent_on_pumpkins:,}\nNet winnings: {total_candy_won_from_pumpkins:,} • Losses: {total_candy_lost_on_pumpkins:,}",
+        "cauldron_title": "Cauldron",
+        "cauldron": "Contributions: {contributions:,}\nDraws won: {cauldron_wins} • Candy awarded: {cauldron_rewards:,}",
+        "potions_title": "Potions",
+        "potions": "Purchased: {purchased} • Activations: {activated} • Effects triggered: {triggered}\nShop spending after refunds: {spent:,} candy • Ward blocks: {wards}",
+        "protection_title": "Witch’s Veil",
+        "protection": "Time purchased: {protection_purchased_seconds:,} seconds\nTime used: {protection_used_seconds:,} seconds",
+        "potion_title": "Potion breakdown",
+        "potion_row": "Inventory: {bottles} • Active charges: {charges}\nBought: {purchased} • Activated: {activated} • Triggered: {triggered}\nSpent: {spent:,} • Candy gifted: {gifted:,} • Defenses: {defended}",
+        "hidden_title": "Sweetness, evilness & base chance",
+        "hidden": "Sweetness: **{sweetness}%**\nEvilness: **{evilness}%**\nBase trick roll chance: **{chance}%** (before potion effects and special outcomes).\nLuna cauldron weighting uses kindness action counts, not the sweetness percentage.",
+        "tracking_note": "New counters start when tracking is installed. Activations include reactivating returned bottles; purchases do not."
     }
 }

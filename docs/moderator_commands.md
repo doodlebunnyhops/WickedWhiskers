@@ -35,7 +35,7 @@ Use `/bot update channel channel_type:Event|Admin channel:<channel>` for an exis
 - `/game get player user:<member> get:Stats|Hidden Values|All`: inspect a player. Hidden trick rate is the base calculation, without active Cunning.
 - `/game set player_stat user:<member> stat:<choice> number:<integer>`: overwrite Candy, Successful Tricks, Failed Tricks, or Treats Given. This is an absolute value, not an increment; avoid negative values (currently unvalidated).
 - `/bot reset player user:<member>`: immediately reset an existing player to 50 candy, active/unfrozen status, cleared counters, bottles and effects. There is no confirmation step and unregistered players cause an error.
-- `/game get leaderboard type:<category>`: list up to ten ranked players. All opens eight category pages with a selector and Previous/Next. Only the invoking moderator can change pages; controls expire after three minutes. All is private outside the configured admin channel. Individual categories (including Candy Hoarders) are visible in the configured event or admin channel and private elsewhere. Empty results are always private. Rankings are a snapshot at invocation. Sweetness = candy given / (given + stolen); evilness = candy stolen / (given + stolen), both displayed as percentages and zero when neither exists.
+- `/game get leaderboard type:<category>`: list up to ten ranked players. All opens fifteen category pages with a selector and Previous/Next. Only the invoking moderator can change pages; controls expire after three minutes. All is private outside the configured admin channel. Individual categories (including Candy Hoarders) are visible in the configured event or admin channel and private elsewhere. Empty results are always private. Rankings are a snapshot at invocation. Sweetness = candy given / (given + stolen); evilness = candy stolen / (given + stolen), both displayed as percentages and zero when neither exists.
 - `/game get cauldron`: inspect the pool. `/game set cauldron amount:<nonnegative integer>` replaces its balance.
 - `/game cast spell witch:Luna|Raven winners:One|Many`: select distinct active players with treating/tricking preferences, splitting the full pool among them. Potions do not affect eligibility.
 
@@ -67,3 +67,44 @@ These changes affect only the selected player's balance. They do not increment t
 Configure an event channel and grant the bot View Channel, Send Messages, and Embed Links before use. If Discord rejects the announcement after the adjustment has saved, the moderator receives a private warning; do not issue another command to retry the post, since a new command is a new adjustment. Replaying the same interaction cannot apply the adjustment twice.
 
 All new responses use `mod_candy` in `discord-bot/utils/messages.json` through `messages.py`.
+
+
+### Seasonal statistics and boards
+
+`/game get player` now includes real potion inventory, per-potion purchases, activations,
+triggered effects, spending after refunds, defensive uses, and potion candy gifted.
+It also shows pumpkin activity, cauldron contributions/winnings, blocked and redirected
+trick attempts, and protection time purchased/used. All output stays private.
+The displayed trick chance is the base roll chance before potion effects and special outcomes.
+
+Seven additional leaderboard categories:
+
+| Board | Score |
+|---|---|
+| Potion Collector | Bottles purchased, including paid Veil access; gifts and returned credits excluded |
+| Biggest Spender | Shop candy spent, including Veil, less refunds |
+| Master of Potions | Charges actually triggered; successful Luna summons count once; Veil time excluded |
+| Luna’s Favorites | Candy distributed by Calling and Favor |
+| Untouchable | Ward blocks and Mirror redirects/stops, credited to the defender |
+| Cauldron Contributors | Recorded pumpkin contributions, Mirror self-losses, and ordinary trick losses sent to the pool |
+| Pumpkin Smashers | Completed pumpkin smashes |
+
+Highest Risk Takers now ranks total pumpkin wagers, including break-even smashes.
+All boards exclude inactive and currently frozen players before selecting the top ten;
+expired freezes and protected players remain eligible. Ties use player ID for stable ordering.
+The All board remains private outside the admin channel. Single categories are public
+only in configured event/admin channels.
+
+A successful Luna’s Calling adds one kindness action and the actual candy distributed
+to its summoner's generosity. Favor adds its bonus candy without adding another action.
+Sweetness/evilness percentages retain their existing formulas; Luna cauldron weighting
+uses kindness action counts. Receiving candy never adds kindness credit.
+Moderator candy adjustments remain excluded from gameplay counters.
+
+New counters start when this update is installed; historical receipts are not backfilled.
+Startup creates the new counter table automatically without resetting existing data.
+Existing stats remain intact. Leave/reset/season reset clear the new seasonal counters.
+Protection elapsed time includes the current session and caps at expiry, without a timer job.
+Returned bottles count as another activation if reused, never another purchase.
+Blocked and redirected attempts are separate annotations: a redirect can also resolve
+as a successful or failed trick, so those figures must not be added together.

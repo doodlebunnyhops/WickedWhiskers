@@ -176,7 +176,8 @@ def test_favor_bonus_cap_cost_and_duplicate_treat(database,monkeypatch,amount,bo
     assert balance(10)==50-amount
     assert balance(20)==50+amount+bonus
     assert potions.inventory(1,10)[1].get('favor',0)==(0 if bonus else 1)
-    assert db.get_player_data(10,1)['total_candy_given']==amount
+    assert db.get_player_data(10,1)['total_candy_given']==amount+bonus
+    assert db.get_player_data(10,1)['treats_given']==1
     if bonus:assert 'Luna’s Favor' in event.description
 
 

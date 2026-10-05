@@ -3,6 +3,7 @@ import random
 import discord
 import db_utils as db
 import potions
+import game_stats as stats
 
 
 def text(interaction, key, **values):
@@ -57,6 +58,7 @@ def choose_redirect(candidates):
 def resolve_protection(interaction, target, responses):
     guild_id, attacker = interaction.guild.id, interaction.user
     if potions.block_trick(guild_id, attacker.id, target.id):
+        stats.add(db.get_db_connection(),guild_id,attacker.id,'blocked_attempts')
         body = text(interaction, 'ward', target=target.mention)
         responses.append_personal(body)
         responses.append_event(message=body)
@@ -75,12 +77,17 @@ def resolve_protection(interaction, target, responses):
         return True
     redirected = choose_redirect(choices)
     take(interaction, target.id, 'mirror')
+    stats.add(db.get_db_connection(),guild_id,target.id,'defended',1,'mirror')
+    stats.add(db.get_db_connection(),guild_id,attacker.id,'redirected_attempts')
     responses.potion_notes.append(text(interaction, 'mirror_redirect', original=target.mention, target=redirected.mention))
     if potions.block_trick(guild_id, attacker.id, redirected.id):
+        stats.add(db.get_db_connection(),guild_id,attacker.id,'blocked_attempts')
         responses.potion_notes.append(text(interaction, 'ward', target=redirected.mention))
         finish_mirror(interaction, responses, 'mirror_blocked', target, redirected)
         return True
     if take(interaction, redirected.id, 'mirror'):
+        stats.add(db.get_db_connection(),guild_id,redirected.id,'defended',1,'mirror')
+        stats.add(db.get_db_connection(),guild_id,attacker.id,'blocked_attempts')
         responses.potion_notes.append(text(interaction, 'mirror_stop', target=redirected.mention))
         finish_mirror(interaction, responses, 'mirror_blocked', target, redirected)
         return True
@@ -116,6 +123,8 @@ def favor_bonus(interaction, recipient, amount):
     if bonus <= 0 or db.is_player_frozen(interaction.user.id, guild_id) or db.is_player_frozen(recipient.id, guild_id):
         return None
     if take(interaction, interaction.user.id, 'favor'):
+        db.get_db_connection().execute('UPDATE players SET total_candy_given=total_candy_given+? WHERE guild_id=? AND player_id=?',(bonus,guild_id,interaction.user.id))
+        stats.add(db.get_db_connection(),guild_id,interaction.user.id,'gifted',bonus,'favor')
         db.get_db_connection().execute('UPDATE players SET candy_in_bucket=candy_in_bucket+? WHERE guild_id=? AND player_id=?', (bonus, guild_id, recipient.id))
         return text(interaction, 'favor', target=recipient.mention, amount=bonus)
     return None

@@ -45,15 +45,15 @@ def test_all_pages_and_single_category_queries(database,monkeypatch):
         view=caller.response.send_message.call_args.kwargs['view']
         assert requested==list(CATEGORIES)
         assert view.previous_button.disabled
-        assert len(view.selector.options)==8
-        for index in range(8):
+        assert len(view.selector.options)==len(CATEGORIES)
+        for index in range(len(CATEGORIES)):
             assert view.index==index
-            assert f'Category {index+1} of 8' in view.embed().footer.text
+            assert f'Category {index+1} of {len(CATEGORIES)}' in view.embed().footer.text
             assert len(view.embed())<6000
-            if index<7:await view.next(caller)
+            if index<len(CATEGORIES)-1:await view.next(caller)
         assert view.next_button.disabled
         await view.previous(caller)
-        assert view.index==6
+        assert view.index==len(CATEGORIES)-2
         view.selector._values=['most_sweet']
         await view.choose(caller)
         assert view.index==5

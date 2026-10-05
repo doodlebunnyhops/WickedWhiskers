@@ -76,72 +76,12 @@ async def get_cauldron_pool(interaction: discord.Interaction):
     get="The details you want to view (stats, hidden values, or both)"
 )
 async def get_player_stats(interaction: discord.Interaction, user: discord.Member, get: app_commands.Choice[str]):
-    guild_id = interaction.guild.id
-    # Fetch the player's stats from the database
-    player_data = db_utils.get_player_data(user.id, guild_id)
-
-    if player_data:
-        try:
-            candy_in_bucket = player_data.get('candy_in_bucket', 0)
-            successful_tricks = player_data.get('successful_tricks', 0)
-            failed_tricks = player_data.get('failed_tricks', 0)
-            treats_given = player_data.get('treats_given', 0)
-            potions_purchased = player_data.get('potions_purchased', 0)
-            total_candy_given = player_data.get('total_candy_given', 0)
-            total_candy_stolen = player_data.get('total_candy_stolen', 0)
-            total_candy_lost = player_data.get('total_candy_lost', 0)
-            active = player_data.get('active', 0)
-
-
-            
-            active_status = "Active" if active == 1 else "Inactive"
-
-            # Prepare the response based on the selected details option
-            response_message = ""
-
-            if get.value == "stats" or get.value == "all":
-                # Standard player stats
-                response_message += (
-                    f"**{user.display_name} Stats:**\n\n"
-                    f"Bucket Contents:"
-                    f"\tCandy: {candy_in_bucket} candy.\n"
-                    f"\tPotions: {potions_purchased}\n\n"
-                    f"Tricerky Stats:\n"
-                    f"\tSuccessful Tricks: {successful_tricks}\n"
-                    f"\tFailed Tricks: {failed_tricks}\n"
-                    f"\tTotal Tricks: {successful_tricks + failed_tricks}\n"
-                    f"\tTotal candy stolen: {total_candy_stolen}\n\n"
-                    f"Treats Stats:\n"
-                    f"\t# Times Treated: {treats_given}\n"
-                    f"\tTotal candy given: {total_candy_given}\n\n"
-                    f"Other:\n"
-                    f"\tCandy lost: {total_candy_lost}\n"
-                    f"\tStatus: {active_status}\n"
-                )
-            
-            if get.value == "hidden_values" or get.value == "all":
-                # Hidden values
-                # evilness, sweetness, trick_success_rate = hidden_values
-                evilness = calculate_evilness(total_candy_given, total_candy_stolen)
-                sweetness = calculate_sweetness(total_candy_given, total_candy_stolen)
-                trick_success_rate = calculate_thief_success_rate(candy_in_bucket)
-
-                response_message += (
-                    f"**Hidden Values:**\n"
-                    f"\tEvilness: {round(evilness*100, 2)}%\n"
-                    f"\tSweetness: {round(sweetness*100, 2)}%\n"
-                    f"\tTrick Success Rate: {round(trick_success_rate*100, 2)}%\n"
-                )
-
-            await interaction.response.send_message(response_message, ephemeral=True)
-        
-        except Exception as e:
-            logging.error(f"Error fetching player stats: {str(e)}")
-            await interaction.response.send_message("An error occurred while fetching player stats.", ephemeral=True)
-    
+    from utils.player_stats import player_stats_embeds
+    embeds = player_stats_embeds(interaction, user, get.value)
+    if embeds:
+        await interaction.response.send_message(embeds=embeds, ephemeral=True, allowed_mentions=discord.AllowedMentions.none())
     else:
-        await interaction.response.send_message(f"{user.display_name} has not joined the game yet.", ephemeral=True)
-
+        await interaction.response.send_message(interaction.client.message_loader.get_message('player_stats','not_joined',user=user.mention),ephemeral=True)
 
 
 @get_group.command(name="leaderboard", description="View the leaderboard.")
@@ -155,6 +95,13 @@ async def get_player_stats(interaction: discord.Interaction, user: discord.Membe
     app_commands.Choice(name="Most Sweet", value="most_sweet"),
     app_commands.Choice(name="Highest Risk Takers", value="highest_risk_takers"),
     app_commands.Choice(name="Candy Hoarders", value="candy_hoarders"),
+    app_commands.Choice(name="Potion Collector", value="potion_collector"),
+    app_commands.Choice(name="Biggest Spender", value="biggest_spender"),
+    app_commands.Choice(name="Master of Potions", value="master_of_potions"),
+    app_commands.Choice(name="Luna’s Favorites", value="lunas_favorites"),
+    app_commands.Choice(name="Untouchable", value="untouchable"),
+    app_commands.Choice(name="Cauldron Contributors", value="cauldron_contributors"),
+    app_commands.Choice(name="Pumpkin Smashers", value="pumpkin_smashers"),
     app_commands.Choice(name="All", value="all")
     ])
 async def get_leaderboard(interaction: discord.Interaction, type: app_commands.Choice[str]):

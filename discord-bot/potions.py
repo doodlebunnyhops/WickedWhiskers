@@ -5,6 +5,7 @@ import random
 import time
 
 import db_utils as db
+import game_stats as stats
 
 
 @dataclass(frozen=True)
@@ -45,7 +46,7 @@ class PriceChanged(PotionError):
 
 
 def initialize_schema(conn):
-    # No migrations: this bot starts each season with a fresh database.
+    stats.initialize_schema(conn)
     statements = [
         "CREATE TABLE IF NOT EXISTS potion_inventory (guild_id INTEGER, player_id INTEGER, potion_id TEXT, quantity INTEGER NOT NULL CHECK(quantity >= 0), PRIMARY KEY(guild_id, player_id, potion_id))",
         "CREATE TABLE IF NOT EXISTS potion_effects (guild_id INTEGER, player_id INTEGER, potion_id TEXT, charges INTEGER NOT NULL CHECK(charges >= 0), PRIMARY KEY(guild_id, player_id, potion_id))",
@@ -136,6 +137,8 @@ def purchase(guild_id, buyer_id, potion_id, quantity, quoted_price, action_id):
         if updated.rowcount != 1:
             raise PotionError(f"You need {total} candy for this purchase.")
         grant(conn, guild_id, buyer_id, potion_id, quantity)
+        stats.add(conn,guild_id,buyer_id,"purchased",quantity,potion_id)
+        stats.add(conn,guild_id,buyer_id,"spent",total,potion_id)
         balance = eligible(guild_id, buyer_id)
         return record_action(conn, guild_id, action_id, buyer_id, "purchase", {"potion": potion_id, "name": potion.name, "quantity": quantity, "cost": total, "balance": balance})
 
@@ -174,9 +177,14 @@ def use(guild_id, player_id, potion_id, action_id, member_ids=None, now=None, rn
             conn.executemany("UPDATE players SET candy_in_bucket=candy_in_bucket+5 WHERE guild_id=? AND player_id=?", [(guild_id, recipient) for recipient in recipients])
             conn.execute("INSERT INTO potion_cooldowns VALUES(?,'luna',?) ON CONFLICT(guild_id,effect) DO UPDATE SET available_at=excluded.available_at", (guild_id, now + LUNA_COOLDOWN))
             conn.execute("INSERT INTO potion_stats(guild_id,player_id,luna_summons) VALUES(?,?,1) ON CONFLICT(guild_id,player_id) DO UPDATE SET luna_summons=luna_summons+1", (guild_id, player_id))
+            gifted = 5 * len(recipients)
+            conn.execute('UPDATE players SET treats_given=treats_given+1,total_candy_given=total_candy_given+? WHERE guild_id=? AND player_id=?',(gifted,guild_id,player_id))
+            stats.add(conn,guild_id,player_id,'gifted',gifted,potion_id)
+            stats.add(conn,guild_id,player_id,'triggered',1,potion_id)
             result["recipients"] = recipients
         else:
             conn.execute("INSERT INTO potion_effects VALUES(?,?,?,?) ON CONFLICT(guild_id,player_id,potion_id) DO UPDATE SET charges=excluded.charges", (guild_id, player_id, potion_id, charges))
+        stats.add(conn,guild_id,player_id,"activated",1,potion_id)
         if returned:
             conn.execute("DELETE FROM returned_potions WHERE id=?",(returned[0],))
         else:
@@ -188,13 +196,17 @@ def consume_charge(conn, guild_id, player_id, potion_id):
     from player_state import visible
     if not visible(guild_id, player_id):
         return False
-    return conn.execute("UPDATE potion_effects SET charges=charges-1 WHERE guild_id=? AND player_id=? AND potion_id=? AND charges>0", (guild_id, player_id, potion_id)).rowcount == 1
+    consumed = conn.execute("UPDATE potion_effects SET charges=charges-1 WHERE guild_id=? AND player_id=? AND potion_id=? AND charges>0", (guild_id, player_id, potion_id)).rowcount == 1
+    if consumed:
+        stats.add(conn,guild_id,player_id,'triggered',1,potion_id)
+    return consumed
 
 
 def block_trick(guild_id, attacker_id, target_id):
     conn = db.get_db_connection()
     if consume_charge(conn, guild_id, target_id, "ward"):
         conn.execute("INSERT INTO potion_stats(guild_id,player_id,tricks_blocked) VALUES(?,?,1) ON CONFLICT(guild_id,player_id) DO UPDATE SET tricks_blocked=tricks_blocked+1", (guild_id, target_id))
+        stats.add(conn,guild_id,target_id,"defended",1,"ward")
         audit(conn, guild_id, target_id, "ward_block", {"attacker": attacker_id})
         return True
     return False
@@ -243,10 +255,10 @@ def reset_prices(guild_id, actor_id, potion_id=None):
 
 
 def clear_player(conn, guild_id, player_id):
-    for table in ("potion_inventory", "potion_effects", "potion_stats", "potion_actions", "returned_potions", "protection_credits"):
+    for table in ("player_metrics", "potion_inventory", "potion_effects", "potion_stats", "potion_actions", "returned_potions", "protection_credits"):
         conn.execute(f"DELETE FROM {table} WHERE guild_id=? AND player_id=?", (guild_id, player_id))
 
 
 def clear_season(conn, guild_id):
-    for table in ("potion_inventory", "potion_effects", "potion_stats", "potion_actions", "potion_cooldowns", "potion_audit", "player_freezes", "player_rejoins", "returned_potions", "protection_credits", "player_protection", "protection_cooldowns"):
+    for table in ("player_metrics", "potion_inventory", "potion_effects", "potion_stats", "potion_actions", "potion_cooldowns", "potion_audit", "player_freezes", "player_rejoins", "returned_potions", "protection_credits", "player_protection", "protection_cooldowns"):
         conn.execute(f"DELETE FROM {table} WHERE guild_id=?", (guild_id,))

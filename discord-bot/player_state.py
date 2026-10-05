@@ -8,6 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 import db_utils as db
 import potions
+import game_stats as stats
 from utils.messages import default_messages
 
 REJOIN_SECONDS = 3600
@@ -143,6 +144,11 @@ def buy_protection(guild_id, player_id, quoted, action_id, now=None):
             raise StateError('not_enough', amount=current['total'])
         if current['credit']:
             conn.execute('UPDATE protection_credits SET quantity=quantity-1 WHERE guild_id=? AND player_id=?',(guild_id,player_id))
+        stats.settle_protection(conn,guild_id,player_id,now)
+        stats.add(conn,guild_id,player_id,'purchased',int(not current['credit']),'veil')
+        stats.add(conn,guild_id,player_id,'activated',1,'veil')
+        stats.add(conn,guild_id,player_id,'spent',current['total'],'veil')
+        stats.add(conn,guild_id,player_id,'protection_purchased_seconds',current['minutes']*60,'veil')
         end = now + current['minutes']*60
         cooldown = current['config']['cooldown']*60
         conn.execute('INSERT OR REPLACE INTO player_protection VALUES(?,?,?,?,?,?,?,?)',(guild_id,player_id,now,end,current['mode'],current['config']['rate'],current['reserve'],cooldown))
@@ -162,6 +168,8 @@ def finish_protection(conn, guild_id, player_id, now, frozen=False, forfeited=Fa
         if frozen:
             conn.execute('INSERT INTO protection_credits VALUES(?,?,1) ON CONFLICT(guild_id,player_id) DO UPDATE SET quantity=quantity+1',(guild_id,player_id))
         conn.execute('INSERT OR REPLACE INTO protection_cooldowns VALUES(?,?,?)',(guild_id,player_id,now+shield['cooldown']))
+    stats.settle_protection(conn,guild_id,player_id,now)
+    stats.add(conn,guild_id,player_id,'spent',-refund,'veil')
     conn.execute('DELETE FROM player_protection WHERE guild_id=? AND player_id=?',(guild_id,player_id))
     return refund
 
@@ -244,7 +252,7 @@ def leave(guild_id, player_id, now=None):
             return False
         finish_protection(conn,guild_id,player_id,now,forfeited=True)
         # Preserve freeze records, all cooldowns, and receipts/audit to prevent replay exploits.
-        for table in ('potion_inventory','potion_effects','potion_stats','returned_potions','protection_credits'):
+        for table in ('player_metrics','potion_inventory','potion_effects','potion_stats','returned_potions','protection_credits'):
             conn.execute(f'DELETE FROM {table} WHERE guild_id=? AND player_id=?',(guild_id,player_id))
         columns=[r[1] for r in conn.execute('PRAGMA table_info(players)') if r[1] not in ('guild_id','player_id','frozen')]
         conn.execute('UPDATE players SET '+','.join('"'+c+'"=0' for c in columns)+' WHERE guild_id=? AND player_id=?',(guild_id,player_id))

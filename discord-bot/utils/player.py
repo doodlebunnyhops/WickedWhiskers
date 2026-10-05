@@ -3,6 +3,7 @@ import discord
 import settings
 import db_utils as db
 import potions
+import game_stats as stats
 from utils import potion_gameplay as perks
 from utils.artwork import image_url, icon_embed
 
@@ -131,6 +132,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
     if db.is_player_frozen(user.id, guild_id) or db.is_player_frozen(target.id, guild_id):
         responses.append_personal("Frozen players cannot participate in tricks.", ephemeral=True)
         return
+    stats.add(db.get_db_connection(),guild_id,user.id,"trick_attempts")
     if perks.resolve_protection(interaction, target, responses):
         return
 
@@ -227,6 +229,8 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
             cauldron_event = stolen_amount * 2  # both lose the candy
             # Add the candy to the lottery pool
             update_cauldron_pool(interaction.guild.id, cauldron_event)
+            update_cauldron_contribution(thief_id,guild_id,stolen_amount)
+            update_cauldron_contribution(target_id,guild_id,stolen_amount)
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","both_lose", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
             personal_message = f"{interaction.user.display_name} well you tried to trick {target.display_name}! But you both lost!"
@@ -296,6 +300,8 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
 
             cauldron_event = penalty + target_penalty  # both lose the candy
             update_cauldron_pool(interaction.guild.id, cauldron_event)
+            update_cauldron_contribution(thief_id,guild_id,penalty)
+            update_cauldron_contribution(target_id,guild_id,target_penalty)
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "both_lose", 
                                                                           user=interaction.user.mention, target=target.mention,amount=penalty)

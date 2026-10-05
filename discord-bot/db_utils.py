@@ -1120,20 +1120,31 @@ def get_leaderboard_query(leaderboard_type, guild_id, top_n=10):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    leaderboard_query = {
-        'top_tricksters': "SELECT player_id, successful_tricks FROM players WHERE guild_id = ? ORDER BY successful_tricks DESC LIMIT ?",
-        'top_treaters': "SELECT player_id, treats_given FROM players WHERE guild_id = ? ORDER BY treats_given DESC LIMIT ?",
-        'top_thieves': "SELECT player_id, total_candy_stolen FROM players WHERE guild_id = ? ORDER BY total_candy_stolen DESC LIMIT ?",
-        'most_generous': "SELECT player_id, total_candy_given FROM players WHERE guild_id = ? ORDER BY total_candy_given DESC LIMIT ?",
-        'most_evil': "SELECT player_id, CASE WHEN total_candy_given + total_candy_stolen = 0 THEN 0.0 ELSE 1.0 * total_candy_stolen / (total_candy_given + total_candy_stolen) END AS evilness FROM players WHERE guild_id = ? ORDER BY evilness DESC, player_id ASC LIMIT ?",
-        'most_sweet': "SELECT player_id, CASE WHEN total_candy_given + total_candy_stolen = 0 THEN 0.0 ELSE 1.0 * total_candy_given / (total_candy_given + total_candy_stolen) END AS sweetness FROM players WHERE guild_id = ? ORDER BY sweetness DESC, player_id ASC LIMIT ?",
-        'highest_risk_takers': "SELECT player_id, (total_candy_lost + total_candy_won_from_pumpkins) AS risk_takers FROM players WHERE guild_id = ? ORDER BY risk_takers DESC LIMIT ?",
-        'candy_hoarders': "SELECT player_id, candy_in_bucket FROM players WHERE guild_id = ? ORDER BY candy_in_bucket DESC LIMIT ?"
+    scores = {
+        'top_tricksters': 'p.successful_tricks',
+        'top_treaters': 'p.treats_given',
+        'top_thieves': 'p.total_candy_stolen',
+        'most_generous': 'p.total_candy_given',
+        'most_evil': 'CASE WHEN p.total_candy_given+p.total_candy_stolen=0 THEN 0.0 ELSE 1.0*p.total_candy_stolen/(p.total_candy_given+p.total_candy_stolen) END',
+        'most_sweet': 'CASE WHEN p.total_candy_given+p.total_candy_stolen=0 THEN 0.0 ELSE 1.0*p.total_candy_given/(p.total_candy_given+p.total_candy_stolen) END',
+        'highest_risk_takers': 'p.total_candy_spent_on_pumpkins',
+        'candy_hoarders': 'p.candy_in_bucket',
+        'cauldron_contributors': 'p.cauldron_contributions',
+        'pumpkin_smashers': 'p.pumpkins_smashed',
     }
-
-    query = leaderboard_query.get(leaderboard_type)
-    if query:
-        cursor.execute(query, (guild_id, top_n))
-        return cursor.fetchall()
+    metrics = {'potion_collector':'purchased', 'biggest_spender':'spent', 'master_of_potions':'triggered', 'lunas_favorites':'gifted', 'untouchable':'defended'}
+    if leaderboard_type in metrics:
+        # Metric names are an internal allowlist, never user-supplied SQL.
+        metric = metrics[leaderboard_type]
+        score = f"COALESCE((SELECT SUM(value) FROM player_metrics m WHERE m.guild_id=p.guild_id AND m.player_id=p.player_id AND m.metric='{metric}'),0)"
+    elif leaderboard_type in scores:
+        score = scores[leaderboard_type]
     else:
         raise ValueError(f"Invalid leaderboard type: {leaderboard_type}")
+    from player_state import clock
+    cursor.execute(f"""SELECT p.player_id, {score} AS score FROM players p
+        LEFT JOIN player_freezes f ON f.guild_id=p.guild_id AND f.player_id=p.player_id
+        WHERE p.guild_id=? AND p.active=1
+        AND ((f.player_id IS NULL AND p.frozen=0) OR (f.until_at IS NOT NULL AND f.until_at<=?))
+        ORDER BY score DESC,p.player_id ASC LIMIT ?""",(guild_id,clock(),top_n))
+    return cursor.fetchall()

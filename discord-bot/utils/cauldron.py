@@ -83,7 +83,7 @@ def award_pool(guild_id, action_id, caster_id, witch, mode):
         awards = []
         for index, uid in enumerate(selected):
             reward = share + (1 if index < remainder else 0)
-            updated = conn.execute('UPDATE players SET candy_in_bucket=candy_in_bucket+? WHERE guild_id=? AND player_id=? AND active=1', (reward, guild_id, uid))
+            updated = conn.execute('UPDATE players SET candy_in_bucket=candy_in_bucket+?,cauldron_wins=cauldron_wins+1,cauldron_rewards_received=cauldron_rewards_received+? WHERE guild_id=? AND player_id=? AND active=1', (reward,reward,guild_id,uid))
             if updated.rowcount != 1:
                 raise CauldronError('payout_failed')
             awards.append({'player_id': uid, 'amount': reward})

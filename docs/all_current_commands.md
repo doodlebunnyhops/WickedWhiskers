@@ -87,7 +87,7 @@ Argument names below are exactly those registered with Discord. Text channels ar
 | `/game set state` | `state`: Enable, Disable |
 | `/game add player` | `user`: user |
 | `/game get player` | `user`: user; `get`: Stats, Hidden Values, All |
-| `/game get leaderboard` | `type`: Top Tricksters, Top Treaters, Top Thieves, Most Generous, Most Evil, Most Sweet, Highest Risk Takers, Candy Hoarders, All |
+| `/game get leaderboard` | `type`: Top Tricksters, Top Treaters, Top Thieves, Most Generous, Most Evil, Most Sweet, Highest Risk Takers, Candy Hoarders, Potion Collector, Biggest Spender, Master of Potions, Luna’s Favorites, Untouchable, Cauldron Contributors, Pumpkin Smashers, All |
 | `/trick` | `member`: user |
 | `/treat` | `member`: user; `amount`: integer |
 | `/whois` | `character`: Luna, Raven |
