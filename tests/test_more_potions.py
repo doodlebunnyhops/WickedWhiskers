@@ -25,7 +25,7 @@ def member(uid):
 
 def interaction():
     members={uid:member(uid) for uid in (10,20,30,40,50)}
-    return NS(id=987,user=members[10],guild=NS(id=1,chunked=True,get_member=lambda uid:members.get(uid)),client=NS(message_loader=MessageLoader(str(Path(__file__).resolve().parents[1]/'discord-bot/utils/messages.json'))),response=NS(send_message=AsyncMock(),is_done=lambda:False),followup=NS(send=AsyncMock()))
+    return NS(id=987,user=members[10],guild=NS(id=1,chunked=True,get_member=lambda uid:members.get(uid)),client=NS(message_loader=MessageLoader(str(Path(__file__).resolve().parents[1]/'discord-bot/utils/messages.json'))),delete_original_response=AsyncMock(),edit_original_response=AsyncMock(),response=NS(defer=AsyncMock(),send_message=AsyncMock(),is_done=lambda:False),followup=NS(send=AsyncMock()))
 
 
 def resolve(monkeypatch,target=20):

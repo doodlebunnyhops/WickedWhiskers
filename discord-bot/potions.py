@@ -36,7 +36,10 @@ class PotionError(ValueError):
 
 class PotionCooldownError(PotionError):
     """A rejected activation; no inventory has been consumed."""
-    pass
+    def __init__(self, expiry):
+        from utils.messages import default_messages
+        self.expiry = int(expiry)
+        super().__init__(default_messages().get_message("gameplay_messages","luna_cooldown",expiry=self.expiry))
 
 
 class PriceChanged(PotionError):
@@ -167,7 +170,7 @@ def use(guild_id, player_id, potion_id, action_id, member_ids=None, now=None, rn
         if potion_id == "luna":
             cooldown = conn.execute("SELECT available_at FROM potion_cooldowns WHERE guild_id=? AND effect='luna'", (guild_id,)).fetchone()
             if cooldown and cooldown[0] > now:
-                raise PotionCooldownError(f"Luna is resting. Try again in {max(1, int(cooldown[0]-now+0.999))} seconds; your potion is safe.")
+                raise PotionCooldownError(cooldown[0])
             if member_ids is None:
                 raise PotionError("Couldn't verify server members. Your potion is safe; please try again.")
             candidates = [row[0] for row in conn.execute("SELECT player_id FROM players WHERE guild_id=? AND active=1 AND player_id<>?", (guild_id, player_id)) if row[0] in member_ids and visible(guild_id,row[0],now)]

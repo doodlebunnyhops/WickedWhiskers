@@ -44,6 +44,9 @@ def sticky_amount(interaction, responses, target, amount, available):
 
 def finish_mirror(interaction, responses, key, original, target, amount=0):
     body = text(interaction, key, original=original.mention, target=target.mention, amount=amount)
+    if responses.potion_notes:
+        body = '\n\n'.join([*responses.potion_notes,body])
+        responses.potion_notes.clear()
     witch = interaction.client.message_loader.get_message('who_is_raven', 'image_url')
     embed = discord.Embed(title=text(interaction, 'mirror_title'), description=body, color=discord.Color.dark_purple())
     embed.set_thumbnail(url=witch)
@@ -126,5 +129,5 @@ def favor_bonus(interaction, recipient, amount):
         db.get_db_connection().execute('UPDATE players SET total_candy_given=total_candy_given+? WHERE guild_id=? AND player_id=?',(bonus,guild_id,interaction.user.id))
         stats.add(db.get_db_connection(),guild_id,interaction.user.id,'gifted',bonus,'favor')
         db.get_db_connection().execute('UPDATE players SET candy_in_bucket=candy_in_bucket+? WHERE guild_id=? AND player_id=?', (bonus, guild_id, recipient.id))
-        return text(interaction, 'favor', target=recipient.mention, amount=bonus)
+        return text(interaction, 'favor', target=recipient.mention, amount=bonus,total=amount+bonus)
     return None

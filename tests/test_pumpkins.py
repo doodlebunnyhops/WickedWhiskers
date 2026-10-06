@@ -96,7 +96,7 @@ def test_ineligible_players(database,state):
 
 def test_wipeout_announcement_and_replay(database,monkeypatch):
     loader = MessageLoader(str(Path(__file__).resolve().parents[1]/'discord-bot/utils/messages.json'))
-    caller = NS(id=987,user=NS(id=10,mention='<@10>',display_name='Player'),guild=NS(id=1),client=NS(message_loader=loader),response=NS(defer=AsyncMock()),followup=NS(send=AsyncMock()))
+    caller = NS(id=987,user=NS(id=10,mention='<@10>',display_name='Player'),guild=NS(id=1),client=NS(message_loader=loader),delete_original_response=AsyncMock(),edit_original_response=AsyncMock(),response=NS(defer=AsyncMock()),followup=NS(send=AsyncMock()))
     post = AsyncMock()
     monkeypatch.setattr(player,'post_to_target_channel',post)
     rolls=Rolls(.99,0)
@@ -107,7 +107,8 @@ def test_wipeout_announcement_and_replay(database,monkeypatch):
     assert 'cauldron' in embed.description and 'Bucket:' not in embed.description
     assert 'Net change: -50' in embed.description
     assert post.call_args.kwargs['channel_type'] == 'event'
-    assert '0 candy' in caller.followup.send.call_args.args[0]
+    caller.followup.send.assert_not_awaited()
+    caller.delete_original_response.assert_awaited_once()
     asyncio.run(player.smash_pumpkin(caller,30))
     assert post.await_count == 1
     assert db.get_cauldron_pool(1) == 50

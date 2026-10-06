@@ -37,7 +37,7 @@ def caller(uid=10,moderator=True):
     def member(i):return NS(id=i,mention=f'<@{i}>',name=str(i),display_name=str(i),bot=False,guild=guild,guild_permissions=NS(manage_guild=moderator),roles=[])
     guild.get_member=member
     guild.members=[member(i) for i in (10,20,30,40,50)]
-    return NS(id=991,guild=guild,guild_id=1,user=member(uid),client=NS(message_loader=state.loader()),response=NS(send_message=AsyncMock(),defer=AsyncMock(),is_done=lambda:True,edit_message=AsyncMock()),followup=NS(send=AsyncMock())),channel
+    return NS(id=991,guild=guild,guild_id=1,user=member(uid),client=NS(message_loader=state.loader()),delete_original_response=AsyncMock(),edit_original_response=AsyncMock(),response=NS(send_message=AsyncMock(),defer=AsyncMock(),is_done=lambda:True,edit_message=AsyncMock()),followup=NS(send=AsyncMock())),channel
 
 
 def test_freeze_returns_remaining_charges_once(database,clock):
@@ -233,7 +233,7 @@ def test_protected_pumpkin_still_funds_pool(database,clock,monkeypatch):
     assert result['protected'] and result['contribution']==20
     assert db.get_cauldron_pool(1)==20
     msg=state.loader().get_message('smash_pumpkin','event_messages','hidden_raven',user='PLAYER',candy_amount=20)
-    assert 'cauldron' in msg and 'No additional candy' in msg
+    assert 'cauldron' in msg and ('lost sweets' in msg or 'already lost' in msg)
 
 
 def test_freeze_public_privacy_and_permission(database,clock):

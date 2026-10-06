@@ -64,17 +64,10 @@ async def post_to_target_channel(interaction: discord.Interaction, message, chan
         else:
             await target_channel.send(message)
     else:
-        # Fallback to sending the message in the interaction channel
-        if interaction.response.is_done():
-            if is_embed:
-                await interaction.followup.send(embed=message)
-            else:
-                await interaction.followup.send(message)
+        if is_embed:
+            await interaction.channel.send(embed=message)
         else:
-            if is_embed:
-                await interaction.response.send_message(embed=message)
-            else:
-                await interaction.response.send_message(message)
+            await interaction.channel.send(message)
 
             
 import random

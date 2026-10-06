@@ -22,17 +22,8 @@ class Treat(discord.ui.Modal, title="Amount"):
                 await interaction.response.send_message(f"{interaction.user.mention}, you can't give negative candy!", ephemeral=True)
                 return
             
-            #get the event message and personal message responses
-            with db.transaction():
-                event_message,personal_message = give_treat(interaction,self.target_user,amount)
-
-            #check if event_message is None, this means there was an error
-            if event_message is None:
-                await interaction.response.send_message(personal_message, ephemeral=True)
-            else:
-                #Send responses
-                await interaction.response.send_message(personal_message,ephemeral= True)
-                await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
+            from utils.player import player_treat
+            await player_treat(interaction,self.target_user,amount)
 
         except ValueError:
              print("ValueError")

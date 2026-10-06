@@ -6,6 +6,7 @@ import potions
 import game_stats as stats
 from utils import potion_gameplay as perks
 from utils.artwork import image_url, icon_embed
+from utils.game_messages import publish_result
 
 from discord import InteractionType, AppCommandType
 from db_utils import is_player_active, create_player_data,get_player_data,update_player_field,update_cauldron_pool,get_active_players_by_guild,update_many_players_fields, update_cauldron_contribution
@@ -87,14 +88,17 @@ async def player_trick(interaction: discord.Interaction, member: discord.Member)
         else:
             _resolve_trick(interaction, member, responses)
             potions.record_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "trick", {"target": member.id})
-    for kind, message in responses.messages:
-        if kind == "personal":
+    events = [message for kind,message in responses.messages if kind == 'event']
+    if events:
+        for event in events:
+            if not await publish_result(interaction,event,post_to_target_channel,members=(member,)):
+                break
+    else:
+        for kind,message in responses.messages:
             if interaction.response.is_done():
-                await interaction.followup.send(message, ephemeral=True)
+                await interaction.followup.send(message,ephemeral=True)
             else:
-                await interaction.response.send_message(message, ephemeral=True)
-        else:
-            await post_to_target_channel(interaction, message, channel_type="event")
+                await interaction.response.send_message(message,ephemeral=True)
 
 
 def _resolve_trick(interaction: discord.Interaction,member: discord.Member, responses):
@@ -248,7 +252,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
             update_player_field(thief_id, guild_id, 'total_candy_stolen', thief_data["total_candy_stolen"] + stolen_amount - 1)
             update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + stolen_amount -1 )
 
-            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount)
+            event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "successful_trick","target_gets_1", user=interaction.user.mention, target=target.mention,amount=stolen_amount,net_amount=stolen_amount-1)
             personal_message = f"{interaction.user.display_name}, you tricked {stolen_amount -1} candy from {target.display_name}! Success!"
             embedded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             
@@ -308,7 +312,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
             embedded_message = create_embed(f"{user.display_name} Failed to Trick {target.display_name}",event_message,discord.Color.dark_purple(),  raven_url,"Raven")
             personal_message = f"{interaction.user.display_name} you fumbled the trick and lost {penalty} candy!!"
             if target_penalty != penalty:
-                embedded_message = create_embed("Raven claims the fumbled candy", f"{user.mention} lost {penalty} candy and {target.mention} lost {target_penalty}. Raven tossed all {cauldron_event} into the cauldron.", discord.Color.dark_purple(), raven_url, "Raven")
+                embedded_message = create_embed("Raven claims the fumbled candy", interaction.client.message_loader.get_message("gameplay_messages","unequal_loss",user=user.mention,target=target.mention,amount=penalty,target_amount=target_penalty,total=cauldron_event), discord.Color.dark_purple(), raven_url, "Raven")
 
             responses.append_personal(personal_message, ephemeral=True)
             responses.append_event(channel_type="event", message=embedded_message, interaction=interaction)
@@ -323,7 +327,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
             update_player_field(target_id, guild_id, 'total_candy_lost', target_data["total_candy_lost"] + half_stolen)
 
             event_message = interaction.client.message_loader.get_message("trick_player", "event_messages", "failed_trick", "thief_half", 
-                                                                          user=interaction.user.mention, target=target.mention,amount=penalty)
+                                                                          user=interaction.user.mention, target=target.mention,amount=half_stolen)
             embedded_message = create_embed(f"{user.display_name} Successfully Tricked {target.display_name}",event_message,discord.Color.purple(),raven_url,"Raven",None)
             personal_message = f"{interaction.user.display_name} you initially failed but managed to get {half_stolen} candy!!"
 
@@ -381,18 +385,11 @@ async def player_treat(interaction: discord.Interaction,member: discord.Member, 
     with db.transaction():
         event_message,personal_message = give_treat(interaction,member,amount)
 
-    #I know I had some reason for doing this but i can't remember why... so it stays till i figure that out
-    if event_message == "The game is currently paused." or personal_message == "The game is currently paused.":
-        await interaction.response.send_message("The game is currently paused.", ephemeral=True)
-
-    #check if event_message is None, this means there was an error
-    if event_message is None: #set a condition for give_treat to reuse event_message as none to send error message
-        await interaction.response.send_message(personal_message, ephemeral=True)
+    if event_message is None:
+        await interaction.response.send_message(personal_message,ephemeral=True)
     else:
-        #Send responses
-        await interaction.response.send_message(personal_message,ephemeral= True)
-        await post_to_target_channel(channel_type="event", message=event_message, interaction=interaction)
-    
+        await publish_result(interaction,event_message,post_to_target_channel,members=(member,))
+
 
 async def player_bucket(interaction: discord.Interaction):
     guild_id = interaction.guild.id
@@ -409,9 +406,11 @@ async def player_bucket(interaction: discord.Interaction):
     # failed_tricks = player_data["failed_tricks"]
     # treats_given = player_data["treats_given"]
 
-    witch_name = random.choice(["luna", "raven"])
-
-    personal_message = interaction.client.message_loader.get_message(f"{witch_name}_bucket", user=user.mention, candy_amount=candy_in_bucket,potion_amount=potions_purchased)
+    import player_state as state
+    witch_name = 'hidden' if state.protection_info(guild_id,user.id) else random.choice(['luna','raven'])
+    tier = 'empty' if candy_in_bucket == 0 else 'small' if candy_in_bucket < 50 else 'growing' if candy_in_bucket < 500 else 'large'
+    message = interaction.client.message_loader.get_message
+    personal_message = message('bucket_messages',witch_name,tier) + '\n\n' + message('bucket_messages','summary',candy_amount=candy_in_bucket,potion_amount=potions_purchased)
     await interaction.response.send_message(embed=icon_embed(personal_message, "candy_bucket"), ephemeral=True)
 
 async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
@@ -441,26 +440,18 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
     values = dict(user=interaction.user.mention, candy_amount=abs(result['delta']),
                   wager=result['wager'], balance=result['balance'], delta=result['delta'])
     event = message("smash_pumpkin", "event_messages", ("hidden_" if result.get("protected") else "") + result['message_key'], **values)
-    personal = message("smash_pumpkin", "personal_message", ("hidden_" if result.get("protected") else "") + result['message_key'], **values)
     # Append magical contributions rather than replacing the actual outcome (especially a wiped bucket).
     if result['magic']:
         event += "\n\n" + message("smash_pumpkin", "event_messages", ("hidden_" if result.get("protected") else "") + result['magic'], **values)
-        personal += "\n\n" + message("smash_pumpkin", "personal_message", ("hidden_" if result.get("protected") else "") + result['magic'], **values)
     summary = message("smash_pumpkin", "summary", **values)
     event += "\n\n" + summary
-    personal += "\n\n" + summary
     is_win = result['delta'] >= 0
     image = (luna_pumpkin_cauldron if result['magic'] == 'luna' else luna_pumpkin) if is_win else (raven_pumpkin_cauldron if result['magic'] == 'raven' else raven_pumpkin)
     embed = create_embed(message("smash_pumpkin", "title", user=interaction.user.display_name),
                          event, discord.Color.orange(), image, "Luna" if is_win else "Raven", None)
     if result.get('protected'):
         embed = discord.Embed(title=message('smash_pumpkin', 'title', user=interaction.user.display_name), description=event, color=discord.Color.orange())
-    await interaction.followup.send(personal, ephemeral=True)
-    try:
-        await post_to_target_channel(interaction, embed, channel_type="event")
-    except discord.HTTPException:
-        logger.exception("Pumpkin result saved but announcement failed")
-        await interaction.followup.send(message("smash_pumpkin", "errors", "post_failed"), ephemeral=True)
+    await publish_result(interaction,embed,post_to_target_channel,deferred=True)
 
 def calculate_sweetness(total_candy_given, total_candy_stolen):
     """
@@ -678,7 +669,7 @@ def give_all_candy(interaction: discord.Interaction, guild_id: int, giver: disco
 
     # Messages
     event_message = interaction.client.message_loader.get_message(
-        "give_treat", "event_messages", "candy_for_all", user=giver.mention, target=recipient.mention
+        "give_treat", "event_messages", "candy_for_all", user=giver.mention, target=recipient.mention,amount=amount
         ) 
     personal_message = f":{giver.display_name} you gave {recipient.display_name} {amount} and now Luna is throwing candy everywhere! LOL"
     embeded = create_embed(f"EVERYONE GETS CANDY!",event_message,discord.Color.pink(),luna_url,"Luna",None,luna_candy_rain)
@@ -718,7 +709,7 @@ def double_candy(interaction: discord.Interaction, guild_id: int, giver: discord
         tuple: The event message and personal message for the interaction.
     """
     event_message = interaction.client.message_loader.get_message(
-        "give_treat", "event_messages", "double_candy", user=giver.mention, target=recipient.mention,amount=amount*2
+        "give_treat", "event_messages", "double_candy", user=giver.mention, target=recipient.mention,amount=amount*2,giver_bonus=amount
         )
     personal_message = f"Oh my! Looks like Luna got carried away again and doubled the candy {giver.display_name}!"
     embeded = create_embed(f"{giver.display_name} Gave {recipient.display_name} {amount} Candy... but wait?",event_message,discord.Color.magenta(),luna_url,"Luna",None)
@@ -733,7 +724,7 @@ def double_candy(interaction: discord.Interaction, guild_id: int, giver: discord
 def luna_cauldron_fill(interaction: discord.Interaction, guild_id: int, giver: discord.Member, giver_data, recipient: discord.Member, recipient_data, amount: int,max_candy: 500):
     magic_burst_candy = random.randint(50, max_candy)
     event_message = interaction.client.message_loader.get_message(
-        "give_treat", "event_messages", "cauldron", user=giver.mention, target=recipient.mention,cauldron_candy_amount=magic_burst_candy
+        "give_treat", "event_messages", "cauldron", user=giver.mention, target=recipient.mention,amount=amount,cauldron_candy_amount=magic_burst_candy
         )
     personal_message = f"Oh my! Looks like Luna got carried away again... :D Luna gave you and {recipient.display_name} a Witch's Ward potion, {giver.display_name}!"
     embeded = create_embed(f"{giver.display_name} Gave {recipient.display_name} {amount} Candy.",event_message,discord.Color.pink(),luna_url,"Luna",None,luna_cauldron)

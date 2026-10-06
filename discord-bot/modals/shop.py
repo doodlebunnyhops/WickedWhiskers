@@ -208,7 +208,7 @@ class UsePotionModal(OwnedModal):
         try:
             result = potions.use(self.guild_id, interaction.user.id, key, interaction.id, members)
         except potions.PotionError as error:
-            await tell(interaction, str(error), artwork='cooldown' if isinstance(error, potions.PotionCooldownError) else None)
+            await tell(interaction, interaction.client.message_loader.get_message('gameplay_messages','luna_cooldown',expiry=error.expiry) if isinstance(error,potions.PotionCooldownError) else str(error), artwork='cooldown' if isinstance(error, potions.PotionCooldownError) else None)
             return
         message = interaction.client.message_loader.get_message
         if result['recipients']:

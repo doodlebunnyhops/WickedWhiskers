@@ -117,7 +117,7 @@ def test_pause_freeze_and_inactive_reject_mutations(database):
 
 def interaction(uid=10, guild=1, action=123):
     member=NS(id=uid,display_name=str(uid),mention=f'<@{uid}>',name=str(uid),guild_permissions=NS(manage_guild=False),roles=[])
-    return NS(id=action,user=member,guild_id=guild,guild=NS(id=guild),response=NS(send_message=AsyncMock(),edit_message=AsyncMock(),send_modal=AsyncMock(),is_done=lambda:False),client=NS(message_loader=NS(get_message=lambda *a,**k:'event')))
+    return NS(id=action,user=member,guild_id=guild,guild=NS(id=guild),delete_original_response=AsyncMock(),edit_original_response=AsyncMock(),response=NS(defer=AsyncMock(),send_message=AsyncMock(),edit_message=AsyncMock(),send_modal=AsyncMock(),is_done=lambda:False),client=NS(message_loader=NS(get_message=lambda *a,**k:'event')))
 
 
 def test_modal_components_serialize(database):
