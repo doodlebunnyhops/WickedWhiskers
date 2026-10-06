@@ -1,3 +1,5 @@
+> Historical brainstorming only. These examples are not registered commands. Use the [current command reference](all_current_commands.md); some goals are now covered by potions, freezes, and leaderboards.
+
 <!-- TOC -->
 
 - [Ideas for Moderators and Players](#ideas-for-moderators-and-players)
@@ -94,3 +96,4 @@
 - **Action:** Sends a player to the witch’s lair, where they are "held" until released.
 - **Example:** `/set_lair @Player` → Sends the player to Raven’s lair, where they can’t act until a specific time.
 - **Purpose:** Adds another thematic way to handle player restrictions during the game.
+

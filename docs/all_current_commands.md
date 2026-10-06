@@ -1,7 +1,6 @@
 # Current command reference
 
-Audited on 2026-10-04 against `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`.
-The actual bot setup was loaded offline with Discord login and sync mocked: **36 slash-command leaves, 5 user context menus, and the default `!help` prefix command**. Registration does not mean every handler is complete. This is a source/registration review, not a live Discord acceptance test.
+Reviewed 2026-10-06 against `feature/potion-shop`. The tables describe implemented behavior, including known limitations. This is a source/registration review, not a live Discord acceptance test.
 
 `<argument>` is required; `[argument]` is optional. In Discord, choose the named argument and its offered value; do not type angle brackets. Group names such as `/bot`, `/game`, and `/shop` alone are not executable commands. Use these commands in a server.
 
@@ -18,7 +17,10 @@ The access column describes application checks, not guaranteed visibility in Dis
 
 | Command | Access | Current behavior |
 | --- | --- | --- |
-| `/join` | Player/public | Join with 50 candy. Existing inactive records are not reliably reactivated. |
+| `/help` | Player/public | Private topic guide; moderator topics appear only for game moderators. |
+| `/leave` | Player/public | Confirmation before forfeiting progress; one-hour rejoin delay; freezes persist. |
+| `/shop protection` | Player/public | Buy timed Witch’s Veil, inspect its timer, or confirm ending it early. |
+| `/join` | Player/public | Join with 50 candy; enforce pause, freeze, and one-hour rejoin delay. |
 | `/trick <member>` | Player/public | Attempt to take candy from another active player; special events and active potion effects can change the outcome. |
 | `/treat <member> <amount>` | Player/public | Give candy to another active player; special events may alter the cost/reward. |
 | `/whois <character>` | Player/public | Show Luna or Raven character information. |
@@ -27,7 +29,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/shop browse` | Player/public | Open your private potion-selection and quantity modal, then review and confirm checkout. |
 | `/shop manage` | Shop manager | Show this server’s catalog; use controls and a modal to change prices or sale availability. |
 | `/shop manager_role [role]` | Manage Server | Set the dedicated shop-manager role. Omit role to clear it. |
-| `/shop post <channel>` | Shop manager | Post a persistent Open Shop button in a text channel. |
+| `/shop post <channel>` | Shop manager | Post persistent Open Shop and Inventory buttons in a text channel. |
 | `/inventory` | Player/public | Show your bottles and active effects; includes an activation control. |
 | `/use` | Player/public | Open your potion-activation modal. |
 
@@ -57,13 +59,17 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/game set settings <trick_success_rate> [game_enabled]` | Game moderator | Store rate (0–100) and enabled state. Omitted game_enabled defaults to false and pauses the game. Stored rate is not used by the actual trick calculation. |
 | `/game set cauldron <amount>` | Game moderator | Replace the cauldron balance with this nonnegative amount; does not add to it. |
 | `/game set player_stat <user> <stat> <number>` | Game moderator | Set an active player’s chosen stat to an absolute value. Negative values are currently accepted. |
-| `/game set state <state>` | Game moderator | Enable or pause gameplay. Reaction-based joining currently bypasses the pause. |
-| `/game add player <user>` | Game moderator | Enroll a player; existing inactive records are not reliably reactivated. |
+| `/game set state <state>` | Game moderator | Enable or pause gameplay. Joining also respects the pause. |
+| `/game add player <user>` | Game moderator | Enroll/reactivate a player through the shared join checks, including freeze and rejoin delay. |
 | `/game get settings` | Game moderator | Show pause state and stored trick rate; directs pricing changes to /shop manage. |
 | `/game get cauldron` | Game moderator | Show the shared cauldron balance. |
 | `/game get player <user> <get>` | Game moderator | Show player stats, hidden values, or both. Hidden trick rate excludes active Cunning bonus. |
 | `/game get leaderboard <type>` | Game moderator | Show up to 10 results per category. All provides category navigation, private outside the admin channel. Single boards are visible in event/admin channels and private elsewhere. |
-| `/game cast spell` | Game moderator | Unavailable placeholder. No draw, candy payout, or pool reset occurs. |
+| `/game cast spell <witch> <winners>` | Game moderator | Award the full pool to One or Many distinct eligible players; post witch embed and winner mentions in Event. |
+| `/game get cauldron_eligibility` | Game moderator | Private, read-only eligibility and weight report. |
+| `/game freeze <player> [minutes] [reason] [update]` | Game moderator | Freeze indefinitely or for 1–525600 minutes; return remaining active potion charges. `update` defaults false. |
+| `/game unfreeze <player>` | Game moderator | Remove freeze while preserving progress and any rejoin delay. |
+| `/bot candy <player> <action> <amount> <include_moderator>` | Game moderator | Give or Take positive candy; required boolean controls moderator attribution in Event. See below. |
 
 ## Arguments and choices
 
@@ -81,6 +87,10 @@ Argument names below are exactly those registered with Discord. Text channels ar
 | `/bot update channel` | `channel_type`: Event, Admin; `channel`: channel |
 | `/bot reset player` | `user`: user |
 | `/bot send join_game_msg` | `channel`: channel |
+| `/game cast spell` | `witch`: Luna, Raven; `winners`: One, Many |
+| `/game freeze` | `player`: member; `minutes`: integer (optional); `reason`: text (optional); `update`: boolean (optional) |
+| `/game unfreeze` | `player`: member |
+| `/bot candy` | `player`: member; `action`: Give, Take; `amount`: positive integer; `include_moderator`: boolean |
 | `/game set settings` | `trick_success_rate`: number; `game_enabled`: boolean (optional) |
 | `/game set cauldron` | `amount`: integer |
 | `/game set player_stat` | `user`: user; `stat`: Candy, Successful Tricks, Failed Tricks, Treats Given; `number`: integer |
@@ -107,13 +117,13 @@ Right-click/long-press a server member, then open **Apps**:
 | Check Bucket | Show your own bucket, regardless of the selected member. |
 | Potion Shop | Open your own shop, regardless of the selected member. Purchases debit only you. |
 
-The posted **Open Shop** button opens the same private shop and survives bot restarts. Reacting with 🎃 to the configured invite enrolls a player; its pause check is missing (see audit). Default discord.py `!help` is registered, but is a prefix-command helper, not this slash-command reference; delivery also depends on message-content access.
+The posted **Open Shop** and **Inventory** buttons open private views and survive bot restarts. Reacting with 🎃 to the configured invite enrolls a player through the shared join checks. Removing the reaction does not leave; bots cannot join. Default discord.py `!help` is registered, but is a prefix-command helper, not this slash-command reference; delivery also depends on message-content access.
 
 ## Old documentation that no longer applies
 
 `/buy potion`, `/shop prices`, `/escape`, `/return`, `/stats`, `/view potions`, `/freeze`, `/reset game`, `/dump cauldron`, `/cast_spell`, `/remove player`, `/update player status`, `/view player count`, and `/add player candy` are **not registered** in this branch. Some messages/helpers still mention old commands. A Python helper is not automatically a Discord command.
 
-The current cast path is `/game cast spell`, with **no arguments**, and is unavailable. There is no `witch`, `winners`, or potion-ticket option. Prices are managed through `/shop manage`, not a `potion_price` game-setting argument. `/game set player_stat` no longer exposes Potions Purchased. Pumpkin smashing is registered, despite the old README calling it unimplemented.
+The current cast path is `/game cast spell witch:Luna|Raven winners:One|Many`. Use `/game freeze` and `/game unfreeze`, not standalone `/freeze`. Prices use `/shop manage`; Witch’s Veil uses `/shop protection`. `/game set player_stat` does not expose Potions Purchased.
 
 See [player guide](player_commands.md), [moderator guide](moderator_commands.md), [command audit](command-audit.md), and [potion design and behavior](potion-shop.md).
 
@@ -131,3 +141,9 @@ These changes affect only the selected player's balance. They do not increment t
 Configure an event channel and grant the bot View Channel, Send Messages, and Embed Links before use. If Discord rejects the announcement after the adjustment has saved, the moderator receives a private warning; do not issue another command to retry the post, since a new command is a new adjustment. Replaying the same interaction cannot apply the adjustment twice.
 
 All new responses use `mod_candy` in `discord-bot/utils/messages.json` through `messages.py`.
+
+## Public results and privacy
+
+Completed tricks, treats, and pumpkin smashes post one public result; their temporary private acknowledgement is removed after delivery. Validation failures remain private. See [message behavior](gameplay-messages.md). Bucket, inventory, help, and checkout stay private.
+
+Leaderboard privacy currently differs from the requested policy: **every individual board**, not just Candy Hoarders, can be public in the Event channel. All stays private outside Admin. See [outstanding issues](command-audit.md).

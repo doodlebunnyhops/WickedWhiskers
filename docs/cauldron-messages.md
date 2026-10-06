@@ -28,11 +28,11 @@ For example, replace the value of `cauldron.draw.luna.normal` with:
 | --- | --- |
 | `{witch}` | Display name from `cauldron.witches`, e.g. Luna |
 | `{outcome}` | Display label from `cauldron.outcomes`, e.g. fumble |
-| `{winners}` | Comma-separated selected display names; player IDs when not cached |
+| `{winners}` | Selected winner mentions |
 | `{winner_count}` | Number of distinct selected players |
 | `{user}` | Invoking moderator's mention text |
 
-Announcements suppress Discord mentions. Display names are escaped for Markdown. Payouts are committed before announcements; the embed shows the total paid and the pool remainder. Individual award rows are omitted.
+Announcements include winner mentions in message content so winners are notified; allowed mentions are restricted to selected winners. Large winner lists are batched. Payouts are committed before announcements; the embed shows the total paid and the pool remainder. Individual award rows are omitted.
 
 Announcements longer than 3,800 characters are preserved in an attachment. `cauldron.long_announcement` provides the short summary and supports the same placeholders; keep it brief (at most 1,900 characters).
 
@@ -73,12 +73,13 @@ Additional editable response keys under `cauldron`:
 
 ## Payout embed
 
-The Event-channel post is an embed titled `✨ A spell has been cast! • {witch}`, with the existing `who_is_luna.image_url` or `who_is_raven.image_url` image. Edit those JSON URLs if the Discord-hosted images expire. Themed narrative stays in `cauldron.draw`; the total payout and pool remainder appear in the pool summary.
+The Event-channel post is an embed titled `✨ A spell has been cast! • {witch}`, with the respective `luna_cauldron` or `raven_cauldron` artwork and portrait author icon. URLs live under `artwork` in messages.json; see [artwork configuration](artwork.md). Themed narrative stays in `cauldron.draw`; the total payout and pool remainder appear in the pool summary.
 
-The full pool is awarded atomically: equal shares, with remainder pieces assigned in draw order. Many caps its random winner count at the smaller of active-player count and available candy, so every winner receives at least one. The pool becomes zero. Discord interaction IDs prevent duplicate payouts, and cauldron_draws plus cauldron_event record each completed draw.
+The full pool is awarded atomically: equal shares, with remainder pieces assigned in draw order. Many caps its random winner count at the smaller of eligible-player count and available candy, so every winner receives at least one. The pool becomes zero. Discord interaction IDs prevent duplicate payouts, and cauldron_draws plus cauldron_event record each completed draw.
 
 Additional draw/summary placeholders: `{amount}` (total awarded), `{remaining}` (pool after payout). `cauldron.embed` controls `title`, `pool_title`, and `pool_value` (`{amount}`, `{winner_count}`, `{remaining}`). `empty_pool`, `payout_failed` and `already_paid` provide private failure/retry responses (`already_paid` accepts `{amount}`). Existing failed selections from before this feature are not paid retroactively; cast a new spell to award the current pool.
 
 ### One versus Many
 
-One pays one selected player. Many randomly selects at least two distinct players whenever there are at least two active players and two candy; it falls back to one only when a second paid winner is impossible. With two active players and enough candy, Many always pays both. Announcement names, the displayed winner count and credited amounts all come from the same saved payout result.
+One pays one selected player. Many randomly selects at least two distinct players whenever there are at least two eligible players and two candy; it falls back to one only when a second paid winner is impossible. With two eligible players and enough candy, Many always pays both. Announcement names, the displayed winner count and credited amounts all come from the same saved payout result.
+

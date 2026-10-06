@@ -16,7 +16,7 @@ A big loss can drain the entire bucket. With 15 candy and a wager of 10, a big l
 
 Luna has a 30% chance after a win to create a copy of the winnings in the cauldron. The player keeps the full win. Raven has a 90% chance after a loss to send the actual lost candy into the cauldron; this is not another charge. Break-even results do not trigger either contribution.
 
-The private reply and event-channel embed summaries show the wager and signed net change without displaying the player's bucket balance. Messages and variations are editable under `smash_pumpkin` in `discord-bot/utils/messages.json`, loaded through `MessageLoader` in `messages.py`. Magical narration is appended so it cannot hide an empty-bucket outcome.
+The public result embed shows the wager and signed net change without displaying the player's bucket balance. Messages and variations are editable under `smash_pumpkin` in `discord-bot/utils/messages.json`, loaded through `MessageLoader` in `messages.py`. Completed smashes do not keep a duplicate private success reply. Magical narration is appended so it cannot hide an empty-bucket outcome.
 
 Balance, statistics, cauldron contributions, and the interaction receipt are saved in one database transaction. Replaying the same Discord interaction does not settle it or announce it again. Paused games, inactive/frozen players, and invalid wagers are rejected. An announcement failure does not undo a saved payout.
 

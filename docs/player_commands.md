@@ -1,36 +1,40 @@
-# Player commands
+# Player guide
 
-Current for `feature/potion-shop`, reviewed 2026-10-04. See the [complete reference](all_current_commands.md) for exact arguments and [known limitations](command-audit.md).
+Run `/help` for a private guide. In a server using #join, #play, and #shop, react to 🎃 in #join, play in #play, and use the shop buttons in #shop. Channel names are server choices; commands can be used wherever permitted.
 
-## Playing
+| Command | What it does |
+| --- | --- |
+| `/join` | Start with 50 candy. The bot also accepts 🎃 on the configured join message. |
+| `/trick member:@Player` | Attempt to steal candy; witches and potions can change the result. |
+| `/treat member:@Player amount:5` | Offer candy to another player; special magical outcomes can alter the cost or gift. |
+| `/smash_pumpkin amount:5` | Wager candy. There is no separate entry fee, and losses can empty your bucket. |
+| `/bucket` | Privately check candy and unactivated bottles, with narration suited to an empty, small, or larger bucket. |
+| `/shop browse` | Select a potion and quantity, then review and confirm your private checkout. |
+| `/inventory` | Privately see bottles, returned partial bottles, and active effects; open Use Potion or protection controls. |
+| `/use` | Open the potion activation modal. |
+| `/shop protection` | Buy Witch’s Veil, check its timer, or confirm ending it early. |
+| `/whois character:Luna` | Meet Luna or Raven. |
+| `/leave` | Confirm forfeiting progress and begin a one-hour rejoin delay. |
+| `/help` | Open the private topic menu. |
 
-1. Use `/join` to enter with 50 candy, or react 🎃 to the server’s game invitation.
-2. Use `/bucket` to check your candy and unactivated potion count.
-3. Use `/trick member:<player>` to attempt a theft, or `/treat member:<player> amount:<number>` to give candy. Both players must be active and must be different people. Special Luna/Raven scenarios can change rewards and costs.
-4. Use `/whois character:Luna` or `character:Raven` for character information.
+Completed tricks, treats, and pumpkin smashes publish their result without a duplicate private success message. Errors and eligibility failures stay private. Potion effects appear alongside the public result; repeated references to a player use their name after their first mention. Public results do not reveal remaining bucket balances, except they may say a bucket was emptied. See [pumpkin odds](pumpkin-smashing.md).
 
-`/smash_pumpkin amount:<number>` wagers candy with no separate entry fee: 10% big win, 30% small reward, 20% break even, 30% normal loss, and 10% big loss. A big loss can empty your bucket. See [payouts and examples](pumpkin-smashing.md).
+## Potions
 
-There are no registered `/escape`, `/return`, `/stats`, or `/view potions` commands. Leaderboards currently require a game moderator through `/game get leaderboard`.
+[The catalog](potion-shop.md#catalog) lists all seven bottled potions and Witch’s Veil with default prices. Your server can charge different prices or stop selling an item.
 
-## Potion shop and modals
+Buy ordinary bottles, then activate them with `/use` or Inventory. Buying alone does not enable an effect. Spare bottles can be held; duplicate active effects cannot stack. Effects persist through restarts and usually last until their charges trigger. Ward and Mirror cannot coexist. Offensive effects can combine; see [exact interactions](potion-interactions.md).
 
-Use `/shop browse`, a posted **Open Shop** button, or the **Potion Shop** member context menu. Select a potion and quantity (1–100) in the private modal, submit, then review the price, effect and resulting balance before **Confirm Purchase**. Cancel does not spend candy. If a price changes, the revised order needs confirmation.
+Luna’s Calling immediately gives 5 candy each to up to three other eligible members. Its 60-second cooldown is shared across the server. A cooldown rejection, failed membership verification, or no eligible recipients does not consume your bottle. A successful summon credits you with one kindness action and the candy actually gifted.
 
-Purchases always use your own candy and inventory—even when you opened the shop by selecting another member. Buying a bottle does not activate it. Use `/inventory` to view bottles and active effects, then **Use Potion**, or open `/use` directly to select and activate a bottle.
+Witch’s Veil activates on confirmed purchase. While hidden, you cannot trick, treat, use other potions, receive witch gifts, or win cauldron draws. You can buy potions, inspect your inventory/bucket, and smash pumpkins. Pumpkin losses can still feed the cauldron. [Time pricing and refund rules](freeze-and-protection.md#witchs-veil) differ between exact-duration and candy-budget purchases.
 
-| Potion | Default candy price | Effect |
-| --- | --- | --- |
-| Witch’s Ward | 5 | Block the next incoming player trick. |
-| Raven’s Cunning | 5 | Add 15 percentage points to the next 3 eligible initial trick rolls, capped at 95% without lowering a higher base rate. |
-| Luna’s Calling | 10 | Give 5 candy each to up to 3 distinct other eligible members. Shared 60-second server cooldown. |
+## Leaving and freezes
 
-Your server may change prices or disable sales. Disabled sales do not invalidate bottles already owned. Ward and Cunning can coexist; activating an already-active copy is rejected without consuming the spare bottle. Effects survive restart and have no time expiry. A Ward-blocked attempt or an empty unprotected bucket does not spend a Cunning charge.
+Removing the 🎃 reaction does not leave the game. `/leave` clears your candy, stats, inventory, and effects after confirmation. Rejoining is a fresh start after one hour. The current bot also resets progress on a server departure, including departures detected after reconnecting.
 
-Luna excludes the summoner, bots, departed, frozen and inactive players. No recipients, failed member verification, or an active cooldown preserves the bottle. Purchase/use is blocked while paused or for frozen/inactive players. `/inventory` remains a read-only way to inspect your state.
+A moderator freeze preserves your progress and returns remaining active potion charges to inventory, but prevents gameplay, purchases, targeting, and witch rewards. You can still inspect help, inventory, and your bucket. Blocked actions privately explain the reason and expiry. Leaving or rejoining does not remove a freeze. See [full participation rules](freeze-and-protection.md).
 
-Potions grant perks; purchases do not fund the cauldron or enter a prize draw. Cauldron draws remain unavailable.
+## Other ways to play
 
-## Member menus
-
-Right-click/long-press a member → **Apps**. **Trick Player** targets that member; **Treat Player** opens an amount modal for them. **Join Game** must target yourself. **Check Bucket** and **Potion Shop** always use your own account.
+Right-click or long-press a member, then choose Apps for Join Game, Trick Player, Treat Player, Check Bucket, or Potion Shop. Bucket and shop always belong to you, regardless of whose menu you opened. Join Game must target yourself. The persistent shop message has both Open Shop and Inventory buttons.

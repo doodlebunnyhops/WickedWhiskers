@@ -1,31 +1,24 @@
-# To Do
-- [ ] CoolDowns
-- [x] What are the ways players can join the game?
-  - ~~logic i have `opt in/out` isn't flushed out and idk how much i care for it.~~
-  - either through /join or react join
-- [x] Better command descriptions
-- [ ] Consider easier to read command names
-- [ ] LOG...how have i not put this in yet..
-- [x] Update the help cmd
-- [ ] make sure we're salting inputs... be safe not dumb
-- [ ] decide on where messages should be sent:
-  - admin channel
-  - event channel
-  - ephemeral response or not? <- if not it will post it what ever channel invoked in.
-- [ ] Make some responses prettier with embeds
-- [ ] Include Candy Stolen and Candy Won from Cauldron Spell in /stats
-- [ ] Cauldron has a chance of exploding it takes away a blast of players candy and gives it to one random player
+# Outstanding and deferred work
 
-# Found Bugs
-- [x] lottery system..it's wrong
-  - DB isn't tracking how many tickets a player has, thus not giving players increased chances of winning
-  - But i do like the idea of a moderator or admin coming in and deciding to be evil and give it to one or distributed random player(s) who may not have purchased a ticket 😈 muwahahaha...
-- [x] Make sure potions_purchased removes tickets after the cauldron draw has occurred!!
-- [x] Show in stats how many tickets you have
-- [x] /trick command sends "The application did not respond." I need to respond with interaction ephemeral true with timeout and then a post_event_channel() to stop this
-- [x] Give 0 candy should not be possible OR should it… with a smart butt remark
-- [x] Stealing from someone who has 0 candy...that meany LOL
-  - Give some to the target
-    - Put the rest in the cauldron
-  - Put all in the cauldron
-  - Give all to the target
+Current behavior is documented in the [command reference](docs/all_current_commands.md). See the [current audit](docs/command-audit.md) for verified limitations; this list is not a list of available commands.
+
+## Outstanding corrections
+
+- Restrict public individual leaderboards outside Admin to Candy Hoarders.
+- Repair moderator role removal and legacy settings/invitation/channel error paths.
+- Validate stat-setting ranges and add confirmation to destructive player reset.
+- Resolve the ineffective stored trick-success setting without silently changing game probabilities.
+
+## Deferred by discussion
+
+- Large-guild optimization: membership checks, event delivery, database indexing/journal settings, and workload testing.
+- Preserve departed members’ game data and verify membership on targeting/reward; keep freezes intact. Current code still resets on departure.
+- Reduce gateway intents after membership handling is redesigned.
+- Per-server customizable success/failure probabilities.
+- A redesigned rich game/server settings interface; the current legacy settings modal remains limited.
+
+## Implemented
+
+Potion shop and per-server pricing; seven bottled potions and timed Witch’s Veil; inventory buttons; cauldron eligibility and distinct payouts; balanced pumpkin outcomes; moderator candy adjustments; freeze/unfreeze and confirmed leaving; role-aware help; expanded stats/boards; centralized artwork; public gameplay message cleanup.
+
+Historical concepts in [idea.md](docs/idea.md) are brainstorming, not registered commands or committed features.

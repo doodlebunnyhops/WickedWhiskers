@@ -1,6 +1,6 @@
 # Potion interactions
 
-All seven potions appear automatically in `/shop browse`, `/shop manage`, `/inventory`, and `/use`. Prices below are defaults; per-server overrides and sale availability apply to every potion. Purchases grant bottles; activate them before play. Repeated active copies cannot stack.
+All seven bottled potions appear automatically in `/shop browse`, `/shop manage`, `/inventory`, and `/use`. Prices below are defaults; per-server overrides and sale availability apply to every potion. Purchases grant bottles; activate them before play. Repeated active copies cannot stack.
 
 | ID | Potion | Price | Effect |
 | --- | --- | ---: | --- |
@@ -20,7 +20,7 @@ The original Mirror is consumed when it redirects. A Ward on the new target bloc
 
 An unprotected redirected target with candy gets an ordinary trick attempt, using the attacker’s existing success-rate formula and Cunning/Second Chance when active. A miss moves no candy. A hit against a third player transfers candy to the attacker, with normal theft/loss counters; Sticky Fingers can add its bonus. A hit against the attacker moves their candy into the cauldron, capped by their balance. This counts as a failed trick and a candy loss for the attacker, and records their cauldron contribution. Sticky Fingers is preserved on self-reflection because no theft occurs.
 
-Redirected attempts do not run the legacy magical trick scenarios. An empty redirected bucket ends the attempt without a roll or candy movement; Mirror remains consumed, while Cunning, Second Chance and Sticky Fingers remain available. If no verified eligible target exists, Mirror stays active and no candy moves. Active database records from another server, inactive/frozen players, bots and members no longer present cannot become redirection targets.
+Redirected attempts do not run the legacy magical trick scenarios. An empty redirected bucket ends the attempt without a roll or candy movement; Mirror remains consumed, while Cunning, Second Chance and Sticky Fingers remain available. If no verified eligible target exists, Mirror stays active and no candy moves. Active database records from another server, inactive/frozen/protected players, bots and members no longer present cannot become redirection targets.
 
 ## Offensive potion combinations
 
@@ -30,7 +30,7 @@ Sticky Fingers triggers only in the ordinary successful-transfer branch (includi
 
 ## Luna’s Favor
 
-The giver pays only their requested gift; Luna creates the bonus. A gift of 2 grants 1 extra candy, a gift of 5 grants 2, and gifts of 10 or more grant the maximum 5. Zero/one-candy gifts preserve Favor. Magical treat branches preserve it as well. Ordinary generous gifts qualify. The giver’s treats-given and candy-given stats count their own gift, not Luna’s bonus. Frozen participants do not trigger Favor.
+The giver pays only their requested gift; Luna creates the bonus. A gift of 2 grants 1 extra candy, a gift of 5 grants 2, and gifts of 10 or more grant the maximum 5. Zero/one-candy gifts preserve Favor. Magical treat branches preserve it as well. Ordinary generous gifts qualify. The giver receives one kindness action; candy-given includes both their gift and Luna’s actual bonus. Favor does not add a second action. Frozen participants do not trigger Favor.
 
 The shared treat resolver is transactional and deduplicates interaction IDs for both slash commands and the Treat Player modal. A repeated request cannot transfer candy or consume Favor twice.
 
@@ -52,3 +52,9 @@ Customize new narration under `potion_events` in `discord-bot/utils/messages.jso
 | `activated` | `{potion}`, `{charges}` |
 
 Potion-trigger narration is included in the event message alongside the trick/treat result. Cunning and Ward also now use these JSON entries when triggered. Effect charges, candy transfers, statistics and action history commit together before Discord announcements. A failed announcement cannot consume another charge. Bottles and effects persist across restarts in the existing potion tables; no database migration is needed for the four new catalog entries.
+
+## Witch’s Veil and returned charges
+
+Veil is a separate timed purchase available through the shop. It prevents all other potion activation and targeting, including Mirror redirection and Calling gifts. Existing charged effects wait without being consumed while protected. Moderation freezes return only unused charges; see [freeze and protection rules](freeze-and-protection.md).
+
+Potion narration follows the shared [gameplay message rules](gameplay-messages.md): identify each player once, then use their escaped display name, including multi-player Mirror scenes.

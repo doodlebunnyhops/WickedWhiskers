@@ -1,44 +1,24 @@
 # WickedWhiskers
 
-Potion shop implementation: see [setup, commands, effects, and testing](docs/potion-shop.md).
+A seasonal Discord candy game featuring Luna and Raven. Trick or treat other players, smash pumpkins, buy potion perks, and take part in moderator-run cauldron events.
 
-There are a lot of commands that haven't been implemented yet! If you're looking to contribute there's plenty to do here :D and then enjoy the discord bot game! 
+Start with `/help` for a private guide tailored to your access. Join with `/join` or the 🎃 reaction on the server’s invitation. Players begin with 50 candy.
 
-Hacktoberfest 2024 is ON!
+## Guides
 
-## What is WickedWhiskers
+- [Player guide](docs/player_commands.md): commands, shopping, protection, and leaving.
+- [Moderator setup and management](docs/moderator_commands.md): channels, roles, freezes, candy adjustments, and events.
+- [Complete command reference](docs/all_current_commands.md): registered commands, arguments, access, and limitations.
+- [Potion shop](docs/potion-shop.md) and [potion interactions](docs/potion-interactions.md): prices, charges, stacking, and accounting.
+- [Freeze, protection, and leaving](docs/freeze-and-protection.md): timers, refunds, cooldowns, and preserved restrictions.
+- [Pumpkin rules](docs/pumpkin-smashing.md) and [leaderboards/statistics](docs/moderator_commands.md#seasonal-statistics-and-boards).
+- [Gameplay messages](docs/gameplay-messages.md), [cauldron messages](docs/cauldron-messages.md), and [artwork](docs/artwork.md).
+- [Current limitations](docs/command-audit.md) and [deferred work](TODO.md).
 
-This is a discord bot that enabls players in your server to interact in a halloween themed game.  `/trick` members out of their candy or `/treat` them with some?
+Potion purchases grant gameplay perks. They do not fund the cauldron or buy entries. Cauldron draws award the shared pool to distinct eligible players, with weights based on treating or successful tricks. Frozen players and players under Witch’s Veil are excluded.
 
-Buy named potions for gameplay perks: block a trick, boost your next tricks, or summon Luna to share candy. Purchases do not fund the cauldron or grant entries. Cauldron payout rules are still unfinished; its old ticket-based draw is unavailable while the shared pool is preserved.
+## Running and contributing
 
-Try `/smash_pumpkin amount:<number>` with balanced small-reward/normal-loss odds and true break-even outcomes. Big losses can empty your bucket, but never make it negative. See [pumpkin rules](docs/pumpkin-smashing.md).
+See [development setup](docs/development.md), [Linux service installation](docs/systemd.md), and [contribution guidelines](CONTRIBUTION.md). Current documentation follows `feature/potion-shop`; other branches may differ.
 
-
-## Commands
-
-- [Moderator](docs/moderator_commands.md): Setup, permissions, game controls, and shop management.
-- [Player](/docs/player_commands.md)
-- [All current commands](docs/all_current_commands.md): 36 slash commands, five member-menu actions, arguments, and limitations.
-- [Command audit](docs/command-audit.md): Confirmed bugs, incomplete behavior, and suggested repairs.
-
-
-## Development
-
-So glad you want to help! Refer to these docs on setup for dev.
-   - [Development requirements and setup](/docs/development.md)
-   - [Contributing Guidlines](CONTRIBUTION.md)
-
-## Attribution
-
-This project was created by **doodlebunnyhops**.
-
-If you plan to reuse, modify, or distribute any part of this code, please follow these guidelines:
-
-1. **Include a reference to this repository**: [Repository URL]
-2. **Clearly attribute the author**: doodlebunnyhops
-3. **Suggested formats**:
-   - "Based on the original work by doodlebunnyhops (https://github.com/doodlebunnyhops)"
-   - "Original creator: doodlebunnyhops"
-
-For more detailed attribution guidelines, see the `ATTRIBUTION.md` file.
+Created by **doodlebunnyhops**. When reusing or modifying this project, credit the creator and link to [WickedWhiskers](https://github.com/doodlebunnyhops/WickedWhiskers). See [attribution guidelines](ATTRIBUTION.md) and [license](LICENSE.md).

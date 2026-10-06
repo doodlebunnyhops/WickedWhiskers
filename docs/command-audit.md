@@ -1,43 +1,19 @@
-# Command audit — 2026-10-04
+# Current implementation limitations
 
-Scope: `feature/potion-shop` at `d35f8a3fdba12f7c1e8ac257fb7af2ea67504b79`. The live application command objects were inspected with login/sync mocked: 36 slash leaves, five member context menus, default `!help`. Handler and database source was reviewed; these findings are not a claim of live Discord testing. This documentation change does not fix the issues below.
+Reviewed 2026-10-06 against `feature/potion-shop`. This replaces the old October 4 audit: cauldron payouts, freeze controls, shared enrollment, slash help, and the All leaderboard now exist. Source review is not a live Discord acceptance test.
 
-## Confirmed defects
+| Finding | Current impact / workaround |
+| --- | --- |
+| Leaderboard privacy differs from the agreed policy | Every individual category can be public in Event, although only Candy Hoarders was requested. All is private outside Admin. Invoke sensitive boards in Admin or another channel until fixed. |
+| `/bot remove role` calls a nonexistent `remove_role_by_guild` helper | It can announce success without revoking access. Remove the Discord role from members; do not trust this command’s confirmation. |
+| `/bot set settings` has broken optional fields | Empty role fails validation; empty invite can reference an uninitialized variable; successful submission clears the invite message ID. Use individual channel/role commands. |
+| Stored trick-success setting is ineffective | Actual odds use the player formula. `/game set settings` also pauses play if optional `game_enabled` is omitted. Use `/game set state` for pause/resume. |
+| `/game set player_stat` accepts negative values | Supply only valid nonnegative values. Prefer `/bot candy` for Give/Take adjustments; it validates amounts and keeps gameplay counters unchanged. |
+| Legacy invitation/channel error paths remain | Invite removal is instruction-only; update assumes prior settings. Both-channel display can stop at a missing channel, and removal assumes a resolvable saved channel. Use initial setup commands for a new server. |
+| Player reset is immediate | No confirmation step; requires an existing player. Reset clears progress and restrictions as documented. |
+| `/bot get join_game_msg` has no moderator check | It is publicly callable despite the `/bot` grouping. |
+| Membership and scale work is deferred | The bot currently requests all intents and resets departing players, with reconnect membership reconciliation. On-demand verification, preserving departed data, and large-guild optimization are not implemented. |
 
-| Priority | Finding and impact | Source | Suggested repair |
-| --- | --- | --- | --- |
-| High | `/bot remove role` calls missing `remove_role_by_guild` after announcing removal. Access remains. | `discord-bot/cogs/mod_commands/remove.py`, `db_utils.py` | Call existing `delete_role_by_guild` with its correct signature; confirm only after success. |
-| Fixed | Pumpkin outcomes now settle once atomically, with no entry charge and losses capped at the current bucket. | `discord-bot/utils/pumpkins.py` | See [odds and net payouts](pumpkin-smashing.md). Intentional magical contributions are preserved. |
-| Medium | `/game get leaderboard type:All` passes `all` to a query map with no such entry, raising ValueError. Evil/Sweet raw counts are also rendered as percentages. | `cogs/game_commands/get.py`, `db_utils.py:get_leaderboard_query` | Implement aggregate display or remove All; use correct units. |
-| Medium | `/bot set settings` marks role/invite optional, but blank role fails validation and blank invite leaves an unbound variable. Successful submission also clears the invite message ID. | `modals/settings.py:Bot` | Use channel/role selectors; define empty-field semantics and preserve unrelated invite state. |
-| Medium | Configured `trick_success_rate` is stored/displayed, but actual thief-rate calculation uses its own formula. | `cogs/game_commands/set.py`, `utils/player.py` | Define how the server rate modifies the formula, or remove the ineffective setting. |
-| Medium | React-to-join does not check paused state; inactive existing players follow an insert path rather than reactivation. | `bot.py:on_raw_reaction_add`, join/add handlers, `db_utils.py` | Share one enrollment service with explicit pause/reactivation behavior. |
-| Medium | `/game set player_stat` accepts negative candy/stat values. | `cogs/game_commands/set.py` | Validate supported ranges before writing. |
-| Medium | Invite update without prior settings continues after responding and tries to unpack None. Settings display can fail when the saved invite message is gone/inaccessible. | `cogs/mod_commands/update.py`, `get.py` | Return or create cleanly; handle missing/inaccessible messages without failing the whole display. |
-| Medium | Reset assumes a player exists; removing a channel assumes the saved channel still resolves. | `cogs/mod_commands/reset.py`, `remove.py` | Guard missing records/channels before formatting or mutating. |
+Candy creation in magical scenarios is intentional. Potion purchases are perks, not pool contributions or tickets. Many cauldron winners are distinct players. Ward/Mirror protection and frozen/Veil exclusions have their own rules; see the [potion](potion-interactions.md) and [participation](freeze-and-protection.md) guides.
 
-## Incomplete behavior and decisions to make
-
-- `/bot remove join_game_msg` is a registered instruction-only placeholder. Decide whether it should delete the message, clear its mapping, or both.
-- `/game cast spell` is intentionally unavailable. Potions are perks, not tickets. Implement independent eligibility, distinct winners and actual payouts before enabling it.
-- `/game set settings` defaults optional `game_enabled` to false. This is current behavior, but surprising: changing a rate alone pauses play. Prefer an optional “leave unchanged” state.
-- `/bot get join_game_msg` has no moderator permission check. The group name does not enforce one. Decide whether public access is intended.
-- `/bot get channel` with Both returns early when a setting is absent. Show each configured/missing channel independently.
-- Frozen checks differ by activity: tricks and potion actions reject frozen players, while treats do not. Define the intended freeze scope before changing behavior.
-- Check Bucket deliberately returns the caller’s bucket even when invoked on another member. Decide whether its label should make that clearer. Potion Shop must remain caller-owned.
-- Reset is immediate and destructive without confirmation; add a confirmation view. Its existing message still mentions unavailable `/freeze` and misleading rejoin guidance.
-- Other runtime text still mentions unregistered `/return` and old commands. Documentation repair does not repair those messages; audit `utils/messages.json` and embedded strings next.
-
-## Intentional behavior preserved
-
-Luna/Raven special scenarios may create candy, cover treat costs, copy pumpkin rewards into the pool, or grant a named Ward bottle. Do not classify candy creation alone as a transfer bug. Potion purchases do not contribute to the pool. Multiple cauldron winners means distinct players, not repeated tickets for one player. Ward/Cunning inventory and effects are separate from any future cauldron eligibility.
-
-## Recommended order
-
-1. Repair role removal before relying on it in a live season. Pumpkin accounting is now fixed.
-2. Repair leaderboard/settings/invite error paths and range validation.
-3. Unify enrollment and agree freeze/pause behavior; add destructive-action confirmation.
-4. Replace stale runtime guidance and add an in-bot slash-command help entry (default `!help` does not document these slash commands).
-5. Implement the separate cauldron draw and payout flow; consider a public leaderboard command if players should inspect rankings themselves.
-
-The command reference now separates actual registration from incomplete behavior, documents all arguments/choices and permission boundaries, and removes ticket-shop and unregistered-command instructions. The Event/Admin settings-display mapping reported earlier was already fixed in `d35f8a3`; no database rewrite is required for that fix.
+Completed trick/treat/smash actions now publish one public result; private validation errors remain. Announcement failure after a saved transaction is reported privately and is not a reason to repeat the gameplay action.
