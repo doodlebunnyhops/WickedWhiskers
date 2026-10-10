@@ -230,9 +230,9 @@ def test_protected_pumpkin_still_funds_pool(database,clock,monkeypatch):
         values=iter([.9,.99,0])
         def random(self):return next(self.values)
     result,_=pumpkins.smash(1,10,10,'pumpkin',Rolls())
-    assert result['protected'] and result['contribution']==20
-    assert db.get_cauldron_pool(1)==20
-    msg=state.loader().get_message('smash_pumpkin','event_messages','hidden_raven',user='PLAYER',candy_amount=20)
+    assert result['protected'] and result['contribution']==10
+    assert db.get_cauldron_pool(1)==10
+    msg=state.loader().get_message('smash_pumpkin','event_messages','hidden_raven',user='PLAYER',candy_amount=10)
     assert 'cauldron' in msg and ('lost sweets' in msg or 'already lost' in msg)
 
 

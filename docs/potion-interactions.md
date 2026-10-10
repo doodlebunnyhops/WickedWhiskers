@@ -8,7 +8,7 @@ All seven bottled potions appear automatically in `/shop browse`, `/shop manage`
 | cunning | Raven’s Cunning | 5 | +15 percentage points on three eligible initial rolls, capped at 95% without reducing a higher base rate. |
 | luna | Luna’s Calling | 10 | Immediately gives 5 candy each to up to three other eligible members; shared 60-second cooldown. |
 | mirror | Mirror Brew | 10 | Redirects one incoming attempt before rolling. |
-| sticky | Sticky Fingers | 8 | Adds 25% to one ordinary successful theft, rounded up and capped by available candy. |
+| sticky | Sticky Fingers | 8 | Doubles candy on the next 3 ordinary successful thefts, capped by available candy. |
 | second_chance | Second Chance | 8 | Rerolls one failed initial trick roll once at the same effective success rate. |
 | favor | Luna’s Favor | 5 | Adds half an ordinary treat, rounded down and capped at 5 candy, to the recipient’s bucket. |
 
@@ -26,7 +26,7 @@ Redirected attempts do not run the legacy magical trick scenarios. An empty redi
 
 Cunning, Second Chance and Sticky Fingers can coexist. Cunning consumes one charge for an eligible initial roll. Second Chance triggers only if that roll fails, rerolls once at the same boosted rate, and does not consume another Cunning charge. A successful first roll preserves Second Chance. Neither can bypass Ward/Mirror protection.
 
-Sticky Fingers triggers only in the ordinary successful-transfer branch (including an ordinary redirected theft). The bonus is rounded up: a 7-candy theft gets up to 2 extra candy. If no extra candy is available, Sticky Fingers stays active. Special trick scenarios, blocked/empty attempts, failed attempts and self-reflection preserve it. The recorded transfer and theft/loss statistics include the actual bonus. The ordinary trick’s existing special outcomes still apply after a Second Chance success; the reroll does not guarantee an eventual ordinary theft.
+Sticky Fingers triggers only in the ordinary successful-transfer branch (including an ordinary redirected theft). Each new activation has 3 charges. A 7-candy theft gets up to 7 extra candy; one charge is consumed only when at least one extra candy is stolen. If no extra candy is available, Sticky Fingers stays active. Special trick scenarios, blocked/empty attempts, failed attempts and self-reflection preserve it. The recorded transfer and theft/loss statistics include the actual bonus. Existing active effects and bottles returned by a freeze retain their remaining charges; unused full bottles receive 3 charges when activated. The ordinary trick’s existing special outcomes still apply after a Second Chance success; the reroll does not guarantee an eventual ordinary theft.
 
 ## Luna’s Favor
 

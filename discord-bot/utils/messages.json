@@ -1068,7 +1068,7 @@
                 },
                 "tricks": {
                     "name": "Boost your tricks",
-                    "value": "**Raven's Cunning:** +15 percentage points on your next 3 eligible initial trick rolls.\n**Sticky Fingers:** +25% candy, rounded up, on your next ordinary successful theft, capped by the target's candy.\n**Second Chance:** rerolls one failed initial trick roll; it cannot bypass protection."
+                    "value": "**Raven's Cunning:** +15 percentage points on your next 3 eligible initial trick rolls.\n**Sticky Fingers:** Double candy on your next 3 ordinary successful thefts, capped by the target's candy. A charge is used only when extra candy is stolen.\n**Second Chance:** rerolls one failed initial trick roll; it cannot bypass protection."
                 },
                 "kindness": {
                     "name": "Spread some sweetness",

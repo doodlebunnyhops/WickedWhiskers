@@ -24,7 +24,7 @@ Discord slash-command groups cannot also act as a standalone root command. Use `
 | cunning | Raven's Cunning | 5 | Add 15 percentage points to the next 3 eligible initial trick rolls; cap the boosted rate at 95% without lowering a higher base rate. |
 | luna | Luna's Calling | 10 | Give 5 candy each to up to 3 distinct other eligible server members; shared 60-second server cooldown. |
 | mirror | Mirror Brew | 10 | Redirect one incoming attempt; a successful self-hit feeds the cauldron. |
-| sticky | Sticky Fingers | 8 | Add 25% to one ordinary theft, rounded up and capped by the target’s candy. |
+| sticky | Sticky Fingers | 8 | Double candy on the next 3 ordinary successful thefts, capped by the target’s candy. |
 | second_chance | Second Chance | 8 | Reroll one failed initial trick roll at the same effective chance. |
 | favor | Luna’s Favor | 5 | Add half an ordinary treat, rounded down, up to 5 extra candy. |
 | veil | Witch’s Veil | 50 + 5/minute | Immediate timed protection; 5–30 minutes, then a 60-minute personal cooldown. |

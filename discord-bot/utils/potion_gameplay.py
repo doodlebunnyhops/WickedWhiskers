@@ -35,7 +35,7 @@ def roll_trick(interaction, responses, rate):
 
 
 def sticky_amount(interaction, responses, target, amount, available):
-    bonus = min((amount + 3) // 4, max(0, available - amount))
+    bonus = min(amount, max(0, available - amount))
     if bonus > 0 and take(interaction, interaction.user.id, 'sticky'):
         responses.potion_notes.append(text(interaction, 'sticky', target=target.mention, amount=bonus, total=amount + bonus))
         return amount + bonus

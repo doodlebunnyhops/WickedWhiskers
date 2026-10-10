@@ -51,7 +51,7 @@ def test_new_potions_buy_activate_and_server_prices(database,key,price):
     potions.purchase(1,10,key,1,price,'purchase')
     potions.use(1,10,key,'activate')
     assert balance(10)==50-price
-    assert potions.inventory(1,10)[1][key]==1
+    assert potions.inventory(1,10)[1][key]==(3 if key=='sticky' else 1)
     assert not potions.inventory(2,10)[1]
 
 
@@ -65,7 +65,7 @@ def test_mirror_self_pool_and_duplicate_request(database,monkeypatch):
     asyncio.run(player.player_trick(caller,member(20)))
     assert (balance(10),balance(20),db.get_cauldron_pool(1))==(42,50,8)
     assert potions.inventory(1,20)[1]=={}
-    assert potions.inventory(1,10)[1]=={'cunning':2,'sticky':1,'second_chance':1}
+    assert potions.inventory(1,10)[1]=={'cunning':2,'sticky':3,'second_chance':1}
     assert db.get_player_data(10,1)['failed_tricks']==1
     event=player.post_to_target_channel.call_args.args[1]
     assert 'cauldron' in event.description and '<@20>' in event.description and 'Cunning' in event.description
@@ -77,9 +77,9 @@ def test_redirect_to_third_player_with_sticky(database,monkeypatch):
     monkeypatch.setattr(perks.random,'random',lambda:0)
     monkeypatch.setattr(perks.random,'randint',lambda a,b:7)
     resolve(monkeypatch)
-    assert (balance(10),balance(20),balance(30))==(59,50,41)
-    assert potions.inventory(1,10)[1]=={}
-    assert db.get_player_data(10,1)['total_candy_stolen']==9
+    assert (balance(10),balance(20),balance(30))==(64,50,36)
+    assert potions.inventory(1,10)[1]=={'sticky':2}
+    assert db.get_player_data(10,1)['total_candy_stolen']==14
     assert 'Sticky Fingers' in player.post_to_target_channel.call_args.args[1].description
 
 
@@ -146,7 +146,7 @@ def test_second_failed_roll_no_third_roll_in_reflection(database,monkeypatch):
     assert not potions.inventory(1,10)[1]
 
 
-def test_sticky_normal_rounding_cap_and_retention(database,monkeypatch):
+def test_sticky_normal_cap_and_remaining_charges(database,monkeypatch):
     activate('sticky')
     db.update_player_field(20,1,'candy_in_bucket',8)
     rolls=iter([0,.9,.9])
@@ -154,7 +154,7 @@ def test_sticky_normal_rounding_cap_and_retention(database,monkeypatch):
     monkeypatch.setattr(player.random,'randint',lambda a,b:7)
     resolve(monkeypatch)
     assert (balance(10),balance(20))==(58,0)
-    assert not potions.inventory(1,10)[1]
+    assert potions.inventory(1,10)[1]=={'sticky':2}
 
 
 def test_sticky_kept_when_special_success_changes_outcome(database,monkeypatch):
@@ -163,7 +163,7 @@ def test_sticky_kept_when_special_success_changes_outcome(database,monkeypatch):
     monkeypatch.setattr(player.random,'random',lambda:next(rolls))
     monkeypatch.setattr(player.random,'randint',lambda a,b:8)
     resolve(monkeypatch)
-    assert potions.inventory(1,10)[1]['sticky']==1
+    assert potions.inventory(1,10)[1]['sticky']==3
 
 
 @pytest.mark.parametrize('amount,bonus',[(1,0),(2,1),(5,2),(20,5)])
@@ -215,7 +215,7 @@ def test_sticky_preserved_when_no_extra_candy_available(database,monkeypatch):
     monkeypatch.setattr(player.random,'randint',lambda a,b:7)
     resolve(monkeypatch)
     assert balance(20)==0
-    assert potions.inventory(1,10)[1]['sticky']==1
+    assert potions.inventory(1,10)[1]['sticky']==3
 
 
 def test_favor_rolls_back_both_transfer_and_charge(database,monkeypatch):
@@ -247,3 +247,46 @@ def test_all_gameplay_templates_format_and_have_player_context(database):
             result=loader.get_message('_test_potion',**values)
             assert 'Message not found' not in result
             assert not result.startswith('Error formatting')
+
+
+def test_sticky_three_thefts_then_normal_and_replay(database,monkeypatch):
+    activate('sticky')
+    monkeypatch.setattr(player,'post_to_target_channel',AsyncMock())
+    monkeypatch.setattr(player.random,'randint',lambda a,b:4)
+    for index,expected in enumerate([8,8,8,4]):
+        rolls=iter([0,.9,.9])
+        monkeypatch.setattr(player.random,'random',lambda:next(rolls))
+        caller=interaction();caller.id+=index
+        before=balance(10)
+        asyncio.run(player.player_trick(caller,member(20)))
+        assert balance(10)==before+expected
+        assert potions.inventory(1,10)[1].get('sticky',0)==max(0,2-index)
+        asyncio.run(player.player_trick(caller,member(20)))
+        assert balance(10)==before+expected
+        assert potions.inventory(1,10)[1].get('sticky',0)==max(0,2-index)
+    assert db.get_player_data(10,1)['total_candy_stolen']==28
+    assert db.get_player_data(20,1)['total_candy_lost']==28
+
+
+@pytest.mark.parametrize('blocked',[False,True])
+def test_sticky_failed_or_blocked_attempt_preserves_charges(database,monkeypatch,blocked):
+    activate('sticky')
+    if blocked:
+        activate('ward',20)
+    monkeypatch.setattr(player.random,'random',lambda:.99)
+    resolve(monkeypatch)
+    assert potions.inventory(1,10)[1]['sticky']==3
+
+
+def test_sticky_transfer_failure_rolls_back_charge(database,monkeypatch):
+    import sqlite3
+    activate('sticky')
+    rolls=iter([0,.9,.9])
+    monkeypatch.setattr(player.random,'random',lambda:next(rolls))
+    monkeypatch.setattr(player.random,'randint',lambda a,b:4)
+    database.execute("CREATE TRIGGER fail_sticky BEFORE UPDATE OF candy_in_bucket ON players WHEN NEW.candy_in_bucket<>OLD.candy_in_bucket BEGIN SELECT RAISE(ABORT,'failure'); END")
+    database.commit()
+    with pytest.raises(sqlite3.IntegrityError):
+        resolve(monkeypatch)
+    assert balance(10)==balance(20)==50
+    assert potions.inventory(1,10)[1]['sticky']==3
