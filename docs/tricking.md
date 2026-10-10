@@ -20,3 +20,5 @@ Blocked attempts preserve attacking potion charges. Empty redirected buckets end
 All balance updates, potion charges, statistics and the interaction receipt commit together. Repeated requests cannot settle twice. Special outcomes preserve Sticky Fingers. Receivers never pay an additional entry fee. The default Sticky Fingers price remains 8 candy; existing active effects keep their remaining charges.
 
 Public narration uses `scaled_tricks` in `messages.json`, loaded through `messages.py`. It shows actual candy moved, not remaining balances; a full drain can explicitly announce the entire loss. Player stats show the equal-bucket reference chance rather than claiming a fixed chance against everyone.
+
+Attempts against a player under Witch’s Veil receive a private, randomly selected Raven message for tricks or Luna message for treats. These responses do not disclose the timer or remaining candy; frozen/inactive targets retain the generic unavailable response.

@@ -68,6 +68,14 @@ def visible(guild_id, player_id, now=None):
     return db.is_player_active(player_id,guild_id) and not freeze_info(guild_id,player_id,now) and not protection_info(guild_id,player_id,now)
 
 
+def target_unavailable_message(guild_id, player_id, action):
+    if (player_id is not None and db.is_player_active(player_id,guild_id)
+            and not freeze_info(guild_id,player_id)
+            and protection_info(guild_id,player_id)):
+        return text('veil_target_'+action)
+    return text('target_unavailable')
+
+
 def require(guild_id, player_id, action='social', now=None):
     frozen = freeze_info(guild_id,player_id,now)
     if frozen:

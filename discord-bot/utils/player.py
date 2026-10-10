@@ -110,7 +110,7 @@ def _resolve_trick(interaction: discord.Interaction,member: discord.Member, resp
         responses.append_personal(str(error))
         return
     if member and not state.visible(guild_id, member.id):
-        responses.append_personal(state.text('target_unavailable'))
+        responses.append_personal(state.target_unavailable_message(guild_id,member.id,'trick'))
         return
     game_disabled, _,_ = get_game_settings(guild_id)
     if game_disabled:
@@ -397,7 +397,7 @@ def _resolve_treat(interaction: discord.Interaction, user: discord.Member, amoun
     except state.StateError as error:
         return None, str(error)
     if not recipient or not state.visible(guild_id, recipient.id):
-        return None, state.text('target_unavailable')
+        return None, state.target_unavailable_message(guild_id,recipient.id if recipient else None,'treat')
 
     giver_data = get_player_data(giver.id, guild_id)
     recipient_data = get_player_data(recipient.id, guild_id)

@@ -1276,7 +1276,17 @@
         "settings_button": "Witch’s Veil settings",
         "one_protection": "Choose quantity 1 for Witch’s Veil; you choose its time allowance next.",
         "returned_heading": "**Returned bottles (included in inventory counts)**",
-        "returned_bottle": "{name}: {charges} remaining charge(s). Used before fresh bottles."
+        "returned_bottle": "{name}: {charges} remaining charge(s). Used before fresh bottles.",
+        "veil_target_trick": [
+            "🦇 Raven sniffs the mist. “There’s a bucket here somewhere. I can practically smell it. But I can’t trick what I can’t see.”",
+            "🕸️ “Someone’s hiding behind enchanted mist,” Raven mutters. “How inconsiderate of them to prepare for my arrival.”",
+            "🦇 Raven peers into the Veil. “I brought a perfectly dreadful trick, and now there’s nobody to menace. Typical.”"
+        ],
+        "veil_target_treat": [
+            "🌙 Luna peers into the mist. “Oh, sweetheart, someone’s tucked away behind a little magic. I can’t find them to deliver your sweets.”",
+            "🍬 “I followed the candy wrappers, but the trail disappears into mist,” Luna says. “We’ll have to save their treat for later.”",
+            "✨ Luna smiles softly. “Someone’s having a quiet moment beneath the Veil. Your kindness can wait until they return.”"
+        ]
     },
     "artwork": {
         "luna_portrait": "https://cdn.discordapp.com/attachments/1293052178742644889/1556415507635110030/luna_portrait.png",
