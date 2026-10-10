@@ -17,7 +17,7 @@ Run `/help` for a private guide. In a server using #join, #play, and #shop, reac
 | `/leave` | Confirm forfeiting progress and begin a one-hour rejoin delay. |
 | `/help` | Open the private topic menu. |
 
-Completed tricks, treats, and pumpkin smashes publish their result without a duplicate private success message. Errors and eligibility failures stay private. Potion effects appear alongside the public result; repeated references to a player use their name after their first mention. Public results do not reveal remaining bucket balances, except they may say a bucket was emptied. See [pumpkin odds](pumpkin-smashing.md).
+Completed tricks, treats, and pumpkin smashes publish their result without a duplicate private success message. Errors and eligibility failures stay private. Potion effects appear alongside the public result; repeated references to a player use their name after their first mention. Public results do not reveal remaining bucket balances, except they may say a bucket was emptied. See [pumpkin odds](pumpkin-smashing.md) and [trick rules](tricking.md).
 
 ## Potions
 

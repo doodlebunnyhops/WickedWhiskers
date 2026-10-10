@@ -63,7 +63,7 @@ def test_mirror_self_pool_and_duplicate_request(database,monkeypatch):
     monkeypatch.setattr(perks.random,'randint',lambda a,b:8)
     caller=resolve(monkeypatch)
     asyncio.run(player.player_trick(caller,member(20)))
-    assert (balance(10),balance(20),db.get_cauldron_pool(1))==(42,50,8)
+    assert (balance(10),balance(20),db.get_cauldron_pool(1))==(49,50,1)
     assert potions.inventory(1,20)[1]=={}
     assert potions.inventory(1,10)[1]=={'cunning':2,'sticky':3,'second_chance':1}
     assert db.get_player_data(10,1)['failed_tricks']==1
@@ -74,12 +74,12 @@ def test_mirror_self_pool_and_duplicate_request(database,monkeypatch):
 def test_redirect_to_third_player_with_sticky(database,monkeypatch):
     activate('mirror',20);activate('sticky')
     monkeypatch.setattr(perks,'choose_redirect',lambda options:next(m for m in options if m.id==30))
-    monkeypatch.setattr(perks.random,'random',lambda:0)
+    rolls=iter([0,.9,.9]);monkeypatch.setattr(perks.random,'random',lambda:next(rolls))
     monkeypatch.setattr(perks.random,'randint',lambda a,b:7)
     resolve(monkeypatch)
-    assert (balance(10),balance(20),balance(30))==(64,50,36)
+    assert (balance(10),balance(20),balance(30))==(53,50,47)
     assert potions.inventory(1,10)[1]=={'sticky':2}
-    assert db.get_player_data(10,1)['total_candy_stolen']==14
+    assert db.get_player_data(10,1)['total_candy_stolen']==3
     assert 'Sticky Fingers' in player.post_to_target_channel.call_args.args[1].description
 
 
@@ -126,11 +126,11 @@ def test_empty_redirect_keeps_roll_potions(database,monkeypatch):
 
 def test_second_chance_rerolls_once_at_boosted_rate(database,monkeypatch):
     activate('cunning');activate('second_chance')
-    rolls=iter([.99,.94,.9,.9])
+    rolls=iter([.99,.6,.9,.9])
     monkeypatch.setattr(player.random,'random',lambda:next(rolls))
     monkeypatch.setattr(player.random,'randint',lambda a,b:8)
     resolve(monkeypatch)
-    assert (balance(10),balance(20))==(58,42)
+    assert (balance(10),balance(20))==(52,48)
     assert potions.inventory(1,10)[1]=={'cunning':2}
     description=player.post_to_target_channel.call_args.args[1].description
     assert 'Second Chance' in description and 'Cunning' in description
@@ -139,7 +139,7 @@ def test_second_chance_rerolls_once_at_boosted_rate(database,monkeypatch):
 def test_second_failed_roll_no_third_roll_in_reflection(database,monkeypatch):
     activate('mirror',20);activate('second_chance')
     monkeypatch.setattr(perks,'choose_redirect',lambda options:options[0])
-    rolls=iter([.99,.99])
+    rolls=iter([.99,.99,.9,.9])
     monkeypatch.setattr(perks.random,'random',lambda:next(rolls))
     resolve(monkeypatch)
     assert balance(10)==50 and db.get_cauldron_pool(1)==0
@@ -151,7 +151,8 @@ def test_sticky_normal_cap_and_remaining_charges(database,monkeypatch):
     db.update_player_field(20,1,'candy_in_bucket',8)
     rolls=iter([0,.9,.9])
     monkeypatch.setattr(player.random,'random',lambda:next(rolls))
-    monkeypatch.setattr(player.random,'randint',lambda a,b:7)
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',lambda balance,low,high:7 if low==2 else 3)
     resolve(monkeypatch)
     assert (balance(10),balance(20))==(58,0)
     assert potions.inventory(1,10)[1]=={'sticky':2}
@@ -191,7 +192,8 @@ def test_favor_kept_for_magical_treat(database,monkeypatch):
 def test_mirror_charge_rolls_back_on_failure(database,monkeypatch):
     activate('mirror',20)
     monkeypatch.setattr(perks,'choose_redirect',lambda options:options[0])
-    monkeypatch.setattr(perks.random,'randint',lambda *args:(_ for _ in ()).throw(RuntimeError('failure')))
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',lambda *args:(_ for _ in ()).throw(RuntimeError('failure')))
     with pytest.raises(RuntimeError):resolve(monkeypatch)
     assert potions.inventory(1,20)[1]['mirror']==1
     assert balance(10)==balance(20)==50
@@ -212,7 +214,8 @@ def test_sticky_preserved_when_no_extra_candy_available(database,monkeypatch):
     db.update_player_field(20,1,'candy_in_bucket',7)
     rolls=iter([0,.9,.9])
     monkeypatch.setattr(player.random,'random',lambda:next(rolls))
-    monkeypatch.setattr(player.random,'randint',lambda a,b:7)
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',lambda balance,low,high:balance)
     resolve(monkeypatch)
     assert balance(20)==0
     assert potions.inventory(1,10)[1]['sticky']==3
@@ -253,7 +256,7 @@ def test_sticky_three_thefts_then_normal_and_replay(database,monkeypatch):
     activate('sticky')
     monkeypatch.setattr(player,'post_to_target_channel',AsyncMock())
     monkeypatch.setattr(player.random,'randint',lambda a,b:4)
-    for index,expected in enumerate([8,8,8,4]):
+    for index,expected in enumerate([3,3,3,2]):
         rolls=iter([0,.9,.9])
         monkeypatch.setattr(player.random,'random',lambda:next(rolls))
         caller=interaction();caller.id+=index
@@ -264,8 +267,8 @@ def test_sticky_three_thefts_then_normal_and_replay(database,monkeypatch):
         asyncio.run(player.player_trick(caller,member(20)))
         assert balance(10)==before+expected
         assert potions.inventory(1,10)[1].get('sticky',0)==max(0,2-index)
-    assert db.get_player_data(10,1)['total_candy_stolen']==28
-    assert db.get_player_data(20,1)['total_candy_lost']==28
+    assert db.get_player_data(10,1)['total_candy_stolen']==11
+    assert db.get_player_data(20,1)['total_candy_lost']==11
 
 
 @pytest.mark.parametrize('blocked',[False,True])
@@ -290,3 +293,9 @@ def test_sticky_transfer_failure_rolls_back_charge(database,monkeypatch):
         resolve(monkeypatch)
     assert balance(10)==balance(20)==50
     assert potions.inventory(1,10)[1]['sticky']==3
+
+
+@pytest.fixture(autouse=True)
+def stable_trick_amounts(monkeypatch):
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',lambda balance,low,high:min(balance,max(1,(balance*(low+high)+100)//200)) if balance else 0)

@@ -1028,7 +1028,7 @@
                 },
                 "trick": {
                     "name": "🦇 Trick someone",
-                    "value": "`/trick member:@Player` — attempt to steal candy. Tricks can fail, and potions or witch events can change the outcome."
+                    "value": "`/trick member:@Player` — ordinary theft takes 2–6% of the final target’s bucket. Success depends on both buckets. Failure can cost 1–3% of yours. A rare spell can empty a bucket above 100 candy, including your own if reflected!"
                 },
                 "treat": {
                     "name": "🍬 Share a treat",
@@ -1068,7 +1068,7 @@
                 },
                 "tricks": {
                     "name": "Boost your tricks",
-                    "value": "**Raven's Cunning:** +15 percentage points on your next 3 eligible initial trick rolls.\n**Sticky Fingers:** Double candy on your next 3 ordinary successful thefts, capped by the target's candy. A charge is used only when extra candy is stolen.\n**Second Chance:** rerolls one failed initial trick roll; it cannot bypass protection."
+                    "value": "**Raven's Cunning:** +15 percentage points on your next 3 eligible initial trick rolls.\n**Sticky Fingers:** Add a random 25–50% bonus to the stolen amount on your next 3 ordinary successful thefts, capped by the target's candy. A charge is used only when extra candy is stolen.\n**Second Chance:** rerolls one failed initial trick roll; it cannot bypass protection."
                 },
                 "kindness": {
                     "name": "Spread some sweetness",
@@ -1338,7 +1338,7 @@
         "potion_title": "Potion breakdown",
         "potion_row": "Inventory: {bottles} • Active charges: {charges}\nBought: {purchased} • Activated: {activated} • Triggered: {triggered}\nSpent: {spent:,} • Candy gifted: {gifted:,} • Defenses: {defended}",
         "hidden_title": "Sweetness, evilness & base chance",
-        "hidden": "Sweetness: **{sweetness}%**\nEvilness: **{evilness}%**\nBase trick roll chance: **{chance}%** (before potion effects and special outcomes).\nLuna cauldron weighting uses kindness action counts, not the sweetness percentage.",
+        "hidden": "Sweetness: **{sweetness}%**\nEvilness: **{evilness}%**\nTrick chance depends on both buckets: **{chance}% against an equal bucket**, higher against richer targets and lower against poorer targets (before potion effects and special outcomes).\nLuna cauldron weighting uses kindness action counts, not the sweetness percentage.",
         "tracking_note": "New counters start when tracking is installed. Activations include reactivating returned bottles; purchases do not.",
         "earnings_title": "🍬 Passive earnings",
         "earnings": "Saved: {pending}/{reserve_cap} · Earned today: {earned_today}/{daily_cap}\nTotal earned: {total_earned} · Collected: {total_claimed} · Forfeited: {total_forfeited}\nDaily reset: <t:{reset_at}:R>. These earnings do not count as treating or cauldron contributions."
@@ -1422,5 +1422,37 @@
         "balance_limit": "🪣 Your bucket cannot hold this claim yet. Your saved earnings are safe; make room before collecting.",
         "failed": "🫙 The lid would not budge. Your claim was not completed; please try again.",
         "display_failed": "🍬 Your claim of **{amount} candy** was processed, but the display could not refresh. Check `/bucket`; do not expect the same claim twice."
+    },
+    "scaled_tricks": {
+        "title": "🦇 Raven watches a trick unfold!",
+        "ordinary": [
+            "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Such lovely manners. You didn’t even interrupt them while robbing them.”",
+            "🦇 {user} pockets **{amount} candy** from {target}. “A little less jingling on your way out, darling.”"
+        ],
+        "wipeout": [
+            "💀 {user} steals {target}’s **entire bucket: {amount} candy**! Raven stares, then applauds. “You even took the crumbs. Magnificent.”",
+            "🦇 {target}’s entire stash—**{amount} candy**—vanishes into {user}’s grasp. “Well. That was less a trick and more a relocation.”"
+        ],
+        "both": [
+            "💀 {user} and {target} spill **{amount} candy each** into the cauldron. Raven sighs. “Two suspects. One suspiciously well-fed pot.”"
+        ],
+        "reclaimed": [
+            "🍬 {target} snatches one piece back, but {user} escapes with **{amount} candy**. “A handling fee,” Raven declares."
+        ],
+        "consolation": [
+            "🕷️ {user} fumbles, then sneaks **{amount} candy** from {target} on the way out. “Untidy. But not entirely hopeless,” Raven says."
+        ],
+        "failed": [
+            "🦇 {target} catches {user}, who hands over **{amount} candy** instead. “You’ve managed the robbery backwards,” Raven observes."
+        ],
+        "reflect_loss": [
+            "🪞 The trick turns on {user}! **{amount} candy** falls from their bucket into the cauldron. “Do mind which side of the mirror you’re robbing,” Raven purrs."
+        ],
+        "reflect_wipeout": [
+            "💀 The reflected spell drains {user}’s **entire bucket: {amount} candy**, straight into the cauldron! Raven winces. “Ambitious robbery. Unfortunate address.”"
+        ],
+        "reflect_miss": [
+            "🪞 {user}’s reflected trick misses. No candy moves. “Outwitted by yourself. Almost,” Raven murmurs."
+        ]
     }
 }

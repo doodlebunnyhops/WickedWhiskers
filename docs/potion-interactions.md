@@ -8,7 +8,7 @@ All seven bottled potions appear automatically in `/shop browse`, `/shop manage`
 | cunning | Raven’s Cunning | 5 | +15 percentage points on three eligible initial rolls, capped at 95% without reducing a higher base rate. |
 | luna | Luna’s Calling | 10 | Immediately gives 5 candy each to up to three other eligible members; shared 60-second cooldown. |
 | mirror | Mirror Brew | 10 | Redirects one incoming attempt before rolling. |
-| sticky | Sticky Fingers | 8 | Doubles candy on the next 3 ordinary successful thefts, capped by available candy. |
+| sticky | Sticky Fingers | 8 | Adds a random 25–50% of the stolen amount on the next 3 ordinary successful thefts, capped by available candy. |
 | second_chance | Second Chance | 8 | Rerolls one failed initial trick roll once at the same effective success rate. |
 | favor | Luna’s Favor | 5 | Adds half an ordinary treat, rounded down and capped at 5 candy, to the recipient’s bucket. |
 
@@ -18,15 +18,15 @@ Validation occurs first: game enabled, different original attacker/target, both 
 
 The original Mirror is consumed when it redirects. A Ward on the new target blocks the attempt. A second Mirror blocks it and is consumed, but cannot redirect again. No success roll or attacking potion charge is used when protection blocks the attempt. A reflected attack can hit the caster’s own Ward or Mirror. With only the attacker and holder eligible, reflection always targets the attacker.
 
-An unprotected redirected target with candy gets an ordinary trick attempt, using the attacker’s existing success-rate formula and Cunning/Second Chance when active. A miss moves no candy. A hit against a third player transfers candy to the attacker, with normal theft/loss counters; Sticky Fingers can add its bonus. A hit against the attacker moves their candy into the cauldron, capped by their balance. This counts as a failed trick and a candy loss for the attacker, and records their cauldron contribution. Sticky Fingers is preserved on self-reflection because no theft occurs.
+An unprotected redirected target with candy uses the same [percentage trick rules](tricking.md) as an original target, including special outcomes. The final target's bucket determines the amount and relative success chance. Third-player transfers update ordinary theft/loss counters. Self-reflection sends any resulting loss into the cauldron once, records a failed trick and contribution, and preserves Sticky Fingers. A normal reflected failure moves no candy.
 
-Redirected attempts do not run the legacy magical trick scenarios. An empty redirected bucket ends the attempt without a roll or candy movement; Mirror remains consumed, while Cunning, Second Chance and Sticky Fingers remain available. If no verified eligible target exists, Mirror stays active and no candy moves. Active database records from another server, inactive/frozen/protected players, bots and members no longer present cannot become redirection targets.
+An empty redirected bucket ends the attempt without a roll or candy movement; Mirror remains consumed, while Cunning, Second Chance and Sticky Fingers remain available. If no verified eligible target exists, Mirror stays active and no candy moves. Active database records from another server, inactive/frozen/protected players, bots and members no longer present cannot become redirection targets.
 
 ## Offensive potion combinations
 
 Cunning, Second Chance and Sticky Fingers can coexist. Cunning consumes one charge for an eligible initial roll. Second Chance triggers only if that roll fails, rerolls once at the same boosted rate, and does not consume another Cunning charge. A successful first roll preserves Second Chance. Neither can bypass Ward/Mirror protection.
 
-Sticky Fingers triggers only in the ordinary successful-transfer branch (including an ordinary redirected theft). Each new activation has 3 charges. A 7-candy theft gets up to 7 extra candy; one charge is consumed only when at least one extra candy is stolen. If no extra candy is available, Sticky Fingers stays active. Special trick scenarios, blocked/empty attempts, failed attempts and self-reflection preserve it. The recorded transfer and theft/loss statistics include the actual bonus. Existing active effects and bottles returned by a freeze retain their remaining charges; unused full bottles receive 3 charges when activated. The ordinary trick’s existing special outcomes still apply after a Second Chance success; the reroll does not guarantee an eventual ordinary theft.
+Sticky Fingers triggers only in the ordinary successful-transfer branch (including an ordinary redirected theft). Each new activation has 3 charges. A 200-candy theft gets 50–100 extra candy; one charge is consumed only when at least one extra candy is stolen. If no extra candy is available, Sticky Fingers stays active. Special trick scenarios, blocked/empty attempts, failed attempts and self-reflection preserve it. The recorded transfer and theft/loss statistics include the actual bonus. Existing active effects and bottles returned by a freeze retain their remaining charges; unused full bottles receive 3 charges when activated. The ordinary trick’s existing special outcomes still apply after a Second Chance success; the reroll does not guarantee an eventual ordinary theft.
 
 ## Luna’s Favor
 

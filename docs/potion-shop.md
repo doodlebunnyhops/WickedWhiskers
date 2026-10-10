@@ -24,7 +24,7 @@ Discord slash-command groups cannot also act as a standalone root command. Use `
 | cunning | Raven's Cunning | 5 | Add 15 percentage points to the next 3 eligible initial trick rolls; cap the boosted rate at 95% without lowering a higher base rate. |
 | luna | Luna's Calling | 10 | Give 5 candy each to up to 3 distinct other eligible server members; shared 60-second server cooldown. |
 | mirror | Mirror Brew | 10 | Redirect one incoming attempt; a successful self-hit feeds the cauldron. |
-| sticky | Sticky Fingers | 8 | Double candy on the next 3 ordinary successful thefts, capped by the target’s candy. |
+| sticky | Sticky Fingers | 8 | Add a random 25–50% of the stolen amount on the next 3 ordinary successful thefts, capped by the target’s candy. |
 | second_chance | Second Chance | 8 | Reroll one failed initial trick roll at the same effective chance. |
 | favor | Luna’s Favor | 5 | Add half an ordinary treat, rounded down, up to 5 extra candy. |
 | veil | Witch’s Veil | 50 + 5/minute | Immediate timed protection; 5–30 minutes, then a 60-minute personal cooldown. |
@@ -37,7 +37,7 @@ Witch’s Veil is the timed exception: it activates on confirmed purchase. `/sho
 
 ## Interactions
 
-Validation precedes protection; Ward blocks and Mirror redirects before the success roll. Ward and Mirror cannot coexist. A Ward blocks the entire trick, including empty-bucket scenarios, and records a separate blocked-trick statistic. It does not consume the attacker's Cunning charge. An empty, unprotected bucket runs its existing scenarios without consuming Cunning. Ordinary success and recovery/special branches remain unchanged in probability.
+Validation precedes protection; Ward blocks and Mirror redirects before the success roll. Ward and Mirror cannot coexist. A Ward blocks the entire trick, including empty-bucket scenarios, and records a separate blocked-trick statistic. It does not consume the attacker's Cunning charge. An empty, unprotected bucket runs its existing scenarios without consuming Cunning. See [trick rules](tricking.md) for percentages and special outcomes.
 
 Ward does not block gifts, Luna rewards, pumpkin losses or cauldron events. Cunning affects only the initial trick success roll. Frozen/inactive players and paused games cannot purchase or activate potions; frozen players cannot be trick participants.
 

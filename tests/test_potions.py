@@ -183,11 +183,12 @@ def test_ward_preserves_cunning_and_is_single_use(database):
 
 
 def test_reclaim_one_preserves_candy_and_counts_net_theft(database,monkeypatch):
-    rolls=iter([0,.9,0])
+    db.update_player_field(20,1,'candy_in_bucket',200)
+    rolls=iter([0,.9,.9,0])
     monkeypatch.setattr(player.random,'random',lambda:next(rolls))
     monkeypatch.setattr(player.random,'randint',lambda a,b:8)
     with db.transaction():player._resolve_trick(interaction(),interaction(20).user,player._TrickResponses())
-    assert (balance(10),balance(20))==(57,43)
+    assert (balance(10),balance(20))==(57,193)
     assert db.get_player_data(10,1)['total_candy_stolen']==7
 
 
@@ -203,7 +204,8 @@ def test_recovery_steal_cannot_overdraw_target(database,monkeypatch):
 def test_effect_rolls_back_if_trick_resolution_fails(database,monkeypatch):
     grant('cunning');p.use(1,10,'cunning','c')
     def fail(*a):raise RuntimeError('random failure')
-    monkeypatch.setattr(player.random,'randint',fail)
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',fail)
     with pytest.raises(RuntimeError):
         asyncio.run(player.player_trick(interaction(),interaction(20).user))
     assert p.inventory(1,10)[1]['cunning']==3
@@ -218,7 +220,7 @@ def test_trick_duplicate_interaction_cannot_consume_twice(database,monkeypatch):
     caller=interaction()
     asyncio.run(player.player_trick(caller,interaction(20).user))
     asyncio.run(player.player_trick(caller,interaction(20).user))
-    assert balance()==53
+    assert balance()==52
     assert p.inventory(1,10)[1]['cunning']==2
 
 
@@ -281,8 +283,8 @@ def test_shared_loss_funds_only_actual_deductions(database, monkeypatch):
     monkeypatch.setattr(player.random,'random',lambda:next(rolls))
     monkeypatch.setattr(player.random,'randint',lambda a,b:5)
     with db.transaction():player._resolve_trick(interaction(),interaction(20).user,player._TrickResponses())
-    assert balance(10)==45 and balance(20)==0
-    assert db.get_cauldron_pool(1)==6
+    assert balance(10)==49 and balance(20)==0
+    assert db.get_cauldron_pool(1)==2
 
 
 def test_two_orders_cannot_overspend(database):
@@ -326,3 +328,9 @@ def test_real_bot_setup_without_login(database,monkeypatch):
             assert {'shop','inventory','use','Potion Shop','trick','treat'} <= names
             assert 'buy' not in names
     asyncio.run(run())
+
+
+@pytest.fixture(autouse=True)
+def stable_trick_amounts(monkeypatch):
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',lambda balance,low,high:min(balance,max(1,(balance*(low+high)+100)//200)) if balance else 0)

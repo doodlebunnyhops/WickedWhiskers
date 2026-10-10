@@ -35,7 +35,10 @@ def roll_trick(interaction, responses, rate):
 
 
 def sticky_amount(interaction, responses, target, amount, available):
-    bonus = min(amount, max(0, available - amount))
+    if not potions.inventory(interaction.guild.id, interaction.user.id)[1].get('sticky') or available <= amount:
+        return amount
+    from utils.tricks import percentage
+    bonus = min(percentage(amount,25,50), max(0, available - amount))
     if bonus > 0 and take(interaction, interaction.user.id, 'sticky'):
         responses.potion_notes.append(text(interaction, 'sticky', target=target.mention, amount=bonus, total=amount + bonus))
         return amount + bonus
@@ -99,24 +102,8 @@ def resolve_protection(interaction, target, responses):
     if victim_data['candy_in_bucket'] <= 0:
         finish_mirror(interaction, responses, 'mirror_empty', target, redirected)
         return True
-    from utils.player import calculate_thief_success_rate
-    rate = prepare_rate(interaction, responses, calculate_thief_success_rate(attacker_data['candy_in_bucket']))
-    amount = min(random.randint(1, 10), victim_data['candy_in_bucket'])
-    conn = db.get_db_connection()
-    if not roll_trick(interaction, responses, rate):
-        conn.execute('UPDATE players SET failed_tricks=failed_tricks+1 WHERE guild_id=? AND player_id=?', (guild_id, attacker.id))
-        finish_mirror(interaction, responses, 'mirror_failed', target, redirected)
-        return True
-    if redirected.id == attacker.id:
-        conn.execute('UPDATE players SET candy_in_bucket=candy_in_bucket-?, total_candy_lost=total_candy_lost+?, failed_tricks=failed_tricks+1 WHERE guild_id=? AND player_id=?', (amount, amount, guild_id, attacker.id))
-        db.update_cauldron_pool(guild_id, amount)
-        db.update_cauldron_contribution(attacker.id, guild_id, amount)
-        finish_mirror(interaction, responses, 'mirror_self', target, redirected, amount)
-    else:
-        amount = sticky_amount(interaction, responses, redirected, amount, victim_data['candy_in_bucket'])
-        conn.execute('UPDATE players SET candy_in_bucket=candy_in_bucket-?, total_candy_lost=total_candy_lost+? WHERE guild_id=? AND player_id=?', (amount, amount, guild_id, redirected.id))
-        conn.execute('UPDATE players SET candy_in_bucket=candy_in_bucket+?, total_candy_stolen=total_candy_stolen+?, successful_tricks=successful_tricks+1 WHERE guild_id=? AND player_id=?', (amount, amount, guild_id, attacker.id))
-        finish_mirror(interaction, responses, 'mirror_success', target, redirected, amount)
+    from utils.tricks import settle
+    settle(interaction,redirected,responses)
     return True
 
 

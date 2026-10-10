@@ -58,7 +58,7 @@ def test_ward_defense_attempts_and_returned_bottle(database,monkeypatch):
 def test_mirror_redirect_counts_owner_once(database,monkeypatch):
     activate('mirror',20)
     monkeypatch.setattr(perks,'choose_redirect',lambda options:member(30))
-    monkeypatch.setattr(perks.random,'random',lambda:0)
+    rolls=iter([0,.9,.9]);monkeypatch.setattr(perks.random,'random',lambda:next(rolls))
     monkeypatch.setattr(perks.random,'randint',lambda a,b:3)
     resolve(monkeypatch)
     assert stats.totals(1,20)==dict(activated=1,triggered=1,defended=1)
@@ -105,9 +105,9 @@ def test_cauldron_contributions_match_actual_trick_loss(database,monkeypatch):
     rolls=iter([0,0]);monkeypatch.setattr(player.random,'random',lambda:next(rolls))
     monkeypatch.setattr(player.random,'randint',lambda a,b:8)
     resolve(monkeypatch)
-    assert db.get_cauldron_pool(1)==16
-    assert dict(db.get_leaderboard_query('cauldron_contributors',1))[10]==8
-    assert db.get_cauldron_contribution(20,1)==8
+    assert db.get_cauldron_pool(1)==2
+    assert dict(db.get_leaderboard_query('cauldron_contributors',1))[10]==1
+    assert db.get_cauldron_contribution(20,1)==1
 
 
 def test_stats_render_real_inventory_and_new_counters(database):
@@ -121,3 +121,9 @@ def test_stats_render_real_inventory_and_new_counters(database):
     assert 'before potion effects' in text
     state.leave(1,10)
     assert stats.totals(1,10)=={}
+
+
+@pytest.fixture(autouse=True)
+def stable_trick_amounts(monkeypatch):
+    from utils import tricks
+    monkeypatch.setattr(tricks,'percentage',lambda balance,low,high:min(balance,max(1,(balance*(low+high)+100)//200)) if balance else 0)

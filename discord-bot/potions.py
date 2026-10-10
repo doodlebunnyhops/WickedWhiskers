@@ -20,7 +20,7 @@ CATALOG = {
     "ward": Potion("Witch's Ward", "Blocks one incoming player trick. Does not protect against pumpkins or cauldron events.", 5, 1),
     "cunning": Potion("Raven's Cunning", "+15 percentage points on the next 3 eligible initial trick rolls. Special events still apply.", 5, 3),
     "mirror": Potion("Mirror Brew", "Redirects the next incoming trick attempt, possibly back to its caster. Cannot coexist with Ward.", 10, 1),
-    "sticky": Potion("Sticky Fingers", "Double candy on your next 3 ordinary successful thefts, capped by the target's balance. Charges are used only when extra candy is stolen.", 8, 3),
+    "sticky": Potion("Sticky Fingers", "Add a random 25–50% bonus on your next 3 ordinary successful thefts, capped by the target's balance. Charges are used only when extra candy is stolen.", 8, 3),
     "second_chance": Potion("Second Chance", "Rerolls your next failed initial trick roll once. Cannot bypass protection.", 8, 1),
     "favor": Potion("Luna's Favor", "On your next ordinary treat of 2+ candy, Luna adds half the gift (rounded down), up to 5 candy.", 5, 1),
     "luna": Potion("Luna's Calling", "Gives 5 candy each to up to 3 random other active, unfrozen players. 60-second server cooldown.", 10),
