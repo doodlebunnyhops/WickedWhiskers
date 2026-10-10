@@ -687,11 +687,31 @@
             ],
             "luna": [
                 "🌙 Luna makes a magical copy of the winnings, sending **{candy_amount} extra candy** into the cauldron. “A little sweetness for the brew, too!” The winnings stay put.",
-                "✨ “Oh, there’s enough joy to share!” Luna copies **{candy_amount} candy** into the cauldron without taking any of the winnings."
+                "✨ “Oh, there’s enough joy to share!” Luna copies **{candy_amount} candy** into the cauldron without taking any of the winnings.",
+                "🌙 Luna traces a silver circle above the winnings, copying **{candy_amount} candy** into the cauldron. “A little kindness for the next gathering!” The original sweets stay in the bucket.",
+                "✨ “One lovely surprise deserves another,” Luna smiles. A magical copy of **{candy_amount} candy** drops into the cauldron; none of the winnings leave the bucket.",
+                "🍬 Luna shakes a pumpkin seed like a tiny bell. It conjures **{candy_amount} matching candy** for the cauldron, leaving the winnings untouched.",
+                "🫧 Luna giggles at the cauldron’s happy bubbling. “There, dear, I haven’t forgotten you.” She creates **{candy_amount} extra candy** for the pool; the full win stays put.",
+                "🎃 “Even pumpkin seeds can hold a little wonder.” Luna turns a sparkle into a copy of the **{candy_amount} candy** won and sends it to the cauldron. The originals remain safe in the bucket.",
+                "🌟 Luna cups a handful of moonlight and makes **{candy_amount} new candy** for the cauldron. “Something sweet to look forward to!” No winnings are taken.",
+                "🌙 A silver ribbon curls from Luna’s wand, carrying **{candy_amount} magically copied candy** into the cauldron. “Plenty of joy to go around.” The winnings stay in the bucket.",
+                "🍂 Luna brushes pumpkin dust from her sleeves. “Let’s save a little magic for everyone.” She copies **{candy_amount} candy** into the pool without touching the win.",
+                "✨ The cauldron gives a hopeful little bubble. “Oh, you’d like a surprise too?” Luna creates **{candy_amount} extra candy** for it. The player keeps every sweet they won.",
+                "🍬 Luna whispers to a floating pumpkin seed, which blossoms into **{candy_amount} new candy** above the cauldron. “A sweet little harvest!” The original winnings remain untouched."
             ],
             "raven": [
                 "🔥 Raven lunges for the scattered sweets, but the cauldron gulps them down first. “That was supposed to be MINE!”",
-                "🦇 Raven tries to pocket the lost candy, but the cauldron claims it. “Thieving cookware!” she shrieks."
+                "🦇 Raven tries to pocket the lost candy, but the cauldron claims it. “Thieving cookware!” she shrieks.",
+                "🦇 Raven points accusingly at the pumpkin. “You were supposed to frighten them, not cater!” The cauldron swallows the scattered sweets.",
+                "🔥 The lost candy plops into the cauldron. Raven folds her arms. “Yes, yes. That was absolutely my plan.”",
+                "🫧 The cauldron burps after gulping down the lost sweets. “Some of us were raised with manners,” Raven says, hiding a grin.",
+                "🕷️ Raven offers the cauldron a pumpkin seed in exchange for the lost candy. It bubbles louder. “Fine. Keep your precious snacks.”",
+                "💀 The cauldron catches the fallen candy before Raven can reach it. “You have no hands. How are you winning this?”",
+                "🎃 Raven glares at the broken pumpkin as its stolen sweets tumble into the cauldron. “Next time, we discuss the commission FIRST.”",
+                "🦇 “A tribute to my magnificent spellwork!” Raven declares as the cauldron absorbs the lost candy. The pot responds with a deeply unimpressed bubble.",
+                "🔥 Raven taps the cauldron with her wand. “One sweet for the witch?” It gulps down the last of the lost candy. “I shall remember this.”",
+                "🫧 The lost sweets disappear beneath the cauldron’s bubbling surface. Raven peers inside. “You are a cooking pot, not a bottomless handbag.”",
+                "🕯️ Raven dramatically presents the fallen candy to the cauldron. “A donation. Entirely voluntary. On the pumpkin’s behalf.”"
             ],
             "hidden_win": [
                 "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
