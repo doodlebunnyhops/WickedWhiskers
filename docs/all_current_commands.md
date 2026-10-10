@@ -25,7 +25,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/treat <member> <amount>` | Player/public | Give candy to another active player; special events may alter the cost/reward. |
 | `/whois <character>` | Player/public | Show Luna or Raven character information. |
 | `/bucket` | Player/public | Show candy, unactivated bottles, and earnings with a private Collect earned candy button. |
-| `/smash_pumpkin <amount>` | Player/public | Wager candy on a pumpkin; no entry fee, losses capped at your bucket. See [pumpkin rules](pumpkin-smashing.md). |
+| `/smash_pumpkin <amount>` | Player/public | Wager candy on a pumpkin; no entry fee, losses capped at your wager. See [pumpkin rules](pumpkin-smashing.md). |
 | `/shop browse` | Player/public | Open your private potion-selection and quantity modal, then review and confirm checkout. |
 | `/shop manage` | Shop manager | Show this server’s catalog; use controls and a modal to change prices or sale availability. |
 | `/shop manager_role [role]` | Manage Server | Set the dedicated shop-manager role. Omit role to clear it. |

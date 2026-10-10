@@ -7,7 +7,7 @@ Run `/help` for a private guide. In a server using #join, #play, and #shop, reac
 | `/join` | Start with 50 candy. The bot also accepts 🎃 on the configured join message. |
 | `/trick member:@Player` | Attempt to steal candy; witches and potions can change the result. |
 | `/treat member:@Player amount:5` | Offer candy to another player; special magical outcomes can alter the cost or gift. |
-| `/smash_pumpkin amount:5` | Wager candy. There is no separate entry fee, and losses can empty your bucket. |
+| `/smash_pumpkin amount:5` | Wager candy. There is no separate entry fee, and losses cannot exceed your wager. Going all-in can empty your bucket. |
 | `/bucket` | Privately check candy, bottles, and saved earnings; use Collect earned candy to transfer your reserve. |
 | `/shop browse` | Select a potion and quantity, then review and confirm your private checkout. |
 | `/inventory` | Privately see bottles, returned partial bottles, and active effects; open Use Potion or protection controls. |

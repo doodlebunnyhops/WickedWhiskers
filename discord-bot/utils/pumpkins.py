@@ -77,7 +77,7 @@ def smash(guild_id, player_id, wager, action_id, rng=random):
         else:
             outcome = 'lose_double'
         amount = 0 if outcome=='break_even' else roll_amount(wager,balance,outcome,rng)
-        delta = amount if outcome in ('win','win_extra') else -min(amount,balance)
+        delta = amount if outcome in ('win','win_extra') else -min(amount,wager,balance)
         after = balance + delta
         if after > 2**63-1:
             raise PumpkinError('balance_limit')

@@ -550,27 +550,27 @@
                         "🦇 {user} tries to steal from {target}, but leaves with **0 candy**. “All that plotting. Such impressive emptiness.”"
                     ],
                     "1": [
-                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Now that is a useful pair of hands.”",
+                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Such lovely manners. You didn’t even interrupt them while robbing them.”",
                         "🦇 **{amount} candy** disappears from {target}’s bucket and reappears with {user}. “A most convincing magic trick,” Raven purrs.",
                         "🖤 {user} outwits {target} and pockets **{amount} candy**. Raven gives a slow, approving clap. “Do try not to look so innocent.”"
                     ],
                     "3": [
-                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Now that is a useful pair of hands.”",
+                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Such lovely manners. You didn’t even interrupt them while robbing them.”",
                         "🦇 **{amount} candy** disappears from {target}’s bucket and reappears with {user}. “A most convincing magic trick,” Raven purrs.",
                         "🖤 {user} outwits {target} and pockets **{amount} candy**. Raven gives a slow, approving clap. “Do try not to look so innocent.”"
                     ],
                     "6": [
-                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Now that is a useful pair of hands.”",
+                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Such lovely manners. You didn’t even interrupt them while robbing them.”",
                         "🦇 **{amount} candy** disappears from {target}’s bucket and reappears with {user}. “A most convincing magic trick,” Raven purrs.",
                         "🖤 {user} outwits {target} and pockets **{amount} candy**. Raven gives a slow, approving clap. “Do try not to look so innocent.”"
                     ],
                     "9": [
-                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Now that is a useful pair of hands.”",
+                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Such lovely manners. You didn’t even interrupt them while robbing them.”",
                         "🦇 **{amount} candy** disappears from {target}’s bucket and reappears with {user}. “A most convincing magic trick,” Raven purrs.",
                         "🖤 {user} outwits {target} and pockets **{amount} candy**. Raven gives a slow, approving clap. “Do try not to look so innocent.”"
                     ],
                     "10": [
-                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Now that is a useful pair of hands.”",
+                        "🕸️ {user} slips away with **{amount} candy** from {target}. Raven smiles. “Such lovely manners. You didn’t even interrupt them while robbing them.”",
                         "🦇 **{amount} candy** disappears from {target}’s bucket and reappears with {user}. “A most convincing magic trick,” Raven purrs.",
                         "🖤 {user} outwits {target} and pockets **{amount} candy**. Raven gives a slow, approving clap. “Do try not to look so innocent.”"
                     ]
@@ -759,7 +759,7 @@
             "lose_double": [
                 "💀 *Oh no, {user}! That cursed pumpkin took away **{candy_amount}** candy!* Luna is here to comfort you in this spooky time. Better luck next time! 🎃",
                 "🕷️ *Yikes, {user}, that pumpkin was a real trickster!* It drained **{candy_amount}** candy from you. Luna will help you recover soon! 🍬",
-                "☠️ *Oh dear, {user}, that haunted gourd took **twice** the toll!* {candy_amount} candy is gone, but Luna is here to lift your spirits! Keep trying! 🌕 "
+                "☠️ *Oh dear, {user}, that haunted gourd claimed your wager!* {candy_amount} candy is gone, but Luna is here to lift your spirits! Keep trying! 🌕 "
             ],
             "break_even": [
                 "👻 *Well, {user}, that pumpkin was a dud!* No candy gained or lost, but Luna is proud of your smashing spirit! Keep trying! 🎃",
@@ -1044,7 +1044,7 @@
                 },
                 "pumpkins": {
                     "name": "🎃 Smash a pumpkin",
-                    "value": "`/smash_pumpkin amount:10` — wager candy with variable gains and losses. Larger portions of your bucket widen ordinary and big-win ranges. Base odds: 10% big win, 30% ordinary win, 20% break even, 30% ordinary loss, 10% big loss. With at least 3 active, unfrozen players holding candy, buckets below their median get up to +5 percentage points of ordinary wins, taken from break-even odds. No entry fee; an all-in big loss empties your bucket!"
+                    "value": "`/smash_pumpkin amount:10` — wager candy with variable gains and losses. Larger portions of your bucket widen ordinary and big-win ranges. Base odds: 10% big win, 30% ordinary win, 20% break even, 30% ordinary loss, 10% big loss. With at least 3 active, unfrozen players holding candy, buckets below their median get up to +5 percentage points of ordinary wins, taken from break-even odds. No entry fee; you can never lose more than your wager. An all-in big loss empties your bucket!"
                 },
                 "where": {
                     "name": "Where to play",

@@ -20,7 +20,7 @@ def settle(roll, wager=10, magic=.99, action='smash', guild=1, size=.5):
     return pumpkins.smash(guild, 10, wager, action, Rolls(roll, size, magic))[0]
 
 
-@pytest.mark.parametrize('roll,delta', [(0,10),(.099,10),(.1,5),(.399,5),(.4,0),(.599,0),(.6,-5),(.899,-5),(.9,-15),(.999,-15)])
+@pytest.mark.parametrize('roll,delta', [(0,10),(.099,10),(.1,5),(.399,5),(.4,0),(.599,0),(.6,-5),(.899,-5),(.9,-10),(.999,-10)])
 def test_net_outcomes_and_boundaries(database, roll, delta):
     result = settle(roll)
     data = db.get_player_data(10,1)
@@ -39,7 +39,7 @@ def test_small_reward_matches_normal_loss(database,wager):
     assert db.get_player_data(10,1)['candy_in_bucket'] == 50
 
 
-@pytest.mark.parametrize('balance,wager,roll', [(15,10,.95),(15,10,.95),(1,1,.7)])
+@pytest.mark.parametrize('balance,wager,roll', [(15,15,.95),(50,50,.95),(1,1,.7)])
 def test_entire_bucket_and_actual_cauldron_contribution(database,balance,wager,roll):
     database.execute('UPDATE players SET candy_in_bucket=? WHERE guild_id=1 AND player_id=10',(balance,))
     database.commit()
@@ -101,7 +101,7 @@ def test_wipeout_announcement_and_replay(database,monkeypatch):
     monkeypatch.setattr(player,'post_to_target_channel',post)
     rolls=Rolls(.99,.99,0)
     monkeypatch.setattr(pumpkins.random,'random',rolls.random)
-    asyncio.run(player.smash_pumpkin(caller,30))
+    asyncio.run(player.smash_pumpkin(caller,50))
     embed = post.call_args.args[1]
     assert '50' in embed.description and 'Raven' in embed.description
     assert 'cauldron' in embed.description and 'Bucket:' not in embed.description
@@ -109,7 +109,7 @@ def test_wipeout_announcement_and_replay(database,monkeypatch):
     assert post.call_args.kwargs['channel_type'] == 'event'
     caller.followup.send.assert_not_awaited()
     caller.delete_original_response.assert_awaited_once()
-    asyncio.run(player.smash_pumpkin(caller,30))
+    asyncio.run(player.smash_pumpkin(caller,50))
     assert post.await_count == 1
     assert db.get_cauldron_pool(1) == 50
 
@@ -168,3 +168,25 @@ def test_actual_amount_controls_narration_and_wipeout(database):
     # All-in losses are capped even for a very large rolled amount.
     result=settle(.99,wager=75,size=.999999,action='loss')
     assert result['delta']==-75 and result['message_key']=='lose_all'
+
+
+@pytest.mark.parametrize('balance,wager', [(10000,2500),(50,10),(50,49),(1,1),(2**63-1,2500)])
+@pytest.mark.parametrize('roll', [.7,.95])
+@pytest.mark.parametrize('size', [0,.5,.999999])
+def test_losses_never_exceed_wager(database,balance,wager,roll,size):
+    database.execute('UPDATE players SET candy_in_bucket=? WHERE guild_id=1 AND player_id=10',(balance,))
+    database.commit()
+    result=settle(roll,wager,magic=0,size=size)
+    lost=-result['delta']
+    assert 0 < lost <= wager
+    if roll == .95:
+        assert lost == wager
+    data=db.get_player_data(10,1)
+    assert data['candy_in_bucket'] == balance-lost
+    assert data['total_candy_lost_on_pumpkins'] == lost
+    assert db.get_cauldron_pool(1) == lost
+    assert db.get_cauldron_contribution(10,1) == lost
+    replay,repeated=pumpkins.smash(1,10,wager,'smash',Rolls())
+    assert repeated and replay == result
+    assert db.get_player_data(10,1)['candy_in_bucket'] == balance-lost
+    assert db.get_cauldron_pool(1) == lost

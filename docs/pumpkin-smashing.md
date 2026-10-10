@@ -1,6 +1,6 @@
 # Pumpkin smashing
 
-Use `/smash_pumpkin amount:<wager>` with a positive whole number no larger than your current bucket. There is **no separate entry fee**: each result is a net gain or loss. Unclaimed earnings do not count as bucket candy.
+Use `/smash_pumpkin amount:<wager>` with a positive whole number no larger than your current bucket. You cannot lose more than your wager. There is **no separate entry fee**: each result is a net gain or loss. Unclaimed earnings do not count as bucket candy.
 
 ## Outcome chances
 
@@ -29,20 +29,20 @@ Take `risk = wager / bucket` before settling the smash. Independently sample a u
 | Big loss | `1` | `2` |
 | Break even | `0` | `0` |
 
-Multiply by the wager and round to the nearest whole candy, with halves rounded up and a minimum of 1 for a win/loss. Losses are capped at the bucket, never negative balances. Rounded endpoints are not equally likely. There is no penalty or bonus based on previous rolls.
+Multiply by the wager and round to the nearest whole candy, with halves rounded up and a minimum of 1 for a win/loss. Losses are capped at the wager, never taking additional candy from the bucket. The legacy big-loss multiplier is still sampled, but the cap makes its settled loss exactly the wager. Rounded endpoints are not equally likely. There is no penalty or bonus based on previous rolls.
 
 For a 50-candy bucket:
 
 | Wager | Ordinary win/loss | Big win | Big loss after cap |
 | --- | --- | --- | --- |
-| 5 | 2–3 | 5 | 5–10 |
-| 10 | 4–6 | 9–11 | 10–20 |
-| 25 | 8–18 | 19–31 | 25–50 |
+| 5 | 2–3 | 5 | 5 |
+| 10 | 4–6 | 9–11 | 10 |
+| 25 | 8–18 | 19–31 | 25 |
 | 50 | 10–40 | 25–75 | 50 |
 
 An all-in big loss still empties the bucket. Normal and big-win ranges overlap at high risk: announcement wording uses the actual amount. Gains at least as large as the wager use the jackpot narration; smaller gains use ordinary narration. Losses at least the wager use cursed-pumpkin narration; any full drain uses the empty-bucket announcement. The saved outcome retains the actual selected category for auditing.
 
-Before rounding, loss caps, and the median boost, average net change is −5% of the wager. Capped losses and boosted ordinary-win chances improve that average; these are not guarantees for any individual run.
+With the wager cap applied, before rounding and the median boost, average net change is 0% of the wager. The ordinary-win boost improves that average; this is not a guarantee for any individual run.
 
 ## Cauldron and messages
 
