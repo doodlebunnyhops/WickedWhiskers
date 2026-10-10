@@ -381,6 +381,7 @@
     },
     "remove_ghoul_candy": {
         "event_messages": {
+            "1": "{user} felt the icy grip of The Agency as they took away a single candy. One candy might seem small, but when Greed is involved, nothing is ever trivial.",
             "10": "The Agency has quietly removed {amount} candy from {user}... just a small taste of what they can take away.",
             "50": "Without warning, {amount} candy was taken from {user} by The Agency. Greed's influence grows, and who knows what else they'll take next?",
             "100": "{user} just had {amount} candy snatched away by The Agency! Their greed is insatiable, and the player’s stash is quickly dwindling!",
@@ -389,8 +390,7 @@
             "1000": "{user} was hit hard by The Agency, losing a staggering {amount} candy! Greed is hungry, and it looks like they’re next on his list!",
             "else": "The Agency’s greed knows no bounds! They’ve taken an unfathomable {amount} candy from {user}, leaving them vulnerable to the darkness that lurks behind every corner.",
             "negative": "The Agency shows no mercy to {user}. They are now in debt to the dark forces with a **negative candy balance** of {new_candy_in_bucket}... perhaps Greed will come to collect sooner than they think.",
-            "all": "The Agency has stripped {user} of all their candy! With nothing left, they stand empty-handed, and Greed is surely satisfied... for now.",
-            "1": "{user} felt the icy grip of The Agency as they took away a single candy. One candy might seem small, but when Greed is involved, nothing is ever trivial."
+            "all": "The Agency has stripped {user} of all their candy! With nothing left, they stand empty-handed, and Greed is surely satisfied... for now."
         },
         "personal_message": "{amount} candy has been removed from {user}. They now have {max(new_candy_in_bucket, 0)} candy."
     },
@@ -619,25 +619,25 @@
                 "thief_laughs": {}
             },
             "successful_trick": {
-                "both_lose": {},
-                "target_gets_1": {},
                 "0": {},
                 "1": {},
                 "3": {},
                 "6": {},
                 "9": {},
-                "10": {}
+                "10": {},
+                "both_lose": {},
+                "target_gets_1": {}
             },
             "failed_trick": {
-                "thief_lose": {},
-                "both_lose": {},
-                "thief_loses_some": {},
                 "0": {},
                 "1": {},
                 "3": {},
                 "6": {},
                 "9": {},
-                "10": {}
+                "10": {},
+                "thief_lose": {},
+                "both_lose": {},
+                "thief_loses_some": {}
             }
         }
     },
@@ -1028,7 +1028,7 @@
                 },
                 "trick": {
                     "name": "🦇 Trick someone",
-                    "value": "`/trick member:@Player` — ordinary theft takes 2–6% of the final target’s bucket. Success depends on both buckets. Failure can cost 1–3% of yours. A rare spell can empty a bucket above 100 candy, including your own if reflected!"
+                    "value": "`/trick member:@Player` — try to sneak candy from another player. Tricks can backfire and cost you candy, and a rare spell can empty an entire bucket. Watch out for protective potions!"
                 },
                 "treat": {
                     "name": "🍬 Share a treat",
@@ -1044,7 +1044,7 @@
                 },
                 "pumpkins": {
                     "name": "🎃 Smash a pumpkin",
-                    "value": "`/smash_pumpkin amount:10` — wager candy with variable gains and losses. Larger portions of your bucket widen ordinary and big-win ranges. Base odds: 10% big win, 30% ordinary win, 20% break even, 30% ordinary loss, 10% big loss. With at least 3 active, unfrozen players holding candy, buckets below their median get up to +5 percentage points of ordinary wins, taken from break-even odds. No entry fee; you can never lose more than your wager. An all-in big loss empties your bucket!"
+                    "value": "`/smash_pumpkin amount:10` — choose how much candy to risk, then smash! You might win candy, break even, or lose some or all of your wager. There’s no extra entry fee, and you can never lose more than you wager. Going all-in can empty your bucket!"
                 },
                 "where": {
                     "name": "Where to play",
@@ -1068,11 +1068,11 @@
                 },
                 "tricks": {
                     "name": "Boost your tricks",
-                    "value": "**Raven's Cunning:** +15 percentage points on your next 3 eligible initial trick rolls.\n**Sticky Fingers:** Add a random 25–50% bonus to the stolen amount on your next 3 ordinary successful thefts, capped by the target's candy. A charge is used only when extra candy is stolen.\n**Second Chance:** rerolls one failed initial trick roll; it cannot bypass protection."
+                    "value": "**Raven's Cunning:** improves your chances on your next 3 eligible trick attempts.\n**Sticky Fingers:** grabs extra candy on your next 3 ordinary successful thefts. A charge is used only when it adds extra candy.\n**Second Chance:** gives one failed trick roll another try. It cannot bypass protection."
                 },
                 "kindness": {
                     "name": "Spread some sweetness",
-                    "value": "**Luna's Favor:** on your next ordinary treat of at least 2 candy, adds half the gift (rounded down), up to 5 extra candy.\n**Luna's Calling:** immediately gives 5 candy each to up to 3 random other active, unfrozen players. Shared 60-second server cooldown."
+                    "value": "**Luna's Favor:** adds a little magical candy to your next qualifying ordinary treat, up to 5 extra candy.\n**Luna's Calling:** immediately gives 5 candy each to up to 3 random other eligible players. Shared 60-second server cooldown."
                 },
                 "rules": {
                     "name": "Before you sip",
