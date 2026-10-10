@@ -657,7 +657,7 @@
                 "🌙 “Oh, what a lovely smash!” Luna cheers. {user} uncovers a jackpot of **{candy_amount} candy**!"
             ],
             "lose_double": [
-                "💀 Double trouble! {user} cracks a cursed pumpkin and loses **{candy_amount} candy**. Raven raises an eyebrow. “That one holds a grudge.”",
+                "💀 Cauldron-sized trouble! {user} cracks a cursed pumpkin and loses **{candy_amount} candy**. Raven raises an eyebrow. “That one holds a grudge.”",
                 "🕷️ {user} disturbs a haunted gourd, losing **{candy_amount} candy**. “Some pumpkins charge for the inconvenience,” Raven says."
             ],
             "lose_all": [
@@ -1024,11 +1024,15 @@
                 },
                 "pumpkins": {
                     "name": "🎃 Smash a pumpkin",
-                    "value": "`/smash_pumpkin amount:10` — wager candy: 10% big win, 30% small reward, 20% break even, 30% normal loss, 10% big loss. No separate entry fee. A big loss can empty your entire bucket!"
+                    "value": "`/smash_pumpkin amount:10` — wager candy with variable gains and losses. Larger portions of your bucket widen ordinary and big-win ranges. Base odds: 10% big win, 30% ordinary win, 20% break even, 30% ordinary loss, 10% big loss. With at least 3 active, unfrozen players holding candy, buckets below their median get up to +5 percentage points of ordinary wins, taken from break-even odds. No entry fee; an all-in big loss empties your bucket!"
                 },
                 "where": {
                     "name": "Where to play",
                     "value": "Use your server's play channel for commands. Join and shop messages may live in separate channels; their names are chosen by your moderators."
+                },
+                "earnings": {
+                    "name": "🍬 Collect your earned sweets",
+                    "value": "Open `/bucket` and press **Collect earned candy**. Joined, unfrozen players earn 1 candy per 10 minutes even offline or under Witch’s Veil: 100/day (midnight UTC reset), up to 300 saved. At 300, earning stops until collection; no catch-up for capped time. Saved sweets cannot be stolen. Pauses and freezes stop earning and collection. Leaving the game/server or a moderator player reset forfeits saved earnings; daily limits still apply."
                 }
             }
         },
@@ -1124,7 +1128,7 @@
                 },
                 "state": {
                     "name": "Pause or resume",
-                    "value": "`/game set state state:Disable` or `state:Enable`. Moderator candy adjustments remain available while gameplay is paused."
+                    "value": "`/game set state state:Disable` or `state:Enable`. Moderator candy adjustments remain available while gameplay is paused. Pausing also stops passive earning and collection; saved earnings remain."
                 },
                 "freeze": {
                     "name": "Freeze / unfreeze",
@@ -1168,7 +1172,7 @@
         "protection_option": "Timed concealment; buy a duration or reserve a candy budget.",
         "indefinite": "Until a moderator unfreezes you",
         "no_reason": "No reason was supplied.",
-        "frozen_private": "🧊 You are frozen.\n**Ends:** {expiry}\n**Reason:** {reason}\nYou cannot trick, treat, smash pumpkins, shop, activate potions, or receive game rewards. Other players cannot target you. Your progress is preserved, and active potions were returned with their remaining charges. You can still check `/bucket`, `/inventory`, and `/help`. Leaving forfeits your progress but does not remove this freeze.",
+        "frozen_private": "🧊 You are frozen.\n**Ends:** {expiry}\n**Reason:** {reason}\nYou cannot trick, treat, smash pumpkins, shop, activate potions, or receive game rewards. Other players cannot target you. Passive earning and collection are paused. Your progress is preserved, and active potions were returned with their remaining charges. You can still check `/bucket`, `/inventory`, and `/help`. Leaving forfeits your progress but does not remove this freeze.",
         "protected_private": "🌫️ Your Witch’s Veil lasts until <t:{expiry}:F> (<t:{expiry}:R>). You cannot trick, treat, or activate other potions while hidden. You can smash pumpkins, shop, and check inventory. You cannot receive treats, Luna gifts, or cauldron winnings. Use `/shop protection` to manage your spell.",
         "not_joined": "🌙 You are not currently playing. Use `/join` when you are ready.",
         "join_self": "🌙 You can only join yourself.",
@@ -1214,7 +1218,7 @@
         "thaw_saved": "✨ The freeze on {player} is removed. Existing leave/rejoin restrictions still apply.",
         "leave_confirm_button": "Leave and erase my progress",
         "cancel_button": "Cancel",
-        "leave_warning": "⚠️ **Leave the game?**\nThis permanently forfeits your candy, stats, bottles, active effects, and protection reserve with no refund. You cannot rejoin for one hour. Moderator freezes and existing cooldowns survive. Removing your 🎃 reaction does NOT leave the game. Confirm only if you want a fresh start later.",
+        "leave_warning": "⚠️ **Leave the game?**\nThis permanently forfeits your candy, stats, bottles, active effects, protection reserve, and unclaimed earnings with no refund. You cannot rejoin for one hour. Moderator freezes and existing cooldowns survive. Removing your 🎃 reaction does NOT leave the game. Confirm only if you want a fresh start later.",
         "left": "🌙 You have left the game and forfeited your progress. You can join again <t:{expiry}:F> (<t:{expiry}:R>), provided you are not still frozen. Any freeze and cooldowns remain in place.",
         "cancelled": "🌙 Cancelled. Nothing changed.",
         "protection_active": "🌫️ **Witch’s Veil active** · {mode}\nEnds <t:{expiry}:F> (<t:{expiry}:R>).",
@@ -1315,7 +1319,9 @@
         "potion_row": "Inventory: {bottles} • Active charges: {charges}\nBought: {purchased} • Activated: {activated} • Triggered: {triggered}\nSpent: {spent:,} • Candy gifted: {gifted:,} • Defenses: {defended}",
         "hidden_title": "Sweetness, evilness & base chance",
         "hidden": "Sweetness: **{sweetness}%**\nEvilness: **{evilness}%**\nBase trick roll chance: **{chance}%** (before potion effects and special outcomes).\nLuna cauldron weighting uses kindness action counts, not the sweetness percentage.",
-        "tracking_note": "New counters start when tracking is installed. Activations include reactivating returned bottles; purchases do not."
+        "tracking_note": "New counters start when tracking is installed. Activations include reactivating returned bottles; purchases do not.",
+        "earnings_title": "🍬 Passive earnings",
+        "earnings": "Saved: {pending}/{reserve_cap} · Earned today: {earned_today}/{daily_cap}\nTotal earned: {total_earned} · Collected: {total_claimed} · Forfeited: {total_forfeited}\nDaily reset: <t:{reset_at}:R>. These earnings do not count as treating or cauldron contributions."
     },
     "gameplay_messages": {
         "post_failed": "🌙 Your action and candy result were saved, but the public announcement could not be delivered. Please let a moderator know; repeating the command would start a new action.",
@@ -1376,5 +1382,25 @@
                 "🌫️ Beneath the Veil, only you can inspect your bucket. The witches’ gaze passes over the mist."
             ]
         }
+    },
+    "passive_income": {
+        "button": "Collect earned candy",
+        "summary": "🍬 **Saved earnings: {pending} / {reserve_cap} candy**\nEarned today: {earned_today} / {daily_cap} · Resets <t:{reset_at}:R>\nEarn 1 candy per 10 minutes, even offline. Collect to move it into your bucket.",
+        "reserve_full": "🫙 Your secret sweet jar is full! Collect it to make room. Time spent full does not earn extra candy.",
+        "daily_full": "🌙 Your daily sweets are all tucked away. Earning resumes <t:{reset_at}:R>.",
+        "claimed": [
+            "🌙 “A little sweetness for your next adventure!” You collect **{amount} candy**.",
+            "🍬 Your saved sweets tumble into your bucket: **{amount} candy collected**."
+        ],
+        "balance": "🪣 **Candy in your bucket: {amount}**",
+        "nothing": "🫙 Just a few sugar crystals for now! No earned candy is ready to collect yet.",
+        "repeated": "🌙 Those **{amount} candy** were already collected. No second helping from the same claim!",
+        "not_owner": "🦇 Paws off that jar! Open your own `/bucket` to collect your earnings.",
+        "not_joined": "🌙 Join the game with `/join` before collecting earned candy.",
+        "frozen": "🧊 Your sweet jar is resting while you are frozen. Earning and collecting resume when the freeze ends.",
+        "paused": "🌙 The game is resting. No candy is earned or collected while it is paused.",
+        "balance_limit": "🪣 Your bucket cannot hold this claim yet. Your saved earnings are safe; make room before collecting.",
+        "failed": "🫙 The lid would not budge. Your claim was not completed; please try again.",
+        "display_failed": "🍬 Your claim of **{amount} candy** was processed, but the display could not refresh. Check `/bucket`; do not expect the same claim twice."
     }
 }

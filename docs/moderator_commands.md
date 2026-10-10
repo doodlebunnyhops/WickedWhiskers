@@ -120,3 +120,7 @@ For #join and #shop, deny @everyone Send Messages and Add Reactions to keep the 
 **Outstanding privacy fix:** the requested policy permits only Candy Hoarders publicly outside Admin. Current code permits every individual category in Event; until corrected, run sensitive boards in Admin or another channel where they respond privately. All is already private outside Admin. Commands reply where invoked; they do not forward boards to Event.
 
 For host setup, command synchronization, and currently requested gateway intents, see [development](development.md). The planned no-Members-intent operation and large-guild changes are deferred.
+
+## Passive earnings
+
+`/game get player` Stats/All includes saved earnings, today’s accrued amount, total earned/collected/forfeited, and UTC reset time. Claims only change bucket candy, not kindness, cauldron weights, or potion counters. Pausing freezes accrual and collection; moderator freezes do the same per player. Player resets and departures forfeit pending earnings without clearing the daily allowance history. See [earnings rules](passive-earnings.md).

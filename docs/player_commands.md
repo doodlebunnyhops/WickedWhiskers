@@ -8,7 +8,7 @@ Run `/help` for a private guide. In a server using #join, #play, and #shop, reac
 | `/trick member:@Player` | Attempt to steal candy; witches and potions can change the result. |
 | `/treat member:@Player amount:5` | Offer candy to another player; special magical outcomes can alter the cost or gift. |
 | `/smash_pumpkin amount:5` | Wager candy. There is no separate entry fee, and losses can empty your bucket. |
-| `/bucket` | Privately check candy and unactivated bottles, with narration suited to an empty, small, or larger bucket. |
+| `/bucket` | Privately check candy, bottles, and saved earnings; use Collect earned candy to transfer your reserve. |
 | `/shop browse` | Select a potion and quantity, then review and confirm your private checkout. |
 | `/inventory` | Privately see bottles, returned partial bottles, and active effects; open Use Potion or protection controls. |
 | `/use` | Open the potion activation modal. |
@@ -38,3 +38,7 @@ A moderator freeze preserves your progress and returns remaining active potion c
 ## Other ways to play
 
 Right-click or long-press a member, then choose Apps for Join Game, Trick Player, Treat Player, Check Bucket, or Potion Shop. Bucket and shop always belong to you, regardless of whose menu you opened. Join Game must target yourself. The persistent shop message has both Open Shop and Inventory buttons.
+
+## Earn candy over time
+
+Joined, unfrozen players earn 1 candy per 10 minutes, even offline or under Witch’s Veil. Maximum 100 per UTC day and 300 saved. Collect from `/bucket`; unclaimed candy stays protected and cannot be wagered. Full reserves stop earning without backdated catch-up. Pauses/freezes stop earning and collection. Leaving or a moderator reset forfeits saved earnings. See [full rules](passive-earnings.md).

@@ -411,7 +411,11 @@ async def player_bucket(interaction: discord.Interaction):
     tier = 'empty' if candy_in_bucket == 0 else 'small' if candy_in_bucket < 50 else 'growing' if candy_in_bucket < 500 else 'large'
     message = interaction.client.message_loader.get_message
     personal_message = message('bucket_messages',witch_name,tier) + '\n\n' + message('bucket_messages','summary',candy_amount=candy_in_bucket,potion_amount=potions_purchased)
-    await interaction.response.send_message(embed=icon_embed(personal_message, "candy_bucket"), ephemeral=True)
+    import passive_income as income
+    from modals.earnings import EarningsView, details
+    earnings=income.status(guild_id,user.id)
+    personal_message+='\n\n'+details(interaction,earnings)
+    await interaction.response.send_message(embed=icon_embed(personal_message, "candy_bucket"), view=EarningsView(interaction), ephemeral=True)
 
 async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
     from utils.pumpkins import smash, PumpkinError

@@ -58,3 +58,7 @@ Leaving the Discord server applies the same reset and one-hour rejoin delay. The
 ## Messages and help
 
 All new player-facing text is under `participation` in `discord-bot/utils/messages.json`, using the existing `messages.py` loader. Protected pumpkin variants use `smash_pumpkin.*.hidden_*`. `/help` documents the new player actions, potion, freeze controls, and event exclusions while retaining moderator-only topics.
+
+## Passive earnings
+
+Freezes stop earning and collection without confiscating the saved reserve. Eligible partial-minute progress survives; earning resumes at timed expiry. Veil does not stop either earning or collection. Leaving the game/guild or a moderator reset forfeits saved earnings and partial progress; daily totals and claim history remain to prevent allowance resets. Paused game time does not earn. See [passive earnings](passive-earnings.md).

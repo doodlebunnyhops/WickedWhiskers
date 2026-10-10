@@ -11,6 +11,7 @@ Start with `/help` for a private guide tailored to your access. Join with `/join
 - [Complete command reference](docs/all_current_commands.md): registered commands, arguments, access, and limitations.
 - [Potion shop](docs/potion-shop.md) and [potion interactions](docs/potion-interactions.md): prices, charges, stacking, and accounting.
 - [Freeze, protection, and leaving](docs/freeze-and-protection.md): timers, refunds, cooldowns, and preserved restrictions.
+- [Passive earnings](docs/passive-earnings.md): offline accrual, daily limits, and collection.
 - [Pumpkin rules](docs/pumpkin-smashing.md) and [leaderboards/statistics](docs/moderator_commands.md#seasonal-statistics-and-boards).
 - [Gameplay messages](docs/gameplay-messages.md), [cauldron messages](docs/cauldron-messages.md), and [artwork](docs/artwork.md).
 - [Current limitations](docs/command-audit.md) and [deferred work](TODO.md).

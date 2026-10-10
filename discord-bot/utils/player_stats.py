@@ -29,6 +29,9 @@ def player_stats_embeds(interaction, user, section):
         embed.set_thumbnail(url=image_url('inventory'))
         for key in ('overview','tricks','treats','pumpkins','cauldron','potions','protection'):
             embed.add_field(name=text(key+'_title'),value=text(key,**values),inline=False)
+        import passive_income as income
+        earnings=income.status(guild,user.id)
+        embed.add_field(name=text('earnings_title'),value=text('earnings',**earnings),inline=False)
         embed.set_footer(text=text('tracking_note'))
         embeds.append(embed)
         details=stats.potion_details(guild,user.id)

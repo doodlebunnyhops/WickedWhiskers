@@ -24,7 +24,7 @@ The access column describes application checks, not guaranteed visibility in Dis
 | `/trick <member>` | Player/public | Attempt to take candy from another active player; special events and active potion effects can change the outcome. |
 | `/treat <member> <amount>` | Player/public | Give candy to another active player; special events may alter the cost/reward. |
 | `/whois <character>` | Player/public | Show Luna or Raven character information. |
-| `/bucket` | Player/public | Show your candy and total unactivated potion bottles. |
+| `/bucket` | Player/public | Show candy, unactivated bottles, and earnings with a private Collect earned candy button. |
 | `/smash_pumpkin <amount>` | Player/public | Wager candy on a pumpkin; no entry fee, losses capped at your bucket. See [pumpkin rules](pumpkin-smashing.md). |
 | `/shop browse` | Player/public | Open your private potion-selection and quantity modal, then review and confirm checkout. |
 | `/shop manage` | Shop manager | Show this server’s catalog; use controls and a modal to change prices or sale availability. |
@@ -147,3 +147,5 @@ All new responses use `mod_candy` in `discord-bot/utils/messages.json` through `
 Completed tricks, treats, and pumpkin smashes post one public result; their temporary private acknowledgement is removed after delivery. Validation failures remain private. See [message behavior](gameplay-messages.md). Bucket, inventory, help, and checkout stay private.
 
 Leaderboard privacy currently differs from the requested policy: **every individual board**, not just Candy Hoarders, can be public in the Event channel. All stays private outside Admin. See [outstanding issues](command-audit.md).
+
+Passive earnings use the existing `/bucket` command, not a new slash command. See [earning, collection, and lifecycle rules](passive-earnings.md). Pumpkin probabilities now include a below-median ordinary-win boost when at least three positive eligible buckets exist; see [formulas](pumpkin-smashing.md).

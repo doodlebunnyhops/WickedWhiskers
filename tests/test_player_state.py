@@ -227,7 +227,7 @@ def test_luna_and_cauldron_skip_hidden_and_frozen(database,clock):
 def test_protected_pumpkin_still_funds_pool(database,clock,monkeypatch):
     fund();protect()
     class Rolls:
-        values=iter([.9,0])
+        values=iter([.9,.99,0])
         def random(self):return next(self.values)
     result,_=pumpkins.smash(1,10,10,'pumpkin',Rolls())
     assert result['protected'] and result['contribution']==20
@@ -277,7 +277,7 @@ def test_frozen_action_paths_have_private_details_and_no_game_changes(database,c
 def test_protected_pumpkin_public_embed_has_no_witch_narrator(database,clock,monkeypatch):
     fund();protect()
     interaction,_=caller()
-    values=iter([.9,0]);monkeypatch.setattr(pumpkins.random,'random',lambda:next(values))
+    values=iter([.9,.99,0]);monkeypatch.setattr(pumpkins.random,'random',lambda:next(values))
     post=AsyncMock();monkeypatch.setattr(player,'post_to_target_channel',post)
     asyncio.run(player.smash_pumpkin(interaction,10))
     embed=post.call_args.args[1]

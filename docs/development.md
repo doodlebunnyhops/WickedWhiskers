@@ -53,3 +53,5 @@ From the repository root:
 The tests use isolated databases and mocked Discord operations. Verify real modal rendering, channel permissions, event delivery, winner mentions, private-response cleanup, and persistent buttons in a test server before a season. Command synchronization can succeed even when channel permissions prevent posting.
 
 Player-facing narration is primarily in `discord-bot/utils/messages.json`, loaded by `utils/messages.py`; see [message guide](gameplay-messages.md). Restart after changes. Image URLs are centralized as described in the [artwork guide](artwork.md).
+
+The passive-income update creates earnings, UTC daily accounting, and claim tables at startup. Existing players begin accruing from installation, without backfill. No Discord intent changes or periodic earning job are required. Review [earnings lifecycle](passive-earnings.md) and [pumpkin formulas](pumpkin-smashing.md) when upgrading.

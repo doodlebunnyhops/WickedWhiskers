@@ -168,6 +168,8 @@ def initialize_database():
     initialize_schema(conn)
     from player_state import initialize_schema as initialize_player_state
     initialize_player_state(conn)
+    from passive_income import initialize_schema as initialize_income
+    initialize_income(conn)
     commit_changes()
 
 # Close connection on shutdown
@@ -408,6 +410,9 @@ def get_cauldron_event_by_outcome(guild_id, outcome):
 def reset_game(guild_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    from passive_income import forfeit
+    for (uid,) in conn.execute("SELECT player_id FROM players WHERE guild_id=?",(guild_id,)).fetchall():
+        forfeit(conn,guild_id,uid)
     from potions import clear_season
     clear_season(conn, guild_id)
     cursor.execute('DELETE FROM cauldron_pool WHERE guild_id = ?', (guild_id,))
@@ -453,62 +458,20 @@ def set_game_setting(guild_id, game_disabled=None, potion_price=None, trick_succ
         trick_success_rate (int): The new success rate of stealing candies from other players.
     """
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    from passive_income import settle_guild
+    with transaction() as conn:
+        old=conn.execute('SELECT game_disabled FROM game_settings WHERE guild_id=?',(guild_id,)).fetchone()
+        if game_disabled is not None and bool(game_disabled)!=bool(old[0] if old else False):
+            settle_guild(conn,guild_id)
+        conn.execute('INSERT OR IGNORE INTO game_settings(guild_id) VALUES(?)',(guild_id,))
+        values={k:v for k,v in dict(game_disabled=game_disabled,potion_price=potion_price,trick_success_rate=trick_success_rate).items() if v is not None}
+        if values:
+            conn.execute('UPDATE game_settings SET '+','.join(k+'=?' for k in values)+' WHERE guild_id=?',(*values.values(),guild_id))
 
-    # Check if the game settings already exist for the given guild_id
-    cursor.execute("SELECT * FROM game_settings WHERE guild_id = ?", (guild_id,))
-    result = cursor.fetchone()
 
-    if result:
-        # Update the existing record with only the provided values
-        query = "UPDATE game_settings SET "
-        params = []
-        
-        if game_disabled is not None:
-            query += "game_disabled = ?, "
-            params.append(game_disabled)
+def set_game_disabled(guild_id, disabled):
+    set_game_setting(guild_id,game_disabled=disabled)
 
-        if potion_price is not None:
-            query += "potion_price = ?, "
-            params.append(potion_price)
-
-        if trick_success_rate is not None:
-            query += "trick_success_rate = ?, "
-            params.append(trick_success_rate)
-
-        # Remove the trailing comma and space
-        query = query.rstrip(", ")
-
-        # Add WHERE clause to update only the correct guild_id
-        query += " WHERE guild_id = ?"
-        params.append(guild_id)
-
-        cursor.execute(query, tuple(params))
-    else:
-        # Insert a new record if one doesn't exist
-        cursor.execute(
-            "INSERT INTO game_settings (guild_id, game_disabled, potion_price, trick_success_rate) VALUES (?, ?, ?, ?)",
-            (guild_id, game_disabled if game_disabled is not None else False,
-             potion_price if potion_price is not None else 10,
-             trick_success_rate if trick_success_rate is not None else 100)
-        )
-
-    commit_changes()
-
-# Helper function to update the game_disabled state in the database
-def set_game_disabled( guild_id, disabled):
-    """
-    Update the game_disabled state in the database for the specified guild.
-    
-    Args:
-        guild_id (int): The unique identifier of the guild.
-        disabled (bool): The new state of the game (True for disabled, False for enabled).
-    """
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO game_settings(guild_id, game_disabled) VALUES(?,?) ON CONFLICT(guild_id) DO UPDATE SET game_disabled=excluded.game_disabled', (guild_id, disabled))
-    commit_changes()
 
 def get_join_game_msg_settings(guild_id: int):
     conn = get_db_connection()
@@ -706,6 +669,8 @@ def create_player_data(player_id: int, guild_id: int):
     cursor = conn.cursor()
     cursor.execute('INSERT INTO players (player_id, guild_id, candy_in_bucket, successful_tricks, failed_tricks, treats_given, active, potions_purchased, frozen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                     (player_id, guild_id, 50, 0, 0, 0, 1, 0, 0))
+    from passive_income import restart_clock
+    restart_clock(conn,guild_id,player_id)
     commit_changes()
 
 

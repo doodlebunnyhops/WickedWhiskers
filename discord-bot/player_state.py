@@ -201,6 +201,8 @@ def freeze(guild_id, player_id, moderator_id, minutes, reason, action_id, update
         existing = freeze_info(guild_id,player_id,now)
         if existing and not update:
             raise StateError('already_frozen')
+        from passive_income import settle
+        settle(conn,guild_id,player_id,now)
         if not existing:
             conn.execute('INSERT INTO returned_potions(guild_id,player_id,potion_id,charges) SELECT guild_id,player_id,potion_id,charges FROM potion_effects WHERE guild_id=? AND player_id=? AND charges>0',(guild_id,player_id))
             conn.execute('DELETE FROM potion_effects WHERE guild_id=? AND player_id=?',(guild_id,player_id))
@@ -218,6 +220,8 @@ def unfreeze(guild_id, player_id, moderator_id, action_id):
         previous=potions.prior_action(conn,guild_id,action_id,moderator_id,'unfreeze')
         if previous is not None:
             return previous,True
+        from passive_income import settle
+        settle(conn,guild_id,player_id)
         conn.execute('DELETE FROM player_freezes WHERE guild_id=? AND player_id=?',(guild_id,player_id))
         conn.execute('UPDATE players SET frozen=0 WHERE guild_id=? AND player_id=?',(guild_id,player_id))
         result=dict(player_id=player_id)
@@ -241,6 +245,8 @@ def join(guild_id, player_id, now=None):
             conn.execute('UPDATE players SET active=1,candy_in_bucket=50 WHERE guild_id=? AND player_id=?',(guild_id,player_id))
         else:
             db.create_player_data(player_id,guild_id)
+        from passive_income import restart_clock
+        restart_clock(conn,guild_id,player_id,now)
         conn.execute('DELETE FROM player_rejoins WHERE guild_id=? AND player_id=?',(guild_id,player_id))
 
 
@@ -250,6 +256,8 @@ def leave(guild_id, player_id, now=None):
         data=db.get_player_data(player_id,guild_id)
         if not data or not data['active']:
             return False
+        from passive_income import forfeit
+        forfeit(conn,guild_id,player_id,now)
         finish_protection(conn,guild_id,player_id,now,forfeited=True)
         # Preserve freeze records, all cooldowns, and receipts/audit to prevent replay exploits.
         for table in ('player_metrics','potion_inventory','potion_effects','potion_stats','returned_potions','protection_credits'):
@@ -262,5 +270,7 @@ def leave(guild_id, player_id, now=None):
 
 
 def clear_for_reset(conn, guild_id, player_id):
+    from passive_income import forfeit
+    forfeit(conn,guild_id,player_id)
     for table in ('player_freezes','player_rejoins','returned_potions','protection_credits','player_protection'):
         conn.execute(f'DELETE FROM {table} WHERE guild_id=? AND player_id=?',(guild_id,player_id))
