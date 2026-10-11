@@ -1294,7 +1294,8 @@
             "🌙 Luna peers into the mist. “Oh, sweetheart, someone’s tucked away behind a little magic. I can’t find them to deliver your sweets.”",
             "🍬 “I followed the candy wrappers, but the trail disappears into mist,” Luna says. “We’ll have to save their treat for later.”",
             "✨ Luna smiles softly. “Someone’s having a quiet moment beneath the Veil. Your kindness can wait until they return.”"
-        ]
+        ],
+        "open_shop_button": "Open Shop"
     },
     "artwork": {
         "luna_portrait": "https://cdn.discordapp.com/attachments/1293052178742644889/1556415507635110030/luna_portrait.png",

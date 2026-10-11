@@ -145,6 +145,7 @@ class InventoryView(OwnedView):
         super().__init__(owner_id,guild_id)
         import player_state as state
         self.protection.label=state.text('protection_name')
+        self.shop.label=state.text('open_shop_button')
 
     @discord.ui.button(style=discord.ButtonStyle.secondary)
     async def protection(self,interaction,button):
@@ -158,6 +159,10 @@ class InventoryView(OwnedView):
         except potions.PotionError as error:
             await tell(interaction, str(error))
 
+
+    @discord.ui.button(style=discord.ButtonStyle.secondary)
+    async def shop(self, interaction, button):
+        await open_shop(interaction)
 
 async def show_inventory(interaction):
     if not interaction.guild_id:
