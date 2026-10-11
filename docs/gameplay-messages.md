@@ -23,7 +23,8 @@ The compact pumpkin wager/net-change summary is retained.
 
 Luna encourages kindness and sharing. Raven celebrates mischief and reacts with
 sarcasm and theatrical indignation. Veiled players receive neutral bucket narration
-and pumpkin variants where neither witch notices them.
+and pumpkin variants without witch commentary. Public pumpkin outcomes and cauldron
+contribution messages never disclose the player's Veil or concealment status.
 
 Bucket response tiers:
 

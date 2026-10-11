@@ -714,30 +714,38 @@
         "🕯️ Raven dramatically presents the fallen candy to the cauldron. “A donation. Entirely voluntary. On the pumpkin’s behalf.”"
       ],
       "hidden_win": [
-        "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
+        "🎃 {user} cracks a pumpkin and finds **{candy_amount} candy** tucked among the seeds!",
+        "🍬 A satisfying crunch rewards {user} with **{candy_amount} candy**."
       ],
       "hidden_win_extra": [
-        "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
+        "✨ {user} splits a glittering gourd and uncovers **{candy_amount} candy**. That pumpkin was keeping quite a secret!",
+        "🎃 Candy bursts from a golden pumpkin! {user} gains **{candy_amount} candy**."
       ],
       "hidden_lose": [
-        "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
+        "🎃 A hungry pumpkin snaps at {user}’s bucket, taking **{candy_amount} candy**. Apparently, it came for treats too.",
+        "🕷️ {user} disturbs a haunted gourd and loses **{candy_amount} candy**. Some pumpkins bite back!"
       ],
       "hidden_lose_double": [
-        "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
+        "💀 {user} cracks a cursed pumpkin and loses **{candy_amount} candy**. An expensive pile of seeds!",
+        "🎃 A particularly greedy gourd takes **{candy_amount} candy** from {user}. So much for a sweet surprise."
       ],
       "hidden_lose_all": [
-        "🎃 The witches cannot see {user}, but a hungry pumpkin can! It swallows **all {candy_amount} candy**, emptying the bucket."
+        "🎃 A ravenous pumpkin swallows **all {candy_amount} candy** from {user}, leaving the bucket empty.",
+        "💀 {user} cracks a cursed gourd, losing **all {candy_amount} candy**. Not a single sweet remains in the bucket!"
       ],
       "hidden_break_even": [
-        "🌫️ {user} smashes a pumpkin beneath the Veil. Just seeds and cobwebs—no candy gained or lost."
+        "🎃 {user} smashes a pumpkin. Just seeds and cobwebs—no candy gained or lost.",
+        "🍂 {user} cracks open a stubborn gourd. A dramatic crunch, a shower of seeds, and no change in candy."
       ],
       "hidden_luna": [
-        "✨ The pumpkin’s own magic copies **{candy_amount} candy** into the cauldron. The winnings stay beneath the Veil, unseen by either witch.",
-        "🫧 A magical copy of the winnings feeds the cauldron **{candy_amount} candy**. The mist hides the original stash. The pot never refuses a snack!"
+        "✨ The pumpkin’s own magic copies **{candy_amount} candy** into the cauldron. The original winnings stay put!",
+        "🫧 A magical copy of the winnings feeds the cauldron **{candy_amount} candy**. The pot gets a snack without taking any of the prize."
       ],
       "hidden_raven": [
-        "🫧 The lost sweets tumble into the cauldron. The witches notice nothing beneath the Veil; the pot is simply hungry.",
-        "🎃 The cauldron gulps down the candy already lost. No further sweets leave the hidden bucket."
+        "🫧 The lost sweets tumble into the cauldron. It answers with a very satisfied bubble.",
+        "🎃 The cauldron gulps down the candy already lost. No further sweets leave the bucket.",
+        "🔥 The scattered candy hops into the cauldron, one sweet at a time. Apparently, dinner delivers itself.",
+        "🍬 The cauldron catches the fallen sweets before they hit the ground. Not a crumb goes to waste."
       ]
     },
     "personal_message": {
