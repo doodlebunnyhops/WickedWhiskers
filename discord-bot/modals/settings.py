@@ -97,6 +97,6 @@ class Game(Modal):
             db_utils.set_game_setting(guild.id, trick_success_rate=trick_success_rate)
 
             await interaction.response.send_message(f"Game Settings have been updated:\n"
-                                                    "Potion prices: /shop manage\n"
+                                                    "Potion prices: /game manage shop\n"
                                                     f"Steal Success Rate: {trick_success_rate}%",
                                                     ephemeral=True)

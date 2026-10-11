@@ -45,10 +45,21 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
     if repeated:
         await interaction.followup.send(message('cauldron', 'already_paid', amount=result['amount']), ephemeral=True)
         return
+    try:
+        posted = await post_award(interaction.guild,channel,interaction.client.message_loader,{**result,"witch":witch},interaction.user.id)
+    except discord.HTTPException:
+        await interaction.followup.send(message('cauldron', 'event_post_failed',channel=channel.mention,amount=result['amount'],remaining=result['remaining']),ephemeral=True)
+        return
+    await interaction.followup.send(message('cauldron','event_posted',channel=channel.mention,message_url=posted.jump_url,amount=result['amount'],remaining=result['remaining']),ephemeral=True)
+
+
+async def post_award(guild,channel,loader,result,caster_id):
+    message=loader.get_message
+    witch=result['witch']
     outcome = result['outcome']
     winner_ids = list(dict.fromkeys(award['player_id'] for award in result['awards']))
     from mention_preferences import Announcement
-    preferences=Announcement(interaction.guild)
+    preferences=Announcement(guild)
     names = [preferences.label(uid) for uid in winner_ids]
     # Keep each message below Discord's content and explicit-mention limits.
     winner_batches = [winner_ids[start:start + 20] for start in range(0, len(winner_ids), 20)]
@@ -64,7 +75,7 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
 
     values = dict(
         witch=message('cauldron', 'witches', witch), outcome=message('cauldron', 'outcomes', outcome),
-        winners=', '.join(names), winner_count=len(names), user=preferences.label(interaction.user.id),
+        winners=', '.join(names), winner_count=len(names), user=preferences.label(caster_id),
         amount=result['amount'], remaining=result['remaining'],
     )
     announcement = message('cauldron', 'draw', witch, outcome, **values)
@@ -89,10 +100,7 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
         posted = await channel.send(**kwargs)
         for batch in winner_batches[1:]:
             await channel.send(**winner_notification(batch))
-    except discord.HTTPException:
-        await interaction.followup.send(message('cauldron', 'event_post_failed', channel=channel.mention, **values), ephemeral=True)
-        return
     finally:
         if file is not None:
             file.close()
-    await interaction.followup.send(message('cauldron', 'event_posted', channel=channel.mention, message_url=posted.jump_url, **values), ephemeral=True)
+    return posted

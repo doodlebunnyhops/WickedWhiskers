@@ -264,7 +264,7 @@ def test_cog_registration(database):
         async with bot:
             await setup(bot)
             assert {c.name for c in bot.tree.get_commands()}=={'shop','inventory','use'}
-            assert {c.name for c in bot.tree.get_command('shop').commands}=={'browse','manage','manager_role','post','protection'}
+            assert {c.name for c in bot.tree.get_command('shop').commands}=={'browse'}
             assert bot.persistent_views
     asyncio.run(run())
 
@@ -325,7 +325,7 @@ def test_real_bot_setup_without_login(database,monkeypatch):
         async with module.bot:
             await module.bot.setup_hook()
             names={c.name for c in module.bot.tree.get_commands()}
-            assert {'shop','inventory','use','Potion Shop','trick','treat'} <= names
+            assert {'shop','inventory','use','trick','treat','Trick Player','Treat Player'} <= names
             assert 'buy' not in names
     asyncio.run(run())
 

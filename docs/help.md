@@ -7,7 +7,7 @@ Everyone sees:
 - **Playing:** joining, tricks, treats, shopping, inventory, bucket, and pumpkin smashing.
 - **Potions:** buying versus activating, each potion's effect, and important interactions.
 
-Members with **Manage Server** or a game-moderator role registered through `/bot set role` also see:
+Members with **Manage Server** or a game-moderator role registered through `/bot add role` also see:
 
 - **Server setup:** event/admin channels, join invitation, automatic pumpkin reaction, shop entrance, recommended channel permissions, role access, and enabling play.
 - **Management:** viewing and setting stats, giving/taking candy, leaderboard, shop management permissions, and pausing/resuming.
@@ -19,10 +19,12 @@ Only the requester can operate the menu. Moderator access is rechecked when sele
 
 All page text, topic labels, descriptions, footer, and interaction replies are defined under `help` in `discord-bot/utils/messages.json` and read using `messages.py`. The command is loaded before synchronization for both global and configured-guild operation.
 
-The bot seeds 🎃 (`:jack_o_lantern:`) on new or relocated join invitations. Running `/bot send join_game_msg` again restores it on the existing invitation. Give the bot Add Reactions and Read Message History even when @everyone cannot add new reactions. Reactions from bots, including the bot's own seed reaction, never enroll them.
+The bot seeds 🎃 (`:jack_o_lantern:`) on new or relocated join invitations. Running `/bot post join` again restores it on the existing invitation. Give the bot Add Reactions and Read Message History even when @everyone cannot add new reactions. Reactions from bots, including the bot's own seed reaction, never enroll them.
 
 ## Freeze, protection, and leaving
 
 Playing now explains `/leave` and the one-hour fresh-start delay. Potions explains Witch’s Veil, its purchase modes, restrictions, and returned potions on freezing. Management includes `/game freeze`, `/game unfreeze`, and the Witch’s Veil shop settings. Cauldron help explains frozen/protected exclusions. See [full rules](freeze-and-protection.md).
 
-Playing also explains variable pumpkin amounts, the three-player median boost, and the Collect earned candy button in `/bucket`. Earnings rules include the 100/day UTC cap, 300 saved cap, offline earning, freeze/pause restrictions, and forfeiture on leaving/reset. Management explains that pausing stops earnings.
+Playing explains variable pumpkin amounts and the Collect earned candy button in `/bucket`, without exposing hidden percentages or median calculations. Earnings rules include the 100/day UTC cap, 300 saved cap, offline earning, freeze/pause restrictions, and forfeiture on leaving/full player reset. Management explains that pausing stops earnings.
+
+Management help now distinguishes bucket-only resets from confirmed full-player resets, links the shared settings panel, and uses `/game manage shop`. Events help includes automatic interval/threshold spells and status inspection. Setup help uses `/bot post join`, `/bot post shop`, `/bot add role` and `/bot set shop_manager_role`. Veil is reached through shop/inventory, without a separate protection command.

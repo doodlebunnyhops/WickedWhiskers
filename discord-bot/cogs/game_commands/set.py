@@ -4,25 +4,15 @@ from discord import app_commands
 import utils.checks as checks
 from db_utils import get_game_settings, set_game_disabled,get_cauldron_pool,is_player_active,update_player_field,set_cauldron_pool,set_game_setting
 
-from modals.settings import Game
 
 # Subcommand group for setting (used within the server group)
 set_group = app_commands.Group(name="set", description="Set commands")
 
 @set_group.command(name="settings", description="Update the game settings.")
 @checks.check_if_has_permission_or_role()
-async def set_game_settings_cmd(interaction: discord.Interaction, trick_success_rate: float, game_enabled: bool = False):
-    guild_id = interaction.guild.id
-
-    # Validate the input values
-    if trick_success_rate < 0 or trick_success_rate > 100:
-        await interaction.response.send_message("Invalid values provided. The trick success rate must be between 0 and 100. Manage potion prices with /shop manage.", ephemeral=True)
-        return
-
-    # Update the game settings in the database
-    set_game_setting(guild_id, game_disabled=not game_enabled, trick_success_rate=trick_success_rate)
-
-    await interaction.response.send_message("Game settings updated successfully.", ephemeral=True)
+async def set_game_settings_cmd(interaction: discord.Interaction):
+    import admin_settings as shared
+    await interaction.response.send_message(shared.summary(interaction.guild_id), view=shared.GameSettingsView(interaction), ephemeral=True)
 
 @set_group.command(name="cauldron", description="Set the amount of candy in the cauldron.")
 @checks.check_if_has_permission_or_role()
@@ -35,7 +25,8 @@ async def set_cauldron_pool_amount(interaction: discord.Interaction, amount: int
         return
 
     # Update the cauldron pool in the database
-    set_cauldron_pool(guild_id, amount)
+    import admin_settings as shared
+    shared.set_pool(guild_id, amount)
 
     await interaction.response.send_message(interaction.client.message_loader.get_message("cauldron", "pool", "set", amount=amount), ephemeral=True)
 
@@ -75,27 +66,9 @@ async def set_player_stat(interaction: discord.Interaction, user: discord.Member
 ])
 @checks.check_if_has_permission_or_role()
 async def set_game_state( interaction: discord.Interaction, state: app_commands.Choice[str]):
-    guild_id = interaction.guild.id
-
-    # Fetch current settings from the db using db_utils
-    game_disabled, _, _ = get_game_settings(guild_id)
-
-    # Logic based on the selected option and current game state
-    if state.value == "enable":
-        if not game_disabled:
-            await interaction.response.send_message("The game commands are already enabled.", ephemeral=True)
-            return
-        set_game_disabled(guild_id, False)
-
-        await interaction.response.send_message("The game commands have been enabled.", ephemeral=True)
-
-    elif state.value == "disable":
-        if game_disabled:
-            await interaction.response.send_message("The game commands are already disabled.", ephemeral=True)
-            return
-        set_game_disabled(guild_id, True)
-        get_cauldron_pool(guild_id) #init pool  
-        await interaction.response.send_message("The game commands have been disabled.", ephemeral=True)
+    import admin_settings as shared
+    shared.set_state(interaction.guild_id,state.value == 'enable')
+    await interaction.response.send_message(shared.summary(interaction.guild_id),ephemeral=True)
 
 
 @set_group.command(name="slowmode", description="Set separate player cooldowns in seconds; 0 disables. Omit values to view.")
@@ -111,3 +84,25 @@ async def set_slowmode(interaction: discord.Interaction,
     values=slowmode.configure(interaction.guild_id,**updates) if updates else slowmode.settings(interaction.guild_id)
     shown={k:slowmode.text('off') if v==0 else slowmode.text('seconds',amount=v) for k,v in values.items()}
     await interaction.response.send_message(slowmode.text('settings',**shown),ephemeral=True)
+
+
+@set_group.command(name='auto_cauldron',description='Configure automatic cauldron spells; disabled by default')
+@checks.check_if_has_permission_or_role()
+@app_commands.guild_only()
+@app_commands.choices(trigger=[app_commands.Choice(name=x.title(),value=x) for x in ('interval','threshold','either')],
+                      witch=[app_commands.Choice(name=x.title(),value=x) for x in ('luna','raven','random')],
+                      winners=[app_commands.Choice(name=x.title(),value=x) for x in ('one','many','random')])
+async def set_auto_cauldron(interaction:discord.Interaction,enabled:bool=None,trigger:str=None,
+                           interval_minutes:app_commands.Range[int,1,2147483647]=None,
+                           candy_threshold:app_commands.Range[int,1,2147483647]=None,
+                           witch:str=None,winners:str=None,
+                           minimum_gap_minutes:app_commands.Range[int,1,2147483647]=None):
+    import auto_cauldron
+    try:
+        auto_cauldron.configure(interaction.guild_id,guild=interaction.guild,enabled=enabled,trigger=trigger,
+                               interval_minutes=interval_minutes,candy_threshold=candy_threshold,
+                               witch=witch,winners=winners,minimum_gap_minutes=minimum_gap_minutes)
+    except ValueError as error:
+        await interaction.response.send_message(str(error),ephemeral=True)
+        return
+    await interaction.response.send_message(auto_cauldron.describe(interaction.guild_id,interaction.guild),ephemeral=True)

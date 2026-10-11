@@ -41,5 +41,5 @@ unchanged. Image URLs do not go inside modal controls; the selected potion's
 art appears in the private checkout embed after the modal is submitted.
 
 Existing Discord messages are not rewritten by a restart. Repost the shop
-entrance with `/shop post`; use the normal join-message setup command to post
+entrance with `/bot post shop`; use the normal join-message setup command to post
 an updated invite. New responses immediately use the new artwork.

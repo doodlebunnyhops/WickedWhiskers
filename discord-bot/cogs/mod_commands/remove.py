@@ -7,13 +7,25 @@ from utils.utils import post_to_target_channel
 remove_group = app_commands.Group(name="remove", description="Remove commands")
 
 
-@remove_group.command(name="join_game_msg", description="I cant remove messages :P")
-@app_commands.describe(
-    channel="The channel where the invite message will be ignored."
-)
+@remove_group.command(name="join_message",description="Remove the saved reaction join message")
 @checks.check_if_has_permission_or_role()
-async def update_join_game_msg(interaction: discord.Interaction, channel: discord.TextChannel):
-    await interaction.response.send_message(f":wave: Hey {interaction.user.name}...so I don't have perms to remove the join message in {channel.name} ;) you'll have to have someone with proper permissions manually remove it so they can /update")
+async def remove_join_message(interaction:discord.Interaction):
+    from admin_settings import text
+    await interaction.response.defer(ephemeral=True)
+    message_id,channel_id=db_utils.get_join_game_msg_settings(interaction.guild_id) or (None,None)
+    channel=interaction.guild.get_channel(channel_id) if channel_id else None
+    try:
+        if channel and message_id:
+            try:
+                message=await channel.fetch_message(message_id)
+                await message.delete()
+            except discord.NotFound:
+                pass
+    except discord.HTTPException:
+        await interaction.followup.send(text('join_remove_failed'),ephemeral=True)
+        return
+    db_utils.set_join_game_msg_settings(interaction.guild_id,None,None)
+    await interaction.followup.send(text('join_removed'),ephemeral=True)
 
 @remove_group.command(name="role", description="Remove a role from the games restricted commands")
 @app_commands.describe(
@@ -21,6 +33,7 @@ async def update_join_game_msg(interaction: discord.Interaction, channel: discor
 )
 @checks.check_if_has_permission_or_role()
 async def remove_role(interaction: discord.Interaction, role: discord.Role):
+    db_utils.delete_role_by_guild(role.id,interaction.guild.id)
 
     personal_message = interaction.client.message_loader.get_message(
         "remove_role", "personal_message", role_name=role.name
@@ -28,9 +41,6 @@ async def remove_role(interaction: discord.Interaction, role: discord.Role):
     # Respond with the formatted message
     await interaction.response.send_message(personal_message, ephemeral=True)
 
-    ### DO THE THING JULIE!
-    guild_id = interaction.guild.id
-    db_utils.remove_role_by_guild(role.id,guild_id)
 
     # Access the message loader from the bot instance
     admin_message = interaction.client.message_loader.get_message(
@@ -80,3 +90,4 @@ async def remove_channel_command(interaction: discord.Interaction, channel_type:
     )
     # Respond with the formatted message
     await post_to_target_channel(interaction,admin_message,channel_type=channel_type.value)
+

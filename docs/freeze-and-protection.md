@@ -7,7 +7,7 @@ All settings and player state are isolated by server. Times are stored in the da
 - `/game freeze player:@Player minutes:60 reason:...` freezes for 60 minutes. Omit minutes for an indefinite freeze.
 - Add `update:True` to explicitly replace an existing freeze's duration and reason. Repeating a freeze never returns the same potion twice.
 - `/game unfreeze player:@Player` removes the freeze without resetting progress or bypassing a leave/rejoin delay.
-- Manage Server or a role configured with `/bot set role` is required. A shop-manager role alone is insufficient.
+- Manage Server or a role configured with `/bot add role` is required. A shop-manager role alone is insufficient.
 
 Frozen players cannot trick, treat, smash pumpkins, shop, activate potions, be targeted, receive witch gifts, or win cauldron draws. They can read help, inventory, and their bucket. Candy and stats are preserved.
 
@@ -17,11 +17,11 @@ Active Witch's Veil ends on freezing. Its potion is returned as a bottle credit 
 
 The event channel receives a randomized witch announcement identifying only the frozen player and status. It never contains the moderator, reason, duration, bucket, or returned items. Freeze reasons and moderator identity remain in the internal audit. Blocked player actions privately show the reason, full expiry timestamp, relative time, and restrictions. Indefinite freezes say they last until a moderator unfreezes the player. Reaction-join failures are delivered by DM because reaction events cannot receive ephemeral replies; if DMs are disabled, use `/join` for private feedback.
 
-Freezes survive leaving/rejoining the game or server. `/bot reset player` is an explicit administrative fresh start: it clears the freeze and rejoin delay, restores 50 candy, and clears inventory/effects/stats. Existing potion cooldowns remain.
+Freezes survive leaving/rejoining the game or server. `/game reset player` is an explicit administrative fresh start: it clears the freeze and rejoin delay, restores 50 candy, and clears inventory/effects/stats. Existing potion cooldowns remain.
 
 ## Witch's Veil
 
-Open `/shop protection`, choose Witch's Veil in `/shop browse`, or use its button in `/inventory`. Protection activates immediately on confirmed purchase. Ordinary potions retain their normal buy-then-use workflow.
+Choose Witch's Veil in `/shop browse`, or use its button in `/inventory`. Protection activates immediately on confirmed purchase. Ordinary potions retain their normal buy-then-use workflow.
 
 | Default | Value |
 | --- | --- |
@@ -45,7 +45,7 @@ While protected:
 - Pumpkin odds, gains, losses, and magical contributions to the cauldron are unchanged. Special narration attributes the contribution to the pumpkin/cauldron rather than witches seeing the player; protected pumpkin posts do not use a witch narrator/image.
 - Existing Ward, Mirror, Cunning, and other effects do not trigger or lose charges.
 
-Under `/shop manage`, **Witch's Veil settings** lets Manage Server members or the designated shop-manager role configure the fee, rate, minimum/maximum minutes, cooldown, purchase modes, and sale availability. Values must be positive integers; minimum cannot exceed maximum. Active spells retain the agreed rate, duration, refund policy, and cooldown. Changing settings invalidates an unpaid quote, requiring the player to review it again. Returned bottle credits still cover the next potion fee, but time funding uses the current shop settings.
+Under `/game manage shop`, **Witch's Veil settings** lets Manage Server members or the designated shop-manager role configure the fee, rate, minimum/maximum minutes, cooldown, purchase modes, and sale availability. Values must be positive integers; minimum cannot exceed maximum. Active spells retain the agreed rate, duration, refund policy, and cooldown. Changing settings invalidates an unpaid quote, requiring the player to review it again. Returned bottle credits still cover the next potion fee, but time funding uses the current shop settings.
 
 ## Leaving and rejoining
 
@@ -61,4 +61,6 @@ All new player-facing text is under `participation` in `discord-bot/utils/messag
 
 ## Passive earnings
 
-Freezes stop earning and collection without confiscating the saved reserve. Eligible partial-minute progress survives; earning resumes at timed expiry. Veil does not stop either earning or collection. Leaving the game/guild or a moderator reset forfeits saved earnings and partial progress; daily totals and claim history remain to prevent allowance resets. Paused game time does not earn. See [passive earnings](passive-earnings.md).
+Freezes stop earning and collection without confiscating the saved reserve. Eligible partial-minute progress survives; earning resumes at timed expiry. Veil does not stop either earning or collection. Leaving the game/guild or a full player reset forfeits saved earnings and partial progress; daily totals and claim history remain to prevent allowance resets. Paused game time does not earn. See [passive earnings](passive-earnings.md).
+
+Bucket-only resets (`/game reset bucket` and `/game reset buckets`) preserve freezes, active effects, inventory and unclaimed earnings. They only restore the bucket balance to 50.

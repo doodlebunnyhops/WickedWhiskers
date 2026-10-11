@@ -61,7 +61,7 @@ class CauldronError(ValueError):
     pass
 
 
-def award_pool(guild_id, action_id, caster_id, witch, mode):
+def award_pool(guild_id, action_id, caster_id, witch, mode, *, now=None):
     """Commit one complete draw and payout. No network awaits inside this transaction."""
     import json
     import db_utils as db
@@ -91,4 +91,6 @@ def award_pool(guild_id, action_id, caster_id, witch, mode):
         conn.execute('INSERT INTO cauldron_event (guild_id,caster_id,witch,outcome,num_players_rewarded,total_candy_given) VALUES (?,?,?,?,?,?)', (guild_id,caster_id,witch,outcome,len(awards),amount))
         result = dict(witch=witch, outcome=outcome, awards=awards, amount=amount, remaining=0)
         conn.execute('INSERT INTO cauldron_draws (guild_id,action_id,result) VALUES (?,?,?)', (guild_id,str(action_id),json.dumps(result)))
+        import auto_cauldron
+        auto_cauldron.mark_cast(conn, guild_id, now)
         return result, False

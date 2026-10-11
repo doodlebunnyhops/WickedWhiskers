@@ -52,9 +52,12 @@ def test_raw_reaction_ignores_bots_but_enrolls_humans(uid,is_bot,expected,monkey
 
 def test_existing_invitation_reseeds(database,monkeypatch):
     from cogs.mod_commands import send
-    message=NS(add_reaction=AsyncMock(),jump_url='https://discord.com/channels/1/2/3')
-    channel=NS(fetch_message=AsyncMock(return_value=message))
-    monkeypatch.setattr(send.db_utils,'get_join_game_msg_settings',lambda guild:(3,2))
-    interaction=NS(guild=NS(id=1,get_channel=lambda _:channel),client=NS(message_loader=loader()),response=NS(is_done=lambda:False,send_message=AsyncMock()),followup=NS(send=AsyncMock()))
+    message=NS(id=3,edit=AsyncMock(),add_reaction=AsyncMock(),jump_url='https://discord.com/channels/1/2/3')
+    channel=NS(id=2,fetch_message=AsyncMock(return_value=message),send=AsyncMock())
+    send.db.set_join_game_msg_settings(1,3,2)
+    interaction=NS(guild_id=1,guild=NS(id=1,get_channel=lambda _:channel),client=NS(message_loader=loader()),response=NS(defer=AsyncMock(),is_done=lambda:True,send_message=AsyncMock()),followup=NS(send=AsyncMock()))
     asyncio.run(send.set_join_game_msg.callback(interaction,channel))
     message.add_reaction.assert_awaited_once_with('🎃')
+    message.edit.assert_awaited_once()
+    channel.send.assert_not_awaited()
+    assert send.db.get_join_game_msg_settings(1)==(3,2)

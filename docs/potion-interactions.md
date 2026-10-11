@@ -1,6 +1,6 @@
 # Potion interactions
 
-All seven bottled potions appear automatically in `/shop browse`, `/shop manage`, `/inventory`, and `/use`. Prices below are defaults; per-server overrides and sale availability apply to every potion. Purchases grant bottles; activate them before play. Repeated active copies cannot stack.
+All seven bottled potions appear automatically in `/shop browse`, `/game manage shop`, `/inventory`, and `/use`. Prices below are defaults; per-server overrides and sale availability apply to every potion. Purchases grant bottles; activate them before play. Repeated active copies cannot stack.
 
 | ID | Potion | Price | Effect |
 | --- | --- | ---: | --- |

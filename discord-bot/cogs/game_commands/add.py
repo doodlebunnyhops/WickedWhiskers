@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from db_utils import add_player_to_game
 import utils.checks as checks
-from modals.settings import Bot
 
 # Subcommand group for setting (used within the server group)
 add_group = app_commands.Group(name="add", description="Add commands")

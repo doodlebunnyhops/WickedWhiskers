@@ -1,134 +1,59 @@
 # Moderator and server setup guide
 
-Current for `feature/potion-shop`, reviewed 2026-10-06. The [complete command reference](all_current_commands.md) lists commands and exact argument choices. Read the [audit](command-audit.md) before a live season.
+Updated 2026-10-11 for `feature/potion-shop`. See the [complete command reference](all_current_commands.md) for exact options and the [audit](command-audit.md) for remaining limitations.
 
-## Access
+## Access and Discord setup
 
-Game-moderator commands require **Manage Server** or a role registered with `/bot set role`. This is independent of the dedicated shop-manager role. `/shop manage` and `/shop post` require Manage Server or that shop role; `/shop manager_role` itself requires Manage Server. `/bot get join_game_msg` currently has no moderator check.
+Game moderation requires **Manage Server** or a role registered with `/bot add role`. Shop management is separate: `/game manage shop` and `/bot post shop` require Manage Server or the dedicated shop-manager role. Only Manage Server can appoint that role using `/bot set shop_manager_role` (omit `role` to clear it). Moving commands does not grant additional permissions.
 
-## Initial setup
+1. `/bot set settings` opens channel and role selectors. Alternatively set channels individually:
+   - `/bot set channel channel_type:Event channel:#play`
+   - `/bot set channel channel_type:Admin channel:#mod-log`
+2. `/bot add role role:@Game-Moderator` adds moderator access. `/bot get roles` lists roles; `/bot remove role` revokes one.
+3. `/bot get settings` verifies assignments. `/bot set channel` replaces an existing assignment; `/bot remove channel` clears one.
+4. `/bot post join channel:#join` publishes or refreshes the 🎃 invitation. Choosing a different channel moves it and deletes the previous message when possible. The saved target changes to the new message; old reactions no longer enroll players. `/bot get join_message` retrieves it; `/bot remove join_message` deletes it and clears its mapping.
+5. `/bot set shop_manager_role role:@Shop-Manager`, optionally, then `/game manage shop` to configure prices and availability.
+6. `/bot post shop channel:#shop` posts persistent **Open Shop** and **Inventory** buttons.
+7. `/game set state state:Enable` enables play.
 
-1. `/bot set channel channel_type:Event channel:#game-events`
-2. `/bot set channel channel_type:Admin channel:#game-admin`
-3. Optionally `/bot set role role:@Game-Moderator`.
-4. `/bot get settings` to verify channel/role mappings.
-5. `/bot send join_game_msg channel:#join-the-game` to create the reaction invitation.
-6. Optionally `/shop manager_role role:@Shop-Manager`, then `/shop manage` to set this server’s prices and sale availability.
-7. `/shop post channel:#potion-shop` for persistent Open Shop and Inventory buttons.
-8. `/game set state state:Enable` to enable gameplay.
+Give the bot View Channel, Send Messages, and Embed Links in announcement channels. Join invitations need Add Reactions and Read Message History; cauldron attachments need Attach Files. Administrator is not required. The bot can delete its own invitation without Manage Messages. Members need Use Application Commands in gameplay channels.
 
-Use Discord’s named option pickers; channel/role names above are examples. Ensure the bot can view/send in the selected channels and access invite-message history. Prefer the individual channel/role commands: the legacy `/bot set settings` modal mishandles blank optional fields.
+For #join and #shop, deny @everyone Send Messages and Add Reactions, retaining View Channel and Read Message History. Allow the bot to post and seed 🎃. Players can click the existing reaction; removing it does not leave the game. Bots cannot enroll.
 
-## Channel and invitation maintenance
+## Shared game settings
 
-Use `/bot update channel channel_type:Event|Admin channel:<channel>` for an existing setting and `/bot remove channel channel_type:Event|Admin` to clear it. `/bot get channel` offers Event, Admin, or Both; Both has a missing-channel display limitation.
+`/game set settings` opens a private panel for pause/resume, action slowmode, cauldron balance and automatic spells. Its controls use the same validation and saved settings as individual commands. Editing one setting does not pause play or overwrite unrelated settings. Controls expire after five minutes and recheck permissions on use. `/game get settings` shows current values. Shop configuration remains available through `/game manage shop`.
 
-`/bot get join_game_msg` retrieves the invitation. `/bot update join_game_msg channel:<channel>` requires deletion of the old invite first; use `/bot send join_game_msg` for initial setup. `/bot remove join_game_msg` only gives manual-deletion instructions; it does not remove the message or clear saved IDs.
+- `/game set state state:Disable|Enable` pauses/resumes normal gameplay and passive earnings. Automatic spells do not run while paused.
+- `/game set slowmode trick:10 treat:5 smash:15` sets independent per-player cooldowns, default 0 (off), range 0–86400 seconds. Omitted values are preserved. `/game get slowmode` inspects them. Changing an action's value clears its timers; ordinary resets do not. Failed completed attempts count; invalid requests do not. No gameplay moderator bypass.
+- `/game set cauldron amount:1000` replaces the pool balance; `/game get cauldron` inspects it.
+- `/game set auto_cauldron` and `/game get auto_cauldron` configure/inspect automatic casting. See [schedule rules and examples](auto-cauldron.md).
 
-`/bot get roles` lists game-moderator roles. **`/bot remove role` is broken and can announce success without removing access.** Until repaired, remove the Discord role from affected members or adjust Discord command access; do not rely on its success message.
+## Player management and resets
 
-## Game controls and reports
+- `/game add player user:@Player` uses shared enrollment checks.
+- `/game get player user:@Player get:Stats|Hidden Values|All` privately shows stats, inventory, potion activity, pumpkin activity, passive earnings and cauldron contributions/rewards.
+- `/game set player_stat user:@Player stat:<choice> number:<integer>` overwrites Candy, Successful Tricks, Failed Tricks or Treats Given. Use nonnegative values; range validation for this legacy command remains outstanding.
+- `/game candy player:@Player action:Give|Take amount:100 include_moderator:False` adjusts only candy, requires a positive amount and rejects overdrafts. The Event announcement includes player and amount, optionally the moderator, never the bucket balance. It does not count toward gameplay stats or cauldron weights. Internal audit always records the actor.
+- `/game freeze` and `/game unfreeze` control participation. Frozen players keep progress; remaining potion charges return to inventory. Public messages omit the moderator and reason. See [freeze rules](freeze-and-protection.md).
 
-- `/game set state state:Disable|Enable`: pause/resume gameplay. Joining also respects the pause; read-only help and moderator controls remain available.
-- `/game get settings`: inspect settings. `/game set settings trick_success_rate:<0–100> [game_enabled:<boolean>]` stores values, but the configured rate does not drive actual trick odds. Omitting game_enabled pauses the game. Prefer the explicit state command for pause/resume.
-- `/game add player user:<member>`: enroll a player. The shared join checks enforce freezes, pauses, and rejoin delays.
-- `/game get player user:<member> get:Stats|Hidden Values|All`: inspect a player. Hidden trick rate is the base calculation, without active Cunning.
-- `/game set player_stat user:<member> stat:<choice> number:<integer>`: overwrite Candy, Successful Tricks, Failed Tricks, or Treats Given. This is an absolute value, not an increment; avoid negative values (currently unvalidated).
-- `/bot reset player user:<member>`: immediately reset an existing player to 50 candy, active/unfrozen status, cleared counters, bottles and effects. There is no confirmation step and unregistered players cause an error.
-- `/game get leaderboard type:<category>`: list up to ten ranked players. All opens fifteen category pages with a selector and Previous/Next. Only the invoking moderator can change pages; controls expire after three minutes. All is private outside the configured admin channel. Individual categories (including Candy Hoarders) are visible in the configured event or admin channel and private elsewhere. Empty results are always private. Rankings are a snapshot at invocation. Sweetness = candy given / (given + stolen); evilness = candy stolen / (given + stolen), both displayed as percentages and zero when neither exists.
-- `/game get cauldron`: inspect the pool. `/game set cauldron amount:<nonnegative integer>` replaces its balance.
-- `/game cast spell witch:Luna|Raven winners:One|Many`: select distinct active players with treating/tricking preferences, splitting the full pool among them. Frozen players and players under Witch’s Veil are excluded. Purchases do not buy entries.
-
-Use `/game freeze player:@Player [minutes:60] [reason:...] [update:True]` and `/game unfreeze player:@Player` for moderation. Omit minutes for an indefinite freeze; update explicitly replaces an existing freeze. Remaining charged effects return to inventory. Public announcements omit the moderator and reason. See [freeze rules](freeze-and-protection.md).
-
-There is no registered full-season reset or remove-player command. Players leave with `/leave`. Seasonal database deletion is an operational reset, not a slash command, and also clears server configuration and shop price overrides.
-
-## Shop administration
-
-`/shop manage` provides a potion selector and edit modal. Prices are integers from 1 to 1,000,000 candy, isolated per server. Default-price resets preserve availability. Turning off sales preserves owned bottles. Bottled potion effects are fixed. Witch’s Veil settings additionally expose its fee, candy per minute, minimum/maximum duration, cooldown, purchase modes, and sale availability.
-
-`/shop manager_role role:<role>` appoints one regular role; omit role to clear it. Manage Server retains access. Permissions are rechecked when controls are used. See [potion-shop details](potion-shop.md) for transaction and effect rules.
-
-## Cauldron eligibility diagnostics
-
-Use `/game get cauldron_eligibility` (game-moderator access, no arguments) for a private report of active database players, the pool balance, and candidates/weights for each Luna/Raven outcome. It makes no draw and changes no data. Up to five candidate IDs per outcome are displayed with remaining counts. Active records may include departed members, the draw uses saved winner IDs for mentions.
-
-Active database players qualify unless frozen or protected by Witch’s Veil, independent of potion purchases and pool balance. Luna normal/fumble weight = 1 + treats given; Raven normal/explosion weight = 1 + successful tricks. Luna special weight = 1 + max(0, treats given − successful tricks); Raven rage reverses that difference. Negative stats are treated as zero. Every outcome retains baseline weight 1; when nobody has a positive special-outcome difference, all players have equal chances. Normal/first special/second special probabilities remain 76.5%/15%/8.5%. One selects one player; Many chooses a random count from 2 through the number of distinct eligible players (or 1 when only one player or one candy is available), then draws with weights without replacement. Selected players cannot repeat. The report and draw share these formulas. The full pool is awarded atomically: equal shares, with remainder pieces assigned in draw order. Many caps its random winner count at the smaller of eligible-player count and available candy, so every winner receives at least one. The pool becomes zero. Discord interaction IDs prevent duplicate payouts, and cauldron_draws plus cauldron_event record each completed draw.
-
-
-## Moderator candy adjustments
-
-`/bot candy player:<member> action:Give|Take amount:<positive integer> include_moderator:True|False`
-
-Requires Manage Server or a role registered with `/bot set role`. The include_moderator option is required each time: True names the moderator in the event announcement; False omits them. The player and amount are always shown. No bucket balance is included in announcements or confirmations.
-
-Give creates candy for the selected player; it does not deduct from the moderator. Take removes exactly the requested amount and rejects requests exceeding the player's balance. Zero and negative amounts are rejected. The player must already have a game record in this server. Administrative corrections remain available while gameplay is paused or a player is frozen/inactive.
-
-These changes affect only the selected player's balance. They do not increment tricks, treats, sweetness/evilness counters, or cauldron contributions, and do not change cauldron selection weights or the pool. Moderator identity is still recorded in the internal audit even when omitted from the public announcement.
-
-Configure an event channel and grant the bot View Channel, Send Messages, and Embed Links before use. If Discord rejects the announcement after the adjustment has saved, the moderator receives a private warning; do not issue another command to retry the post, since a new command is a new adjustment. Replaying the same interaction cannot apply the adjustment twice.
-
-All new responses use `mod_candy` in `discord-bot/utils/messages.json` through `messages.py`.
-
-
-### Seasonal statistics and boards
-
-`/game get player` now includes real potion inventory, per-potion purchases, activations,
-triggered effects, spending after refunds, defensive uses, and potion candy gifted.
-It also shows pumpkin activity, cauldron contributions/winnings, blocked and redirected
-trick attempts, and protection time purchased/used. All output stays private.
-The displayed trick chance is the base roll chance before potion effects and special outcomes.
-
-Seven additional leaderboard categories:
-
-| Board | Score |
+| Reset | Effect |
 |---|---|
-| Potion Collector | Bottles purchased, including paid Veil access; gifts and returned credits excluded |
-| Biggest Spender | Shop candy spent, including Veil, less refunds |
-| Master of Potions | Charges actually triggered; successful Luna summons count once; Veil time excluded |
-| Luna’s Favorites | Candy distributed by Calling and Favor |
-| Untouchable | Ward blocks and Mirror redirects/stops, credited to the defender |
-| Cauldron Contributors | Recorded pumpkin contributions, Mirror self-losses, and ordinary trick losses sent to the pool |
-| Pumpkin Smashers | Completed pumpkin smashes |
+| `/game reset bucket user:@Player` | Set one joined player's candy to 50. |
+| `/game reset buckets scope:Selected players` | Select up to 25 users, then confirm. Only still-joined records are changed. |
+| `/game reset buckets scope:All joined players` | Confirm the set of joined players captured when the command opens. New joiners are not added to an open confirmation. |
+| `/game reset player user:@Player` | Separate full reset, with confirmation: fresh 50-candy bucket; clears stats, bottles, effects, earnings, freeze and rejoin delay; player remains joined. |
 
-Highest Risk Takers now ranks total pumpkin wagers, including break-even smashes.
-All boards exclude inactive and currently frozen players before selecting the top ten;
-expired freezes and protected players remain eligible. Ties use player ID for stable ordering.
-The All board remains private outside the admin channel. Single categories are public
-only in configured event/admin channels.
+**Bucket-only resets preserve** participation, stats, inventory, effects, freezes, saved earnings and the cauldron. They do not count as earned/lost candy or change cauldron weights. Full player resets preserve mention preferences and cooldowns. Confirmations are private, bound to the moderator/server, expire after five minutes and reject revoked permissions. There is no bulk full-player reset or registered full-season reset.
 
-A successful Luna’s Calling adds one kindness action and the actual candy distributed
-to its summoner's generosity. Favor adds its bonus candy without adding another action.
-Sweetness/evilness percentages retain their existing formulas; Luna cauldron weighting
-uses kindness action counts. Receiving candy never adds kindness credit.
-Moderator candy adjustments remain excluded from gameplay counters.
+## Cauldron and reports
 
-New counters start when this update is installed; historical receipts are not backfilled.
-Startup creates the new counter table automatically without resetting existing data.
-Existing stats remain intact. Leave/reset/season reset clear the new seasonal counters.
-Protection elapsed time includes the current session and caps at expiry, without a timer job.
-Returned bottles count as another activation if reused, never another purchase.
-Blocked and redirected attempts are separate annotations: a redirect can also resolve
-as a successful or failed trick, so those figures must not be added together.
+`/game cast spell witch:Luna|Raven winners:One|Many` awards the full pool among distinct eligible players. Frozen and Veiled players do not qualify. Purchases provide perks, not entries. Results post in Event with the witch artwork and winner mentions, respecting mention opt-outs. A manual successful cast resets the automatic timer.
 
-## Channel permissions and current privacy limitation
+`/game get cauldron_eligibility` provides a private report without drawing. `/game get leaderboard` supports the existing category boards and All selector. All is private outside Admin. **Known limitation:** the current implementation permits every individual category in Event, although the intended policy is Candy Hoarders only; use Admin or another channel for sensitive boards until that separate fix. Commands do not forward boards to a different channel.
 
-Give the bot View Channel, Send Messages, and Embed Links wherever it posts. Join invitations also need Add Reactions and Read Message History; cauldron overflow announcements need Attach Files. Members need Use Application Commands in gameplay channels. Administrator is not required.
+Luna's Calling credits its summoner with one kindness action and actual distributed candy. Favor adds its bonus candy without another action. Receiving candy adds no kindness credit. Sweetness/evilness retain their formulas. Potion boards distinguish purchases, spending, activations and charges actually triggered; do not sum them as independent gameplay actions. See [potion details](potion-interactions.md).
 
-For #join and #shop, deny @everyone Send Messages and Add Reactions to keep the entrances clean; keep View Channel and Read Message History available. The bot seeds 🎃, which members can use even when they cannot add a new reaction type. Do not apply that denial to the bot. Bots cannot enroll themselves.
+If announcement delivery fails after a saved payout or candy adjustment, do not repeat the command to retry the message: a new interaction is a new operation. Existing idempotency receipts prevent replay of the same request.
 
-**Outstanding privacy fix:** the requested policy permits only Candy Hoarders publicly outside Admin. Current code permits every individual category in Event; until corrected, run sensitive boards in Admin or another channel where they respond privately. All is already private outside Admin. Commands reply where invoked; they do not forward boards to Event.
-
-For host setup, command synchronization, and currently requested gateway intents, see [development](development.md). The planned no-Members-intent operation and large-guild changes are deferred.
-
-## Passive earnings
-
-`/game get player` Stats/All includes saved earnings, today’s accrued amount, total earned/collected/forfeited, and UTC reset time. Claims only change bucket candy, not kindness, cauldron weights, or potion counters. Pausing freezes accrual and collection; moderator freezes do the same per player. Player resets and departures forfeit pending earnings without clearing the daily allowance history. See [earnings rules](passive-earnings.md).
-
-## Player slowmode
-
-Moderators can use `/game set slowmode trick:10 treat:5 smash:15` to set independent waits in seconds for each player in this server. All three default to **0 (off)**. Values range from 0 to 86,400 seconds. Omitted options stay unchanged; omit all options to view the current settings. Changing an action's value clears its existing timers, so the new interval begins with each player's next completed attempt.
-
-Completed attempts start the timer, including failed tricks, blocked-by-potion tricks, and empty-bucket trick events. Invalid or unavailable-target requests do not. Treat modals and slash commands share the same timer. A Mirror redirect is part of the original trick, not an additional action. Cooling-down responses are private and use Discord relative timestamps. Denied actions do not change candy, stats, or potion charges. Duplicate requests cannot extend a timer or settle twice. The three timers are independent across players and servers, persist across restarts, and roll back with a failed transaction. Changing a setting to 0 disables it immediately. There is no moderator bypass for gameplay.
-
-Two small SQLite tables are created automatically at startup; no manual migration or data reset is required. Cooldowns remain across leaving/rejoining or player resets so these cannot bypass a wait.
+The bot's currently requested intents and membership reconciliation are unchanged; reduced-intent and large-guild work remain deferred. Database feature tables are created at startup without resetting current players.

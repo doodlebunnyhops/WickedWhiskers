@@ -41,18 +41,15 @@ async def get_cauldron_eligibility(interaction: discord.Interaction):
 @get_group.command(name="settings", description="View the game settings.")
 @checks.check_if_has_permission_or_role()
 async def get_game_settings(interaction: discord.Interaction):
-    guild_id = interaction.guild.id
-    # Fetch the game settings from the database
-    game_disabled, potion_price, trick_success_rate, *_ = db_utils.get_game_settings(guild_id)
+    import admin_settings as shared
+    await interaction.response.send_message(shared.summary(interaction.guild_id),ephemeral=True)
 
-    # Prepare the response message
-    trick_success_rate = round(trick_success_rate, 2)
-    response_message = (
-        f"Player Game Commands: {'Disabled' if game_disabled == 1 else 'Enabled'}\n"
-        "Potion prices: use /shop browse or /shop manage\n"
-        f"Trick Success Rate: {trick_success_rate}%"
-    )
-    await interaction.response.send_message(response_message, ephemeral=True)
+@get_group.command(name="slowmode", description="View the action cooldowns for this server")
+@checks.check_if_has_permission_or_role()
+async def get_slowmode(interaction: discord.Interaction):
+    import slowmode
+    values={k:slowmode.text('off') if v==0 else slowmode.text('seconds',amount=v) for k,v in slowmode.settings(interaction.guild_id).items()}
+    await interaction.response.send_message(slowmode.text('settings',**values),ephemeral=True)
 
 @get_group.command(name="cauldron", description="View how much is in the cauldron.")
 @checks.check_if_has_permission_or_role()
@@ -148,3 +145,10 @@ def sanitize_string(input_string: str) -> str:
     sanitized = ''.join(c for c in sanitized if c.isprintable())
     
     return sanitized
+
+
+@get_group.command(name='auto_cauldron',description='Inspect automatic cauldron settings and blockers')
+@checks.check_if_has_permission_or_role()
+async def get_auto_cauldron(interaction:discord.Interaction):
+    import auto_cauldron
+    await interaction.response.send_message(auto_cauldron.describe(interaction.guild_id,interaction.guild),ephemeral=True)

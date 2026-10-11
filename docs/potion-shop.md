@@ -9,10 +9,9 @@ Current for `feature/potion-shop`, reviewed 2026-10-06. Uses pinned discord.py 2
 - Confirm Purchase charges the caller and grants bottles. Cancel does not charge.
 - `/inventory`: quantities and active charges; Use Potion opens an activation modal.
 - `/use`: directly opens the activation modal.
-- `/shop manage`: select a potion, then edit price and sale availability in a modal.
-- `/shop manager_role`: Manage Server members can set or clear a regular shop-manager role.
-- `/shop post`: posts persistent Open Shop and Inventory buttons, re-registered at startup.
-- The existing right-click Potion Shop opens the caller's shop, ignoring the clicked member.
+- `/game manage shop`: select a potion, then edit price and sale availability in a modal.
+- `/bot set shop_manager_role`: Manage Server members can set or clear a regular shop-manager role.
+- `/bot post shop`: posts persistent Open Shop and Inventory buttons, re-registered at startup.
 
 Discord slash-command groups cannot also act as a standalone root command. Use `/shop browse` or the Open Shop button, rather than `/shop` alone.
 
@@ -33,7 +32,7 @@ See [potion interactions](potion-interactions.md) for targeting, stacking, round
 
 Bottled purchases do not activate effects, fund the cauldron, or provide entries. Bottled effects persist across restarts without time expiry; duplicate active effects are rejected without consuming inventory. Spare bottles can be held.
 
-Witch’s Veil is the timed exception: it activates on confirmed purchase. `/shop protection` offers exact-duration or candy-budget checkout and early cancellation. Budget cancellation refunds unspent reserved time; fixed-duration cancellation forfeits it. Both consume the purchase and start the agreed cooldown. Freezing has separate return/refund rules. See [complete Veil rules](freeze-and-protection.md).
+Witch’s Veil is the timed exception: it activates on confirmed purchase. The Witch’s Veil controls in `/shop browse` or `/inventory` offer exact-duration or candy-budget checkout and early cancellation. Budget cancellation refunds unspent reserved time; fixed-duration cancellation forfeits it. Both consume the purchase and start the agreed cooldown. Freezing has separate return/refund rules. See [complete Veil rules](freeze-and-protection.md).
 
 ## Interactions
 
@@ -57,7 +56,7 @@ Prices must be integer candy amounts from 1 to 1,000,000. Default-price resets p
 
 Trick resolution now commits effects, transfers and statistics before Discord announcements. Treat resolution (including the right-click modal) groups its writes too. A failed announcement cannot undo a saved reward or consume an additional bottle; a historical transaction record remains for investigation. Automatic announcement retries are not implemented.
 
-Legacy `potions_purchased` and `potion_price` columns remain for compatibility with older data helpers, but are not used as inventory or shop pricing. Player-data displays derive bottle counts from the new inventory. All seven bottled potions use the same shop and inventory; Veil has its own timed checkout. The old generic shop command is replaced. Old generic price controls direct managers to `/shop manage`.
+Legacy `potions_purchased` and `potion_price` columns remain for compatibility with older data helpers, but are not used as inventory or shop pricing. Player-data displays derive bottle counts from the new inventory. All seven bottled potions use the same shop and inventory; Veil has its own timed checkout. The old generic shop command is replaced. Old generic price controls direct managers to `/game manage shop`.
 
 Deleting the seasonal database clears all state, including server overrides. The existing programmatic `reset_game(guild_id)` clears player potion state, histories, cooldowns and the pool while retaining server shop configuration. Player reset/deletion clears that player's potion state.
 
@@ -91,3 +90,4 @@ Active database players qualify unless frozen or under Witch’s Veil, independe
 
 
 The private inventory response includes an **Open Shop** button alongside its potion controls. It opens the same shop modal as `/shop browse` and is restricted to the inventory owner and server.
+

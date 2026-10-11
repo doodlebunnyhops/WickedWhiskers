@@ -12,7 +12,6 @@ Run `/help` for a private guide. In a server using #join, #play, and #shop, reac
 | `/shop browse` | Select a potion and quantity, then review and confirm your private checkout. |
 | `/inventory` | Privately see bottles, returned partial bottles, and active effects; open Use Potion or protection controls. |
 | `/use` | Open the potion activation modal. |
-| `/shop protection` | Buy Witch’s Veil, check its timer, or confirm ending it early. |
 | `/whois character:Luna` | Meet Luna or Raven. |
 | `/leave` | Confirm forfeiting progress and begin a one-hour rejoin delay. |
 | `/help` | Open the private topic menu. |
@@ -37,11 +36,11 @@ A moderator freeze preserves your progress and returns remaining active potion c
 
 ## Other ways to play
 
-Right-click or long-press a member, then choose Apps for Join Game, Trick Player, Treat Player, Check Bucket, or Potion Shop. Bucket and shop always belong to you, regardless of whose menu you opened. Join Game must target yourself. The persistent shop message has both Open Shop and Inventory buttons.
+Right-click or long-press a member, then choose Apps for **Trick Player** or **Treat Player**. Use `/join`, `/bucket`, and `/shop browse` for your own participation, bucket and shopping. The persistent shop message has both Open Shop and Inventory buttons.
 
 ## Earn candy over time
 
-Joined, unfrozen players earn 1 candy per 10 minutes, even offline or under Witch’s Veil. Maximum 100 per UTC day and 300 saved. Collect from `/bucket`; unclaimed candy stays protected and cannot be wagered. Full reserves stop earning without backdated catch-up. Pauses/freezes stop earning and collection. Leaving or a moderator reset forfeits saved earnings. See [full rules](passive-earnings.md).
+Joined, unfrozen players earn 1 candy per 10 minutes, even offline or under Witch’s Veil. Maximum 100 per UTC day and 300 saved. Collect from `/bucket`; unclaimed candy stays protected and cannot be wagered. Full reserves stop earning without backdated catch-up. Pauses/freezes stop earning and collection. Leaving or a full player reset forfeits saved earnings. A bucket-only reset preserves them. See [full rules](passive-earnings.md).
 
 Moderators can enable independent per-player waits between tricks, treats, and pumpkin smashes. If you need to wait, a private response shows when you can try again.
 

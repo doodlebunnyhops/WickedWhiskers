@@ -52,9 +52,7 @@ class MyBot(commands.Bot):
         self.message_loader = default_messages()
 
         #Set Context Menus callback REMINDER, discord limits to 5 context menus per bot!
-        join_cm = app_commands.ContextMenu(name="Join Game", callback=player.join)
         trick_cm = app_commands.ContextMenu(name="Trick Player", callback=player.trick)
-        bucket_cm = app_commands.ContextMenu(name="Check Bucket", callback=player.bucket)
 
         @bot.tree.context_menu(name="Treat Player")
         async def treat_modal(interaction: discord.Interaction, user: discord.Member):
@@ -62,25 +60,13 @@ class MyBot(commands.Bot):
             modal = Treat(target_user=user)
             await interaction.response.send_modal(modal)
         
-        @bot.tree.context_menu(name="Potion Shop")
-        async def shop_modal(interaction: discord.Interaction, user: discord.Member):
-            # Show the modal for user input
-            await open_shop(interaction)
-            
-        # @self.tree.context_menu(name="Join Game")
-        # @checks.must_target_self()
-        # async def join(interaction: discord.Interaction, user: discord.Member):
-        #     await interaction.response.send_message(f"{user.display_name} you are trying to join!", ephemeral=True)
-        
         # Load cogs and cm's
         print("Loading group commands...")
         #the additional options were the trick to force guild update
         if self.guild_id is None:
             self.tree.add_command(Mod.cmds_group,override=True)
             self.tree.add_command(Game.game_group,override=True)
-            self.tree.add_command(join_cm,override=True)
             self.tree.add_command(trick_cm,override=True)
-            self.tree.add_command(bucket_cm,override=True)
             self.tree.add_command(treat_modal,override=True)
             await self.load_extension("cogs.player")
             await self.load_extension("cogs.shop")
@@ -89,15 +75,15 @@ class MyBot(commands.Bot):
         else:
             self.tree.add_command(Mod.cmds_group,guild=self.guild_id,override=True)
             self.tree.add_command(Game.game_group,guild=self.guild_id,override=True)
-            self.tree.add_command(join_cm,guild=self.guild_id,override=True)
             self.tree.add_command(trick_cm,guild=self.guild_id,override=True)
-            self.tree.add_command(bucket_cm,guild=self.guild_id,override=True)
             self.tree.add_command(treat_modal,guild=self.guild_id,override=True)
             await self.load_extension("cogs.player")
             await self.load_extension("cogs.shop")
             await self.load_extension("cogs.help")
             await self.load_extension("cogs.participation")
         
+        await self.load_extension("cogs.auto_cauldron")
+
         print("Syncing tree...")
         try:
             # Sync the commands

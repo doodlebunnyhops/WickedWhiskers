@@ -15,7 +15,7 @@ Offline/invisible status does not matter. Timestamps persist through restarts. A
 
 Pausing the game or freezing a player stops earning and collection, without confiscating already saved candy. Partial progress is preserved. Timed freeze expiry resumes eligibility at the saved expiry even if the bot was offline. Overlapping pauses/freezes never earn candy during blocked time.
 
-Leaving the game or guild forfeits unclaimed earnings and partial progress. The current departure listener and reconnect reconciliation perform this on detected departures; no new intents or presence tracking are added. Moderator player reset/deletion also forfeits the reserve. Rejoining/resetting preserves daily earning totals and claim history, preventing another daily allowance. A seasonal database deletion clears these records along with everything else.
+Leaving the game or guild forfeits unclaimed earnings and partial progress. The current departure listener and reconnect reconciliation perform this on detected departures; no new intents or presence tracking are added. Full moderator player reset/deletion also forfeits the reserve. Bucket-only resets preserve it. Rejoining/resetting preserves daily earning totals and claim history, preventing another daily allowance. A seasonal database deletion clears these records along with everything else.
 
 A player starting with an empty bucket can collect without first completing an action. A rejected gameplay action does not claim income. Witch’s Veil permits earning and collection. A frozen player may inspect the bucket but cannot collect until unfrozen.
 
