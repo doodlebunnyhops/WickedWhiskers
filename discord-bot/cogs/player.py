@@ -14,6 +14,16 @@ class Player(commands.Cog):
     # subgroup = app_commands.Group(name="subgroup",description="...")
     # group.add_command(subgroup)
 
+    @app_commands.command(name="mentions", description="Choose whether game announcements may mention you in this server.")
+    @app_commands.guild_only()
+    @app_commands.describe(enabled="False to disable mentions; True to enable. Omit to view.")
+    async def mentions(self, interaction: discord.Interaction, enabled: bool = None):
+        import mention_preferences as preferences
+        if enabled is not None:
+            preferences.configure(interaction.guild_id,interaction.user.id,enabled)
+        current=preferences.enabled(interaction.guild_id,interaction.user.id)
+        await interaction.response.send_message(interaction.client.message_loader.get_message('mention_preferences','on' if current else 'off'),ephemeral=True)
+
     @app_commands.command(name="join", description="Join the game!")
     async def join(self, interaction: discord.Interaction):
         await helper.player_join(interaction,None)

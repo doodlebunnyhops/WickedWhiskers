@@ -54,20 +54,25 @@ async def post_to_target_channel(interaction: discord.Interaction, message, chan
     # Fetch the channel from the guild
     target_channel = interaction.guild.get_channel(channel_id) if channel_id else None
 
+    from mention_preferences import Announcement
+    preferences=Announcement(interaction.guild)
+    message=preferences.message(message)
+    allowed=preferences.allowed(message)
+
     # Determine if the message is an embed
     is_embed = isinstance(message, discord.Embed)
 
     # If target channel exists, send the message there
     if target_channel is not None:
         if is_embed:
-            await target_channel.send(embed=message)
+            await target_channel.send(embed=message,allowed_mentions=allowed)
         else:
-            await target_channel.send(message)
+            await target_channel.send(message,allowed_mentions=allowed)
     else:
         if is_embed:
-            await interaction.channel.send(embed=message)
+            await interaction.channel.send(embed=message,allowed_mentions=allowed)
         else:
-            await interaction.channel.send(message)
+            await interaction.channel.send(message,allowed_mentions=allowed)
 
             
 import random

@@ -48,6 +48,8 @@ async def candy(interaction: discord.Interaction, player: discord.Member, action
     key = result['action'] + ('_named' if result['include_moderator'] else '_anonymous')
     embed = discord.Embed(title=message('mod_candy', 'title'), description=message('mod_candy', key, **values), color=discord.Color.orange())
     try:
+        from mention_preferences import Announcement
+        embed=Announcement(interaction.guild).message(embed)
         await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions.none())
     except discord.HTTPException:
         logger.exception('Moderator candy adjustment saved but event post failed')

@@ -168,6 +168,8 @@ def initialize_database():
     initialize_schema(conn)
     from player_state import initialize_schema as initialize_player_state
     initialize_player_state(conn)
+    from mention_preferences import initialize_schema as initialize_mentions
+    initialize_mentions(conn)
     from slowmode import initialize_schema as initialize_slowmode
     initialize_slowmode(conn)
     from passive_income import initialize_schema as initialize_income

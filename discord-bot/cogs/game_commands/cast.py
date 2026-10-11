@@ -47,22 +47,24 @@ async def cast_spell(interaction: discord.Interaction, witch: str, winners: str)
         return
     outcome = result['outcome']
     winner_ids = list(dict.fromkeys(award['player_id'] for award in result['awards']))
-    names = [f'<@{uid}>' for uid in winner_ids]
+    from mention_preferences import Announcement
+    preferences=Announcement(interaction.guild)
+    names = [preferences.label(uid) for uid in winner_ids]
     # Keep each message below Discord's content and explicit-mention limits.
-    winner_batches = [winner_ids[start:start + 50] for start in range(0, len(winner_ids), 50)]
+    winner_batches = [winner_ids[start:start + 20] for start in range(0, len(winner_ids), 20)]
 
     def winner_notification(ids):
         return {
-            'content': message('cauldron', 'winner_mentions', winners=', '.join(f'<@{uid}>' for uid in ids)),
+            'content': message('cauldron', 'winner_mentions', winners=', '.join(preferences.label(uid) for uid in ids)),
             'allowed_mentions': discord.AllowedMentions(
                 everyone=False, roles=False, replied_user=False,
-                users=[discord.Object(id=uid) for uid in ids],
+                users=[discord.Object(id=uid) for uid in ids if uid not in preferences.muted],
             ),
         }
 
     values = dict(
         witch=message('cauldron', 'witches', witch), outcome=message('cauldron', 'outcomes', outcome),
-        winners=', '.join(names), winner_count=len(names), user=interaction.user.mention,
+        winners=', '.join(names), winner_count=len(names), user=preferences.label(interaction.user.id),
         amount=result['amount'], remaining=result['remaining'],
     )
     announcement = message('cauldron', 'draw', witch, outcome, **values)

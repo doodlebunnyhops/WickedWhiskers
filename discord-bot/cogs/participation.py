@@ -43,6 +43,8 @@ async def moderator_change(interaction, player, minutes=None, reason='', update=
     if not thaw:
         embed.set_thumbnail(url=image_url('frozen_player'))
     try:
+        from mention_preferences import Announcement
+        embed=Announcement(interaction.guild).message(embed)
         await channel.send(embed=embed,allowed_mentions=discord.AllowedMentions.none())
     except discord.HTTPException:
         logger.exception('Freeze status saved but event announcement failed')

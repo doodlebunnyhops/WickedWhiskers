@@ -1053,6 +1053,10 @@
                 "earnings": {
                     "name": "🍬 Collect your earned sweets",
                     "value": "Open `/bucket` and press **Collect earned candy**. Joined, unfrozen players earn 1 candy per 10 minutes even offline or under Witch’s Veil: 100/day (midnight UTC reset), up to 300 saved. At 300, earning stops until collection; no catch-up for capped time. Saved sweets cannot be stolen. Pauses and freezes stop earning and collection. Leaving the game/server or a moderator player reset forfeits saved earnings; daily limits still apply."
+                },
+                "mentions": {
+                    "name": "🔕 Mention preferences",
+                    "value": "Use `/mentions enabled:False` to stop game announcements tagging you in this server, or `enabled:True` to turn them back on. You still appear in results and receive rewards. Use `/mentions` to check your setting."
                 }
             }
         },
@@ -1477,5 +1481,9 @@
         "off": "Off",
         "seconds": "{amount} seconds",
         "settings": "🎃 **Player slowmode**\nTricks: **{trick}**\nTreats: **{treat}**\nPumpkin smashes: **{smash}**\nEach player has separate timers in this server. Changing a setting clears its current timers."
+    },
+    "mention_preferences": {
+        "on": "🔔 Game mentions are **on** in this server. Use `/mentions enabled:False` to turn them off.",
+        "off": "🔕 Game mentions are **off** in this server. Announcements can still name you, but won’t tag or ping you. Rewards and gameplay are unchanged. Use `/mentions enabled:True` to turn them back on."
     }
 }

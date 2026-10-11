@@ -44,3 +44,7 @@ Right-click or long-press a member, then choose Apps for Join Game, Trick Player
 Joined, unfrozen players earn 1 candy per 10 minutes, even offline or under Witch’s Veil. Maximum 100 per UTC day and 300 saved. Collect from `/bucket`; unclaimed candy stays protected and cannot be wagered. Full reserves stop earning without backdated catch-up. Pauses/freezes stop earning and collection. Leaving or a moderator reset forfeits saved earnings. See [full rules](passive-earnings.md).
 
 Moderators can enable independent per-player waits between tricks, treats, and pumpkin smashes. If you need to wait, a private response shows when you can try again.
+
+## Mention preferences
+
+Use `/mentions enabled:False` to stop public game announcements tagging or pinging you in this server. Use `enabled:True` to restore mentions, or `/mentions` to view your preference privately. Mentions default to on. Players can only change their own preference, even before joining or while frozen/protected. Announcements still show their name and awards remain unchanged. Preferences persist across restarts and player resets, and are independent between servers. Tricks, treats, pumpkins, potion announcements, cauldron winners, join messages, and moderation announcements honor the preference. The new table is created automatically at startup.

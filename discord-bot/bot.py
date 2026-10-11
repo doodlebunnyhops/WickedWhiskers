@@ -216,7 +216,10 @@ async def on_raw_reaction_add(payload):
                     pass  # Never leak freeze reasons to a public channel.
                 return
             message = bot.message_loader.get_message('join', 'messages', user=member.mention)
-            await channel.send(message, delete_after=30)
+            from mention_preferences import Announcement
+            preferences=Announcement(guild)
+            message=preferences.message(message)
+            await channel.send(message, delete_after=30,allowed_mentions=preferences.allowed(message))
     except Exception as e:
         logger.error(f"Unexpected error in on_raw_reaction_add: {str(e)}")
 

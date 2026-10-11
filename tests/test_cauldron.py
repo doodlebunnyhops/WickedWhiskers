@@ -293,3 +293,21 @@ def test_large_draw_pings_every_winner_once_in_bounded_batches(database,monkeypa
         notified.extend(mentions['users'])
         assert ('embed' in kwargs)==(index==0)
     assert notified==ids
+
+
+def test_draw_honors_opt_out_without_changing_awards(database,monkeypatch):
+    import mention_preferences as prefs
+    import db_utils as db
+    database.execute('DELETE FROM players WHERE guild_id=1 AND player_id NOT IN (10,20)')
+    database.commit()
+    prefs.configure(1,10,False)
+    db.set_cauldron_pool(1,100)
+    monkeypatch.setattr(cauldron.random,'randint',lambda low,high:low)
+    caller=SimpleNamespace(id=123456,client=client(),user=SimpleNamespace(id=99,mention='<@99>'),guild=SimpleNamespace(id=1,me=object(),get_channel=lambda cid:event,get_member=lambda uid:SimpleNamespace(display_name='Quiet Player')),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
+    asyncio.run(cast.cast_spell.callback(caller,'luna','many'))
+    sent=event.send.call_args.kwargs
+    assert '<@10>' not in sent['content'] and 'Quiet Player' in sent['content']
+    assert '<@10>' not in sent['embed'].description
+    assert sent['allowed_mentions'].to_dict()['users']==[20]
+    assert db.get_player_data(10,1)['candy_in_bucket']==100
+    assert db.get_player_data(20,1)['candy_in_bucket']==100
