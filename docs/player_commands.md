@@ -42,3 +42,5 @@ Right-click or long-press a member, then choose Apps for Join Game, Trick Player
 ## Earn candy over time
 
 Joined, unfrozen players earn 1 candy per 10 minutes, even offline or under Witch’s Veil. Maximum 100 per UTC day and 300 saved. Collect from `/bucket`; unclaimed candy stays protected and cannot be wagered. Full reserves stop earning without backdated catch-up. Pauses/freezes stop earning and collection. Leaving or a moderator reset forfeits saved earnings. See [full rules](passive-earnings.md).
+
+Moderators can enable independent per-player waits between tricks, treats, and pumpkin smashes. If you need to wait, a private response shows when you can try again.

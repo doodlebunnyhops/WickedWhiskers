@@ -1,3 +1,4 @@
+import slowmode
 """Pumpkin outcomes are net changes, settled exactly once per interaction."""
 import random
 from fractions import Fraction
@@ -64,6 +65,7 @@ def smash(guild_id, player_id, wager, action_id, rng=random):
         balance = data['candy_in_bucket']
         if wager > balance:
             raise PumpkinError('insufficient')
+        slowmode.check(conn,guild_id,player_id,'smash')
         boost,comparison_count = smaller_bucket_boost(conn,guild_id,balance)
         roll = rng.random()
         if roll < .10:
@@ -99,5 +101,6 @@ def smash(guild_id, player_id, wager, action_id, rng=random):
             db.update_cauldron_contribution(player_id, guild_id, contribution)
         from player_state import protection_info
         result = dict(protected=bool(protection_info(guild_id, player_id)), outcome=outcome, win_boost=boost, comparison_count=comparison_count, risk=wager/balance, message_key=message_key, wager=wager, delta=delta, balance=after, magic=magic, contribution=contribution)
+        slowmode.mark(conn,guild_id,player_id,'smash')
         potions.record_action(conn, guild_id, action_id, player_id, 'pumpkin', result)
         return result, False

@@ -1048,7 +1048,7 @@
                 },
                 "where": {
                     "name": "Where to play",
-                    "value": "Use your server's play channel for commands. Join and shop messages may live in separate channels; their names are chosen by your moderators."
+                    "value": "Use your server's play channel for commands. Join and shop messages may live in separate channels; their names are chosen by your moderators. Moderators may enable separate waits between tricks, treats, and smashes; the bot privately tells you when you can try again."
                 },
                 "earnings": {
                     "name": "🍬 Collect your earned sweets",
@@ -1117,6 +1117,10 @@
                 "access": {
                     "name": "5 · Assign access and enable play",
                     "value": "`/bot set role role:@Game-Moderator` grants game moderation access.\n`/shop manager_role role:@Shop-Manager` is a separate shop role, set by Manage Server members.\n`/game set state state:Enable` enables play. Use Disable to pause normal gameplay."
+                },
+                "slowmode": {
+                    "name": "Player slowmode",
+                    "value": "`/game set slowmode trick:10 treat:5 smash:15` sets separate per-player waits in seconds. Set any value to `0` to turn it off. Omit an option to keep it; omit all to view settings. Defaults are off. Changes clear that action’s current timers."
                 }
             }
         },
@@ -1464,5 +1468,14 @@
         "reflect_miss": [
             "🪞 {user}’s reflected trick misses. No candy moves. “Outwitted by yourself. Almost,” Raven murmurs."
         ]
+    },
+    "slowmode": {
+        "wait": "⏳ A little patience, spellcaster! You can try {action} again <t:{expiry}:R>.",
+        "trick": "a trick",
+        "treat": "a treat",
+        "smash": "a pumpkin smash",
+        "off": "Off",
+        "seconds": "{amount} seconds",
+        "settings": "🎃 **Player slowmode**\nTricks: **{trick}**\nTreats: **{treat}**\nPumpkin smashes: **{smash}**\nEach player has separate timers in this server. Changing a setting clears its current timers."
     }
 }

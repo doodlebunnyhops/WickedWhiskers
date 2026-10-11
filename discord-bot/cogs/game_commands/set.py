@@ -96,3 +96,18 @@ async def set_game_state( interaction: discord.Interaction, state: app_commands.
         set_game_disabled(guild_id, True)
         get_cauldron_pool(guild_id) #init pool  
         await interaction.response.send_message("The game commands have been disabled.", ephemeral=True)
+
+
+@set_group.command(name="slowmode", description="Set separate player cooldowns in seconds; 0 disables. Omit values to view.")
+@checks.check_if_has_permission_or_role()
+@app_commands.guild_only()
+@app_commands.describe(trick="Seconds between tricks (0 = off)",treat="Seconds between treats (0 = off)",smash="Seconds between pumpkin smashes (0 = off)")
+async def set_slowmode(interaction: discord.Interaction,
+                       trick: app_commands.Range[int,0,86400] = None,
+                       treat: app_commands.Range[int,0,86400] = None,
+                       smash: app_commands.Range[int,0,86400] = None):
+    import slowmode
+    updates={k:v for k,v in dict(trick=trick,treat=treat,smash=smash).items() if v is not None}
+    values=slowmode.configure(interaction.guild_id,**updates) if updates else slowmode.settings(interaction.guild_id)
+    shown={k:slowmode.text('off') if v==0 else slowmode.text('seconds',amount=v) for k,v in values.items()}
+    await interaction.response.send_message(slowmode.text('settings',**shown),ephemeral=True)

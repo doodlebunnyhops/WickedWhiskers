@@ -149,3 +149,11 @@ Completed tricks, treats, and pumpkin smashes post one public result; their temp
 Leaderboard privacy currently differs from the requested policy: **every individual board**, not just Candy Hoarders, can be public in the Event channel. All stays private outside Admin. See [outstanding issues](command-audit.md).
 
 Passive earnings use the existing `/bucket` command, not a new slash command. See [earning, collection, and lifecycle rules](passive-earnings.md). Pumpkin probabilities now include a below-median ordinary-win boost when at least three positive eligible buckets exist; see [formulas](pumpkin-smashing.md).
+
+## Player slowmode
+
+Moderators can use `/game set slowmode trick:10 treat:5 smash:15` to set independent waits in seconds for each player in this server. All three default to **0 (off)**. Values range from 0 to 86,400 seconds. Omitted options stay unchanged; omit all options to view the current settings. Changing an action's value clears its existing timers, so the new interval begins with each player's next completed attempt.
+
+Completed attempts start the timer, including failed tricks, blocked-by-potion tricks, and empty-bucket trick events. Invalid or unavailable-target requests do not. Treat modals and slash commands share the same timer. A Mirror redirect is part of the original trick, not an additional action. Cooling-down responses are private and use Discord relative timestamps. Denied actions do not change candy, stats, or potion charges. Duplicate requests cannot extend a timer or settle twice. The three timers are independent across players and servers, persist across restarts, and roll back with a failed transaction. Changing a setting to 0 disables it immediately. There is no moderator bypass for gameplay.
+
+Two small SQLite tables are created automatically at startup; no manual migration or data reset is required. Cooldowns remain across leaving/rejoining or player resets so these cannot bypass a wait.

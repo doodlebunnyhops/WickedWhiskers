@@ -1,3 +1,4 @@
+import slowmode
 import random
 import discord
 import settings
@@ -86,7 +87,14 @@ async def player_trick(interaction: discord.Interaction, member: discord.Member)
         if previous is not None:
             responses.append_personal("This trick was already processed; no extra charge or candy was taken.")
         else:
-            _resolve_trick(interaction, member, responses)
+            try:
+                slowmode.check(conn,interaction.guild.id,interaction.user.id,'trick')
+            except slowmode.SlowmodeError as error:
+                responses.append_personal(str(error))
+            else:
+                _resolve_trick(interaction, member, responses)
+                if any(kind=='event' for kind,_ in responses.messages):
+                    slowmode.mark(conn,interaction.guild.id,interaction.user.id,'trick')
             potions.record_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "trick", {"target": member.id})
     events = [message for kind,message in responses.messages if kind == 'event']
     if events:
@@ -273,6 +281,9 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
         return
     try:
         result, repeated = smash(interaction.guild.id, interaction.user.id, amount, interaction.id)
+    except slowmode.SlowmodeError as error:
+        await interaction.followup.send(str(error),ephemeral=True)
+        return
     except PumpkinError as error:
         await interaction.followup.send(message("smash_pumpkin", "errors", str(error)), ephemeral=True)
         return
@@ -369,7 +380,13 @@ def give_treat(interaction: discord.Interaction, user: discord.Member, amount: 0
         previous = potions.prior_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "treat")
         if previous is not None:
             return None, interaction.client.message_loader.get_message("potion_events", "treat_replayed")
+        try:
+            slowmode.check(conn,interaction.guild.id,interaction.user.id,'treat')
+        except slowmode.SlowmodeError as error:
+            return None,str(error)
         result = _resolve_treat(interaction, user, amount)
+        if result[0] is not None:
+            slowmode.mark(conn,interaction.guild.id,interaction.user.id,'treat')
         potions.record_action(conn, interaction.guild.id, interaction.id, interaction.user.id, "treat", {"target": user.id, "amount": amount})
         return result
 
