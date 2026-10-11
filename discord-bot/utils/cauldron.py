@@ -70,7 +70,7 @@ def award_pool(guild_id, action_id, caster_id, witch, mode, *, now=None):
         previous = conn.execute('SELECT result FROM cauldron_draws WHERE guild_id=? AND action_id=?', (guild_id, str(action_id))).fetchone()
         if previous:
             return json.loads(previous[0]), True
-        players = db.get_active_players_by_guild(guild_id)
+        players = db.get_cauldron_players(guild_id)
         if not players:
             raise CauldronError('no_players')
         pool = conn.execute('SELECT candy_in_cauldron FROM cauldron_pool WHERE guild_id=?', (guild_id,)).fetchone()

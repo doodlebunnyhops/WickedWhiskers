@@ -3,7 +3,7 @@ import logging
 import sqlite3
 from discord import app_commands
 from utils.checks import check_if_has_permission_or_role
-from db_utils import get_active_players_by_guild, get_event_channel
+from db_utils import get_cauldron_players, get_event_channel
 from utils.cauldron import award_pool, CauldronError
 from utils.artwork import image_url
 
@@ -19,7 +19,7 @@ cast_group = app_commands.Group(name='cast', description='Cast commands')
 @app_commands.describe(witch='The witch to cast the spell', winners='The number of distinct winners')
 async def cast_spell(interaction: discord.Interaction, witch: str, winners: str):
     message = interaction.client.message_loader.get_message
-    players = get_active_players_by_guild(interaction.guild.id)
+    players = get_cauldron_players(interaction.guild.id)
     if not players:
         await interaction.response.send_message(message('cauldron', 'no_players'), ephemeral=True)
         return

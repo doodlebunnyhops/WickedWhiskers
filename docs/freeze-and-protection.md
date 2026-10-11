@@ -9,7 +9,7 @@ All settings and player state are isolated by server. Times are stored in the da
 - `/game unfreeze player:@Player` removes the freeze without resetting progress or bypassing a leave/rejoin delay.
 - Manage Server or a role configured with `/bot add role` is required. A shop-manager role alone is insufficient.
 
-Frozen players cannot trick, treat, smash pumpkins, shop, activate potions, be targeted, receive witch gifts, or win cauldron draws. They can read help, inventory, and their bucket. Candy and stats are preserved.
+Frozen players cannot trick, treat, smash pumpkins, shop, activate potions, be targeted, receive Luna gifts. They can read help, inventory, and their bucket. Candy and stats are preserved.
 
 Active charged potions return to inventory with only their remaining charges. Returned partial bottles are listed individually and used before fresh bottles. A potion that already acted immediately, such as Luna's Calling, is not returned.
 
@@ -40,9 +40,9 @@ Both modes show the complete quote before confirmation. No stacking, extension, 
 
 While protected:
 
-- No outgoing or incoming tricks or treats, other potion activation, Luna's Calling gifts, or cauldron winnings.
-- Shopping, inventory, bucket, and pumpkin smashing remain available.
-- Pumpkin odds, gains, losses, and magical contributions to the cauldron are unchanged. Special narration attributes the contribution to the pumpkin/cauldron rather than witches seeing the player; protected pumpkin posts do not use a witch narrator/image.
+- No outgoing or incoming tricks or treats, other potion activation, or Luna's Calling gifts.
+- Shopping, inventory, bucket, pumpkin smashing and cauldron rewards remain available.
+- Pumpkin odds, gains, losses, and magical contributions to the cauldron are unchanged. Veiled players use the same public pumpkin messages and witch artwork as everyone else; announcements do not disclose Veil.
 - Existing Ward, Mirror, Cunning, and other effects do not trigger or lose charges.
 
 Under `/game manage shop`, **Witch's Veil settings** lets Manage Server members or the designated shop-manager role configure the fee, rate, minimum/maximum minutes, cooldown, purchase modes, and sale availability. Values must be positive integers; minimum cannot exceed maximum. Active spells retain the agreed rate, duration, refund policy, and cooldown. Changing settings invalidates an unpaid quote, requiring the player to review it again. Returned bottle credits still cover the next potion fee, but time funding uses the current shop settings.

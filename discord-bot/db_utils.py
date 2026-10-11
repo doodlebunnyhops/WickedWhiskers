@@ -825,7 +825,7 @@ def is_player_frozen(player_id: int, guild_id: int) -> bool:
     return bool(freeze_info(guild_id, player_id))
 
 #I need a function get get all players in guild where active = 1, return playerID, candy_in_bucket,potions_purchased
-def get_active_players_by_guild(guild_id: int):
+def get_active_players_by_guild(guild_id: int, *, include_veiled=False):
     """
     Fetches all active players in a guild with their player ID, candy count, potions purchased, treats given, total candy given, successful tricks, failed tricks, and total candy stolen.
     
@@ -843,8 +843,15 @@ def get_active_players_by_guild(guild_id: int):
         WHERE guild_id = ? AND active = 1
     ''', (guild_id,))
     players = cursor.fetchall()
-    from player_state import visible
+    from player_state import visible, freeze_info
+    if include_veiled:
+        return [row for row in players if not freeze_info(guild_id, row[0])]
     return [row for row in players if visible(guild_id, row[0])]
+
+
+def get_cauldron_players(guild_id):
+    """Cauldron draws include Veiled players, but exclude frozen/inactive records."""
+    return get_active_players_by_guild(guild_id, include_veiled=True)
 
 # Function to set event channel for a guild
 def set_event_channel(guild_id: int, channel_id: int):

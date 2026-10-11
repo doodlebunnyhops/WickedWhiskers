@@ -1,6 +1,6 @@
 # Automatic cauldron spells
 
-Automatic casting is **off by default** and configured independently per server. Existing manual `/game cast spell` behavior and eligibility are shared by automatic draws: active, unfrozen, non-Veiled database players; the existing weighted selection and full-pool payout; distinct winners and mention preferences; witch artwork and themed event announcements. Membership verification changes remain deferred.
+Automatic casting is **off by default** and configured independently per server. Existing manual `/game cast spell` behavior and eligibility are shared by automatic draws: active, unfrozen database players (including Veiled players); the existing weighted selection and full-pool payout; distinct winners and mention preferences; witch artwork and themed event announcements. Membership verification changes remain deferred.
 
 ## Configuration
 

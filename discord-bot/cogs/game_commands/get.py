@@ -16,7 +16,7 @@ async def get_cauldron_eligibility(interaction: discord.Interaction):
     from utils.cauldron import eligibility_report
 
     message = interaction.client.message_loader.get_message
-    players = db_utils.get_active_players_by_guild(interaction.guild.id)
+    players = db_utils.get_cauldron_players(interaction.guild.id)
     report = eligibility_report(players)
     embed = discord.Embed(
         title=message('cauldron', 'eligibility', 'title'),

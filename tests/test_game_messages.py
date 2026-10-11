@@ -84,7 +84,7 @@ def test_templates_format_and_no_repeated_pumpkin_addon_player():
         elif isinstance(v,list):
             for item in v:assert item.format(**values)
     for key in ('give_treat','trick_player','smash_pumpkin'):check(d[key]['event_messages'])
-    for key in ('luna','raven','hidden_luna','hidden_raven'):
+    for key in ('luna','raven'):
         assert all('{user}' not in text for text in d['smash_pumpkin']['event_messages'][key])
 
 

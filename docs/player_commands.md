@@ -26,7 +26,7 @@ Buy ordinary bottles, then activate them with `/use` or Inventory. Buying alone 
 
 Luna’s Calling immediately gives 5 candy each to up to three other eligible members. Its 60-second cooldown is shared across the server. A cooldown rejection, failed membership verification, or no eligible recipients does not consume your bottle. A successful summon credits you with one kindness action and the candy actually gifted.
 
-Witch’s Veil activates on confirmed purchase. While hidden, you cannot trick, treat, use other potions, receive witch gifts, or win cauldron draws. You can buy potions, inspect your inventory/bucket, and smash pumpkins. Pumpkin losses can still feed the cauldron. [Time pricing and refund rules](freeze-and-protection.md#witchs-veil) differ between exact-duration and candy-budget purchases.
+Witch’s Veil activates on confirmed purchase. While hidden, you cannot trick, treat, use other potions, receive Luna gifts. You can buy potions, inspect your inventory/bucket, smash pumpkins and win cauldron rewards. Pumpkin losses can still feed the cauldron. [Time pricing and refund rules](freeze-and-protection.md#witchs-veil) differ between exact-duration and candy-budget purchases.
 
 ## Leaving and freezes
 

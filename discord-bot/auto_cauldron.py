@@ -117,7 +117,7 @@ def describe(guild_id,guild=None):
     if not values['enabled']:blockers.append(text('disabled'))
     if db.get_game_settings(guild_id)[0]:blockers.append(text('paused'))
     if db.get_cauldron_pool(guild_id)<=0:blockers.append(text('empty'))
-    if not db.get_active_players_by_guild(guild_id):blockers.append(text('no_players'))
+    if not db.get_cauldron_players(guild_id):blockers.append(text('no_players'))
     if guild is not None:
         _,error=event_channel(guild)
         if error:blockers.append(default_messages().get_message('cauldron',error))

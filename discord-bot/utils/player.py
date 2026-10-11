@@ -296,18 +296,16 @@ async def smash_pumpkin(interaction: discord.Interaction, amount: int = 0):
         return
     values = dict(user=interaction.user.mention, candy_amount=abs(result['delta']),
                   wager=result['wager'], balance=result['balance'], delta=result['delta'])
-    event = message("smash_pumpkin", "event_messages", ("hidden_" if result.get("protected") else "") + result['message_key'], **values)
+    event = message("smash_pumpkin", "event_messages", result['message_key'], **values)
     # Append magical contributions rather than replacing the actual outcome (especially a wiped bucket).
     if result['magic']:
-        event += "\n\n" + message("smash_pumpkin", "event_messages", ("hidden_" if result.get("protected") else "") + result['magic'], **values)
+        event += "\n\n" + message("smash_pumpkin", "event_messages", result['magic'], **values)
     summary = message("smash_pumpkin", "summary", **values)
     event += "\n\n" + summary
     is_win = result['delta'] >= 0
     image = (luna_pumpkin_cauldron if result['magic'] == 'luna' else luna_pumpkin) if is_win else (raven_pumpkin_cauldron if result['magic'] == 'raven' else raven_pumpkin)
     embed = create_embed(message("smash_pumpkin", "title", user=interaction.user.display_name),
                          event, discord.Color.orange(), image, "Luna" if is_win else "Raven", None)
-    if result.get('protected'):
-        embed = discord.Embed(title=message('smash_pumpkin', 'title', user=interaction.user.display_name), description=event, color=discord.Color.orange())
     await publish_result(interaction,embed,post_to_target_channel,deferred=True)
 
 def calculate_sweetness(total_candy_given, total_candy_stolen):

@@ -120,13 +120,14 @@ def test_award_rollback_does_not_advance_schedule(database,monkeypatch):
     assert sum(r[0] for r in database.execute('SELECT candy_in_bucket FROM players WHERE guild_id=1'))==250
 
 
-def test_automatic_respects_freeze_veil_and_guild(database):
+def test_automatic_includes_veil_but_respects_freeze_and_guild(database,monkeypatch):
     enable(witch='raven',winners='many')
     state.freeze(1,10,99,None,'reason','f')
     db.update_player_field(20,1,'candy_in_bucket',1000)
     state.buy_protection(1,20,state.quote(1,20,'fixed',5),'veil')
+    monkeypatch.setattr(auto.random,'randint',lambda low,high:high)
     result=auto.claim(1,'eligible',99,now=2000)
-    assert not {10,20}&{r['player_id'] for r in result['awards']}
+    assert {r['player_id'] for r in result['awards']}=={20,30,40,50}
     assert sum(r['amount'] for r in result['awards'])==100
     assert sum(r[0] for r in database.execute('SELECT candy_in_bucket FROM players WHERE guild_id=2'))==250
 
@@ -181,3 +182,16 @@ def test_auto_ui_same_validation_and_permission(database):
         await modal.on_submit(revoked)
         assert auto.settings(1)['candy_threshold']==100
     asyncio.run(run())
+
+
+def test_only_veiled_player_can_trigger_auto_draw(database):
+    enable(witch='luna',winners='one')
+    db.update_player_field(10,1,'candy_in_bucket',1000)
+    state.buy_protection(1,10,state.quote(1,10,'fixed',5),'veil')
+    database.execute('UPDATE players SET active=0 WHERE guild_id=1 AND player_id<>10')
+    database.commit()
+    assert not db.get_active_players_by_guild(1)  # Still unavailable to other witch gifts.
+    assert [r[0] for r in db.get_cauldron_players(1)]==[10]
+    result=auto.claim(1,'veil-only',99,now=2000)
+    assert result['awards']==[dict(player_id=10,amount=100)]
+    assert state.protection_info(1,10)  # The reward does not consume/end the Veil.

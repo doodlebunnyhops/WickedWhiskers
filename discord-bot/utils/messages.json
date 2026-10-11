@@ -712,40 +712,6 @@
         "🔥 Raven taps the cauldron with her wand. “One sweet for the witch?” It gulps down the last of the lost candy. “I shall remember this.”",
         "🫧 The lost sweets disappear beneath the cauldron’s bubbling surface. Raven peers inside. “You are a cooking pot, not a bottomless handbag.”",
         "🕯️ Raven dramatically presents the fallen candy to the cauldron. “A donation. Entirely voluntary. On the pumpkin’s behalf.”"
-      ],
-      "hidden_win": [
-        "🎃 {user} cracks a pumpkin and finds **{candy_amount} candy** tucked among the seeds!",
-        "🍬 A satisfying crunch rewards {user} with **{candy_amount} candy**."
-      ],
-      "hidden_win_extra": [
-        "✨ {user} splits a glittering gourd and uncovers **{candy_amount} candy**. That pumpkin was keeping quite a secret!",
-        "🎃 Candy bursts from a golden pumpkin! {user} gains **{candy_amount} candy**."
-      ],
-      "hidden_lose": [
-        "🎃 A hungry pumpkin snaps at {user}’s bucket, taking **{candy_amount} candy**. Apparently, it came for treats too.",
-        "🕷️ {user} disturbs a haunted gourd and loses **{candy_amount} candy**. Some pumpkins bite back!"
-      ],
-      "hidden_lose_double": [
-        "💀 {user} cracks a cursed pumpkin and loses **{candy_amount} candy**. An expensive pile of seeds!",
-        "🎃 A particularly greedy gourd takes **{candy_amount} candy** from {user}. So much for a sweet surprise."
-      ],
-      "hidden_lose_all": [
-        "🎃 A ravenous pumpkin swallows **all {candy_amount} candy** from {user}, leaving the bucket empty.",
-        "💀 {user} cracks a cursed gourd, losing **all {candy_amount} candy**. Not a single sweet remains in the bucket!"
-      ],
-      "hidden_break_even": [
-        "🎃 {user} smashes a pumpkin. Just seeds and cobwebs—no candy gained or lost.",
-        "🍂 {user} cracks open a stubborn gourd. A dramatic crunch, a shower of seeds, and no change in candy."
-      ],
-      "hidden_luna": [
-        "✨ The pumpkin’s own magic copies **{candy_amount} candy** into the cauldron. The original winnings stay put!",
-        "🫧 A magical copy of the winnings feeds the cauldron **{candy_amount} candy**. The pot gets a snack without taking any of the prize."
-      ],
-      "hidden_raven": [
-        "🫧 The lost sweets tumble into the cauldron. It answers with a very satisfied bubble.",
-        "🎃 The cauldron gulps down the candy already lost. No further sweets leave the bucket.",
-        "🔥 The scattered candy hops into the cauldron, one sweet at a time. Apparently, dinner delivers itself.",
-        "🍬 The cauldron catches the fallen sweets before they hit the ground. Not a crumb goes to waste."
       ]
     },
     "personal_message": {
@@ -794,30 +760,6 @@
       ],
       "lose_all": [
         "💀 “An empty bucket? How deliciously dreadful!” Raven cackles. The pumpkin took **all {candy_amount} of your candy**. Your bucket now holds **0 candy**."
-      ],
-      "hidden_win": [
-        "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
-      ],
-      "hidden_win_extra": [
-        "🌫️ Unseen beneath the Veil, {user} cracks a pumpkin and gains **{candy_amount} candy**. No witch spots the hidden sweet stash!"
-      ],
-      "hidden_lose": [
-        "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
-      ],
-      "hidden_lose_double": [
-        "🎃 A cursed pumpkin snaps at the hidden {user}, taking **{candy_amount} candy**. Concealment is no match for a hungry gourd!"
-      ],
-      "hidden_lose_all": [
-        "🎃 The witches cannot see {user}, but a hungry pumpkin can! It swallows **all {candy_amount} candy**, emptying the bucket."
-      ],
-      "hidden_break_even": [
-        "🌫️ {user} smashes a pumpkin beneath the Veil. Just seeds and cobwebs—no candy gained or lost."
-      ],
-      "hidden_luna": [
-        "✨ The pumpkin’s own magic copies **{candy_amount} candy** into the cauldron. {user} stays hidden and keeps the winnings. The pot never refuses a snack!"
-      ],
-      "hidden_raven": [
-        "🫧 The cauldron sniffs out **{candy_amount} lost candy** and gulps it down. It cannot see {user}, but it can certainly smell sweets. No additional candy is taken."
       ]
     },
     "title": "🎃 {user} smashed a pumpkin!",
@@ -1044,7 +986,7 @@
         },
         "shop": {
           "name": "🧪 Shop and potions",
-          "value": "`/shop browse` opens your private shop, or use **Open Shop** on the shop message. Buying a bottle puts it in your inventory; use `/use` to activate it. the **Witch’s Veil** controls in `/shop browse` or `/inventory` opens Witch’s Veil: timed concealment with no tricks, treats, other potion use, or witch/cauldron rewards. Shopping and pumpkins remain available."
+          "value": "`/shop browse` opens your private shop, or use **Open Shop** on the shop message. Buying a bottle puts it in your inventory; use `/use` to activate it. The **Witch’s Veil** controls in `/shop browse` or `/inventory` offer timed concealment with no tricks, treats, other potion use, or Luna gifts. Shopping, pumpkins and cauldron rewards remain available."
         },
         "inventory": {
           "name": "🎒 Check your supplies",
@@ -1092,7 +1034,7 @@
         },
         "veil": {
           "name": "🌫️ Witch’s Veil",
-          "value": "Buy a duration or reserve a candy budget through the **Witch’s Veil** controls in `/shop browse` or `/inventory` (also listed in the shop). Activates immediately. No incoming/outgoing tricks or treats, other potion activation, Luna gifts, or cauldron winnings. You may still shop and smash pumpkins. Existing potion charges wait. Ending early consumes the potion and starts its cooldown. Budget mode refunds only unspent time candy; fixed-duration mode forfeits unused time."
+          "value": "Buy a duration or reserve a candy budget through the **Witch’s Veil** controls in `/shop browse` or `/inventory` (also listed in the shop). Activates immediately. No incoming/outgoing tricks or treats, other potion activation, or Luna gifts. You may still shop, smash pumpkins and win cauldron draws. Existing potion charges wait. Ending early consumes the potion and starts its cooldown. Budget mode refunds only unspent time candy; fixed-duration mode forfeits unused time."
         },
         "frozen": {
           "name": "🧊 If a moderator freezes you",
@@ -1188,7 +1130,7 @@
       "fields": {
         "check": {
           "name": "1 · Check the pool and players",
-          "value": "`/game get cauldron` shows the pool.\n`/game get cauldron_eligibility` shows eligible players and weights for each outcome. Active database players have a baseline chance; Luna favors treating and Raven favors successful tricks. Frozen, protected, and opted-out players are excluded. Protected pumpkin contributions still enter the pool."
+          "value": "`/game get cauldron` shows the pool.\n`/game get cauldron_eligibility` shows eligible players and weights for each outcome. Active database players have a baseline chance; Luna favors treating and Raven favors successful tricks. Frozen and inactive players are excluded. Veiled players remain eligible; mention preferences do not affect eligibility."
         },
         "pool": {
           "name": "2 · Set the pool if needed",
@@ -1221,7 +1163,7 @@
     "indefinite": "Until a moderator unfreezes you",
     "no_reason": "No reason was supplied.",
     "frozen_private": "🧊 You are frozen.\n**Ends:** {expiry}\n**Reason:** {reason}\nYou cannot trick, treat, smash pumpkins, shop, activate potions, or receive game rewards. Other players cannot target you. Passive earning and collection are paused. Your progress is preserved, and active potions were returned with their remaining charges. You can still check `/bucket`, `/inventory`, and `/help`. Leaving forfeits your progress but does not remove this freeze.",
-    "protected_private": "🌫️ Your Witch’s Veil lasts until <t:{expiry}:F> (<t:{expiry}:R>). You cannot trick, treat, or activate other potions while hidden. You can smash pumpkins, shop, and check inventory. You cannot receive treats, Luna gifts, or cauldron winnings. Use the **Witch’s Veil** controls in `/shop browse` or `/inventory` to manage your spell.",
+    "protected_private": "🌫️ Your Witch’s Veil lasts until <t:{expiry}:F> (<t:{expiry}:R>). You cannot trick, treat, or activate other potions while hidden. You can smash pumpkins, shop, check inventory and win cauldron draws. You cannot receive treats or Luna gifts. Use the **Witch’s Veil** controls in `/shop browse` or `/inventory` to manage your spell.",
     "not_joined": "🌙 You are not currently playing. Use `/join` when you are ready.",
     "join_self": "🌙 You can only join yourself.",
     "bots_cannot_join": "🦇 Bots cannot join the candy game.",
@@ -1275,7 +1217,7 @@
     "cooldown_status": "Next protection purchase available <t:{expiry}:F> (<t:{expiry}:R>).",
     "mode_fixed": "Exact duration",
     "mode_budget": "Candy budget",
-    "protection_intro": "🌫️ **Witch’s Veil**\nPotion fee: **{fee} candy** · Time: **{rate} candy/minute**\nDuration: {minimum}–{maximum} minutes · Cooldown: {cooldown} minutes after ending.\nPurchase activates immediately. No outgoing/incoming tricks or treats, other potion use, Luna gifts, or cauldron winnings while hidden. You may still shop and smash pumpkins—including special contributions to the hungry cauldron. Existing potion charges wait until protection ends.",
+    "protection_intro": "🌫️ **Witch’s Veil**\nPotion fee: **{fee} candy** · Time: **{rate} candy/minute**\nDuration: {minimum}–{maximum} minutes · Cooldown: {cooldown} minutes after ending.\nPurchase activates immediately. No outgoing/incoming tricks or treats, other potion use, or Luna gifts while hidden. You may still shop, smash pumpkins and win cauldron draws. Pumpkin contributions still feed the hungry cauldron. Existing potion charges wait until protection ends.",
     "protection_buy_button": "Choose protection",
     "protection_end_button": "End protection",
     "protection_modal_title": "Buy Witch’s Veil",
@@ -1283,7 +1225,7 @@
     "units_label": "Minutes OR candy for time",
     "units_hint": "Exact duration: enter minutes. Candy budget: enter time candy only; the potion fee is extra.",
     "confirm_protection_button": "Pay and activate",
-    "protection_quote": "🌫️ **{mode} · {minutes} minutes**\nPotion fee: {fee} candy\nTime allowance: {reserve} candy at {rate}/minute\n**Total charged now: {total} candy**\nCooldown after ending: {cooldown} minutes.\nActivates immediately. No tricking, treating, other potion activation, or witch/cauldron rewards. Pumpkins and shopping remain available. No stacking or extending. Ending consumes the potion.",
+    "protection_quote": "🌫️ **{mode} · {minutes} minutes**\nPotion fee: {fee} candy\nTime allowance: {reserve} candy at {rate}/minute\n**Total charged now: {total} candy**\nCooldown after ending: {cooldown} minutes.\nActivates immediately. No tricking, treating, other potion activation, or Luna gifts. Pumpkins, shopping and cauldron rewards remain available. No stacking or extending. Ending consumes the potion.",
     "refund_fixed": "Exact duration: unused time is forfeited if you end early.",
     "refund_budget": "Budget: time candy is reserved upfront. Each started minute costs one full minute. Ending early returns unspent time candy only; the potion fee is consumed.",
     "protection_started": "🌫️ Witch’s Veil activated for {amount} candy! You are hidden until <t:{expiry}:F> (<t:{expiry}:R>).",

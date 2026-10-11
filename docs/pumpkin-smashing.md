@@ -46,7 +46,7 @@ With the wager cap applied, before rounding and the median boost, average net ch
 
 ## Cauldron and messages
 
-After a win, a separate 30% chance creates a copy of the actual winnings in the cauldron; the player keeps their win. After a loss, a 90% chance sends the actual lost candy to the cauldron, with no additional deduction. Break-even results do neither. Protected players have identical mechanics but neutral narration rather than witches spotting them.
+After a win, a separate 30% chance creates a copy of the actual winnings in the cauldron; the player keeps their win. After a loss, a 90% chance sends the actual lost candy to the cauldron, with no additional deduction. Break-even results do neither. Protected players use identical mechanics, public messages and witch artwork, without revealing Veil.
 
 Public results show wager and signed net change, without a remaining balance, except that a full drain can be announced. Completed smashes do not keep a duplicate private success reply. Narration uses `smash_pumpkin` in `messages.json` through `messages.py`.
 

@@ -23,7 +23,7 @@ The bot seeds 🎃 (`:jack_o_lantern:`) on new or relocated join invitations. Ru
 
 ## Freeze, protection, and leaving
 
-Playing now explains `/leave` and the one-hour fresh-start delay. Potions explains Witch’s Veil, its purchase modes, restrictions, and returned potions on freezing. Management includes `/game freeze`, `/game unfreeze`, and the Witch’s Veil shop settings. Cauldron help explains frozen/protected exclusions. See [full rules](freeze-and-protection.md).
+Playing now explains `/leave` and the one-hour fresh-start delay. Potions explains Witch’s Veil, its purchase modes, restrictions, and returned potions on freezing. Management includes `/game freeze`, `/game unfreeze`, and the Witch’s Veil shop settings. Cauldron help explains frozen/inactive exclusions and includes Veiled players. See [full rules](freeze-and-protection.md).
 
 Playing explains variable pumpkin amounts and the Collect earned candy button in `/bucket`, without exposing hidden percentages or median calculations. Earnings rules include the 100/day UTC cap, 300 saved cap, offline earning, freeze/pause restrictions, and forfeiture on leaving/full player reset. Management explains that pausing stops earnings.
 

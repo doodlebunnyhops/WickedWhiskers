@@ -48,7 +48,7 @@ For #join and #shop, deny @everyone Send Messages and Add Reactions, retaining V
 
 ## Cauldron and reports
 
-`/game cast spell witch:Luna|Raven winners:One|Many` awards the full pool among distinct eligible players. Frozen and Veiled players do not qualify. Purchases provide perks, not entries. Results post in Event with the witch artwork and winner mentions, respecting mention opt-outs. A manual successful cast resets the automatic timer.
+`/game cast spell witch:Luna|Raven winners:One|Many` awards the full pool among distinct eligible players. Frozen and inactive players do not qualify; Veiled players do. Purchases provide perks, not entries. Results post in Event with the witch artwork and winner mentions, respecting mention opt-outs. A manual successful cast resets the automatic timer.
 
 `/game get cauldron_eligibility` provides a private report without drawing. `/game get leaderboard` supports the existing category boards and All selector. All is private outside Admin. **Known limitation:** the current implementation permits every individual category in Event, although the intended policy is Candy Hoarders only; use Admin or another channel for sensitive boards until that separate fix. Commands do not forward boards to a different channel.
 

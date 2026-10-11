@@ -77,7 +77,7 @@ def test_moderator_report_private_read_only(database):
 @pytest.mark.parametrize('witch',['luna','raven'])
 @pytest.mark.parametrize('mode',['One','many'])
 def test_no_active_players_message(database,monkeypatch,witch,mode):
-    monkeypatch.setattr(cast,'get_active_players_by_guild',lambda guild:[])
+    monkeypatch.setattr(cast,'get_cauldron_players',lambda guild:[])
     interaction=SimpleNamespace(id=12345,client=client(),user=SimpleNamespace(id=99,mention='<@99>'),guild=SimpleNamespace(id=1),followup=SimpleNamespace(send=AsyncMock()),response=SimpleNamespace(send_message=AsyncMock(),defer=AsyncMock()))
     asyncio.run(cast.cast_spell.callback(interaction,witch,mode))
     assert 'No active players' in interaction.response.send_message.call_args.args[0]

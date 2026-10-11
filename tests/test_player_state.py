@@ -213,15 +213,16 @@ def test_social_paths_block_without_spending_charges(database,clock):
     assert not result
 
 
-def test_luna_and_cauldron_skip_hidden_and_frozen(database,clock):
+def test_luna_skips_veil_but_cauldron_includes_it(database,clock,monkeypatch):
     fund();protect()
     state.freeze(1,20,30,None,'private','f')
     with db.transaction() as conn:potions.grant(conn,1,30,'luna')
     result=potions.use(1,30,'luna','luna',{10,20,30,40,50})
     assert set(result['recipients'])=={40,50}
     db.set_cauldron_pool(1,100)
+    monkeypatch.setattr(cauldron.random,'randint',lambda low,high:high)
     result,_=cauldron.award_pool(1,'cast',50,'luna','many')
-    assert not {10,20}&{x['player_id'] for x in result['awards']}
+    assert {x['player_id'] for x in result['awards']}=={10,30,40,50}
 
 
 def test_protected_pumpkin_still_funds_pool(database,clock,monkeypatch):
@@ -232,8 +233,6 @@ def test_protected_pumpkin_still_funds_pool(database,clock,monkeypatch):
     result,_=pumpkins.smash(1,10,10,'pumpkin',Rolls())
     assert result['protected'] and result['contribution']==10
     assert db.get_cauldron_pool(1)==10
-    msg=state.loader().get_message('smash_pumpkin','event_messages','hidden_raven',user='PLAYER',candy_amount=10)
-    assert 'cauldron' in msg and ('lost sweets' in msg or 'already lost' in msg)
 
 
 def test_freeze_public_privacy_and_permission(database,clock):
@@ -274,15 +273,17 @@ def test_frozen_action_paths_have_private_details_and_no_game_changes(database,c
     assert balance()==before
 
 
-def test_protected_pumpkin_public_embed_has_no_witch_narrator(database,clock,monkeypatch):
+def test_protected_pumpkin_public_embed_uses_normal_narrator(database,clock,monkeypatch):
     fund();protect()
     interaction,_=caller()
     values=iter([.9,.99,0]);monkeypatch.setattr(pumpkins.random,'random',lambda:next(values))
     post=AsyncMock();monkeypatch.setattr(player,'post_to_target_channel',post)
     asyncio.run(player.smash_pumpkin(interaction,10))
     embed=post.call_args.args[1]
-    assert 'hidden' in embed.description and 'cauldron' in embed.description
-    assert not embed.image.url and not embed.author.name
+    assert 'cauldron' in embed.description
+    assert 'hidden' not in embed.description.lower() and 'veil' not in embed.description.lower()
+    assert embed.author.name == 'Raven'
+    assert embed.thumbnail.url or embed.image.url
     assert 'Bucket:' not in embed.description
 
 
